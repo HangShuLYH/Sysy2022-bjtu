@@ -1,0 +1,12 @@
+TODO:
+1. lexical.lex文件中token匹配之后的动作没写、例如整形常量应该被计算、其值存在yylval.intVal中
+2. 缺少测试文件
+
+说明:
+1.生成可用的lex.yy.cpp文件步骤(重要):
+(1)通过flex lexical.lex生成lex.yy.c,并将后缀改为lex.yy.cpp
+(2)lex.yy.cpp文件中有3处使用了lex.yy.c、需要将其改为lex.yy.cpp
+
+2.yylex()函数返回值是一个整形常量、代表符号种类，我将其定义在main.h的TokenKind的enum变量中(START是使变量从1开始、并不使用)
+整形数和浮点数一符多种，yylval存储值。其余符号都是一符一种，yylval可以不用。
+lex分析器存在一个yylval变量,用于存储当前符号的值。我将这个值定义为main.h中的Type结构体。Type包括两个值，分别存储整形和浮点型数值
