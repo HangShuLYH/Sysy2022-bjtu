@@ -144,13 +144,16 @@
 			"isCMake" : true,
 			"isExternal" : true,
 			"path" : "D:/CLion/CLion 2021.3.4/bin/cmake/win/share/cmake-3.21/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"path" : "src/frontend/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "D:/Compiler Competition/Sysy2022-bjtu/cmake-build-debug",
-		"source" : "D:/Compiler Competition/Sysy2022-bjtu"
+		"build" : "D:/Compiler Competition/sys-bjtu/cmake-build-debug",
+		"source" : "D:/Compiler Competition/sys-bjtu"
 	},
 	"version" : 
 	{

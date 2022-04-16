@@ -1,19 +1,15 @@
 #include <iostream>
-#include "Lexer/main.h"
+#include "driver.hh"
+#include "syntax_tree.hh"
 
-int main() {
-    const char* sFile = "../Lexer/file.txt";
-    FILE* fp = fopen(sFile,"r");
-    if (fp == NULL) {
-        printf("OPEN ERROR!\n");
-        exit(-1);
-    }
-    extern FILE* yyin;
-    yyin = fp;
-    extern int yylex();
-    int c;
-    while(c=yylex()){
-        printf("%d\n",c);
-    }
+driver ddriver;
+CompUnit *root;
+
+int main (int argc, char *argv[])
+{
+    std::cout << "start..." << std::endl;
+    root = ddriver.parse(argv[1]);
+    root->visit(0);
+    std::cout << "end..." <<std::endl;
     return 0;
 }

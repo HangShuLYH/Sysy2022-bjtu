@@ -1,7 +1,0 @@
-awnd
-//awd123
-awd
-123
-0x12
-int a = 5;
-int b[];

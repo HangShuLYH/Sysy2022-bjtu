@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "d:/Compiler Competition/Sysy2022-bjtu/cmake-build-debug"
+			"value" : "d:/Compiler Competition/sys-bjtu/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -623,7 +623,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "D:/Compiler Competition/Sysy2022-bjtu"
+			"value" : "D:/Compiler Competition/sys-bjtu"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -635,7 +635,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Program Files (x86)/Compiler"
+			"value" : "C:/Program Files (x86)/sys_bjtu"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -771,7 +771,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "1"
+			"value" : "2"
 		},
 		{
 			"name" : "CMAKE_OBJCOPY",
@@ -851,7 +851,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "Compiler"
+			"value" : "Sysy2022-bjtu"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1230,7 +1230,7 @@
 			"value" : "FALSE"
 		},
 		{
-			"name" : "Compiler_BINARY_DIR",
+			"name" : "Sysy2022-bjtu_BINARY_DIR",
 			"properties" : 
 			[
 				{
@@ -1239,10 +1239,10 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/Compiler Competition/Sysy2022-bjtu/cmake-build-debug"
+			"value" : "D:/Compiler Competition/sys-bjtu/cmake-build-debug"
 		},
 		{
-			"name" : "Compiler_IS_TOP_LEVEL",
+			"name" : "Sysy2022-bjtu_IS_TOP_LEVEL",
 			"properties" : 
 			[
 				{
@@ -1254,7 +1254,7 @@
 			"value" : "ON"
 		},
 		{
-			"name" : "Compiler_SOURCE_DIR",
+			"name" : "Sysy2022-bjtu_SOURCE_DIR",
 			"properties" : 
 			[
 				{
@@ -1263,7 +1263,43 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "D:/Compiler Competition/Sysy2022-bjtu"
+			"value" : "D:/Compiler Competition/sys-bjtu"
+		},
+		{
+			"name" : "sys_bjtu_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "D:/Compiler Competition/sys-bjtu/cmake-build-debug"
+		},
+		{
+			"name" : "sys_bjtu_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "sys_bjtu_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "D:/Compiler Competition/sys-bjtu"
 		}
 	],
 	"kind" : "cache",
