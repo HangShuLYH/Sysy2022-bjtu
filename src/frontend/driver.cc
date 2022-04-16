@@ -1,12 +1,7 @@
 #include "driver.hh"
 #include "parser.hh"
 
-driver::driver ()
-        : trace_scanning (false), trace_parsing (false)
-{
-    variables["one"] = 1;
-    variables["two"] = 2;
-}
+driver::driver (){}
 
 driver::~driver ()
 {
@@ -17,10 +12,8 @@ CompUnit* driver::parse (const std::string &f)
     file = f;
     scan_begin ();
     yy::parser parser (*this);
-    parser.set_debug_level (trace_parsing);
     parser.parse ();
     scan_end ();
-    // std::cout << this->root;
     return this->root;
 }
 
@@ -37,11 +30,8 @@ void driver::error (const std::string& m)
 
 void driver::scan_begin()
 {
-    lexer.set_debug( trace_scanning );
-
     // Try to open the file:
     instream.open(file);
-
     if( instream.good() ) {
         lexer.switch_streams(&instream, 0);
     } else if( file == "-" ) {
