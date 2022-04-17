@@ -1910,7 +1910,6 @@ namespace yy {
   case 59:
 #line 379 "parser.yy"
                                  {
-    std::cout << "LVal" <<std::endl;
     yylhs.value.as < LVal* > ()=new LVal();
     yylhs.value.as < LVal* > ()->identifier=yystack_[1].value.as < std::string > ();
     yylhs.value.as < LVal* > ()->expList.swap(yystack_[0].value.as < ParamArrayExpList* > ()->expList);

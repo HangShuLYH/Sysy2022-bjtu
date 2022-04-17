@@ -377,7 +377,6 @@ Cond:LOrExp{
 }
 	;
 LVal:IDENTIFIER ParamArrayExpList{
-    std::cout << "LVal" <<std::endl;
     $$=new LVal();
     $$->identifier=$1;
     $$->expList.swap($2->expList);
