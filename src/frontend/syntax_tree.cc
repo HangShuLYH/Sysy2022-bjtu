@@ -347,14 +347,18 @@ void Stmt::visit(int depth) {
     if (lVal) {
         lVal->visit(depth + 1);
         exp->visit(depth + 1);
-    } else if (exp) {
+    } else if (exp && !isReturn) {
         exp->visit(depth + 1);
     } else if (block) {
         block->visit(depth + 1);
     } else if (isSelect) {
 #ifdef DEBUG
-        space(depth+1);
-        std::cout << "If" <<std::endl;
+        space(depth);
+        if (!stmt2) {
+            std::cout << "If" << std::endl;
+        }else{
+            std::cout << "IfElse" << std::endl;
+        }
 #endif
         cond->visit(depth + 1);
         stmt1->visit(depth + 1);
@@ -362,33 +366,37 @@ void Stmt::visit(int depth) {
             stmt2->visit(depth + 1);
         }
 #ifdef DEBUG
-        space(depth+1);
-        std::cout << "If" <<std::endl;
+        space(depth);
+        if (!stmt2) {
+            std::cout << "If" << std::endl;
+        }else{
+            std::cout << "IfElse" << std::endl;
+        }
 #endif
     } else if (isIteration) {
 #ifdef DEBUG
-        space(depth+1);
+        space(depth);
         std::cout << "While" <<std::endl;
 #endif
         cond->visit(depth + 1);
         stmt1->visit(depth + 1);
 #ifdef DEBUG
-        space(depth+1);
+        space(depth);
         std::cout << "While" <<std::endl;
 #endif
     } else if (isBreak) {
 #ifdef DEBUG
-        space(depth+1);
+        space(depth);
         std::cout << "break" <<std::endl;
 #endif
     } else if (isContinue){
 #ifdef DEBUG
-        space(depth+1);
+        space(depth);
         std::cout << "continue" <<std::endl;
 #endif
     }else if (isReturn) {
 #ifdef DEBUG
-        space(depth+1);
+        space(depth);
         std::cout << "return" <<std::endl;
 #endif
         if (exp) {
@@ -562,7 +570,7 @@ void MulExp::visit(int depth) {
 
 void AddExp::visit(int depth) {
 #ifdef DEBUG
-    space(depth + 1);
+    space(depth);
     std::cout << "AddExp" << std::endl;
 #endif
     if (addExp) {
@@ -580,7 +588,7 @@ void AddExp::visit(int depth) {
         mulExp->visit(depth + 1);
     }
 #ifdef DEBUG
-    space(depth + 1);
+    space(depth);
     std::cout << "AddExp" << std::endl;
 #endif
 }
