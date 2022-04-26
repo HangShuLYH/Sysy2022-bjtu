@@ -344,59 +344,96 @@ void Stmt::visit(int depth) {
     space(depth);
     std::cout << "Stmt" << std::endl;
 #endif
-    if (lVal) {
-        lVal->visit(depth + 1);
-        exp->visit(depth + 1);
-    } else if (exp) {
-        exp->visit(depth + 1);
-    } else if (block) {
-        block->visit(depth + 1);
-    } else if (isSelect) {
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "If" <<std::endl;
-#endif
-        cond->visit(depth + 1);
-        stmt1->visit(depth + 1);
-        if (stmt2) {
-            stmt2->visit(depth + 1);
-        }
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "If" <<std::endl;
-#endif
-    } else if (isIteration) {
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "While" <<std::endl;
-#endif
-        cond->visit(depth + 1);
-        stmt1->visit(depth + 1);
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "While" <<std::endl;
-#endif
-    } else if (isBreak) {
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "break" <<std::endl;
-#endif
-    } else if (isContinue){
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "continue" <<std::endl;
-#endif
-    }else if (isReturn) {
-#ifdef DEBUG
-        space(depth+1);
-        std::cout << "return" <<std::endl;
-#endif
-        if (exp) {
-            exp->visit(depth+1);
-        }
+    if (assignStmt) {
+        assignStmt->visit(depth+1);
+    }else if (block){
+        block->visit(depth+1);
+    }else if (selectStmt){
+        selectStmt->visit(depth+1);
+    }else if(iterationStmt){
+        iterationStmt->visit(depth+1);
+    }else if (breakStmt){
+        breakStmt->visit(depth+1);
+    }else if (returnStmt){
+        returnStmt->visit(depth+1);
     }
+#ifdef DEBUG
     space(depth);
     std::cout << "Stmt" << std::endl;
+#endif
+}
+void AssignStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "AssignStmt" << std::endl;
+#endif
+lVal->visit(depth+1);
+exp->visit(depth+1);
+#ifdef DEBUG
+    space(depth);
+    std::cout << "AssignStmt" << std::endl;
+#endif
+}
+void SelectStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "SelectStmt" << std::endl;
+#endif
+    cond->visit(depth+1);
+    ifStmt->visit(depth+1);
+    if (elseStmt){
+        elseStmt->visit(depth+1);
+    }
+#ifdef DEBUG
+    space(depth);
+    std::cout << "SelectStmt" << std::endl;
+#endif
+}
+void IterationStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "IterationStmt" << std::endl;
+#endif
+    cond->visit(depth+1);
+    stmt->visit(depth+1);
+#ifdef DEBUG
+    space(depth);
+    std::cout << "IterationStmt" << std::endl;
+#endif
+}
+void BreakStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "BreakStmt" << std::endl;
+#endif
+#ifdef DEBUG
+    space(depth);
+    std::cout << "BreakStmt" << std::endl;
+#endif
+}
+void ContinueStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "ContinueStmt" << std::endl;
+#endif
+#ifdef DEBUG
+    space(depth);
+    std::cout << "ContinueStmt" << std::endl;
+#endif
+}
+
+void ReturnStmt::visit(int depth) {
+#ifdef DEBUG
+    space(depth);
+    std::cout << "ReturnStmt" << std::endl;
+#endif
+    if (exp) {
+        exp->visit(depth + 1);
+    }
+#ifdef DEBUG
+    space(depth);
+    std::cout << "ReturnStmt" << std::endl;
+#endif
 }
 
 void Exp::visit(int depth) {

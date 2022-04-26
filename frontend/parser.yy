@@ -72,6 +72,12 @@ class driver;
 %type <BlockItemList*>BlockItemList
 %type <BlockItem*>BlockItem
 %type <Stmt*>Stmt
+%type <AssignStmt*>AssignStmt
+%type <SelectStmt*>SelectStmt
+%type <IterationStmt*>IterationStmt
+%type <BreakStmt*>BreakStmt;
+%type <ContinueStmt*>ContinueStmt;
+%type <ReturnStmt*>ReturnStmt;
 %type <Exp*>Exp
 %type <Cond*>Cond
 %type <LVal*>LVal
@@ -311,60 +317,81 @@ BlockItem:ConstDecl{
   }
 	;
 
-Stmt: LVal ASSIGN Exp SEMICOLON{
+Stmt: AssignStmt{
         $$=new Stmt();
-        $$->lVal=std::shared_ptr<LVal>($1);
-        $$->exp=std::shared_ptr<Exp>($3);
+        $$->assignStmt = std::shared_ptr<AssignStmt>($1);
     }
     |Exp SEMICOLON{
-        $$=new Stmt();
-        $$->exp=std::shared_ptr<Exp>($1);
+
     }
     |SEMICOLON{
-        $$=new Stmt();
+
     }
     |Block{
         $$=new Stmt();
         $$->block=std::shared_ptr<Block>($1);
     }
-    |IF LB Cond RB Stmt{
+    |SelectStmt{
         $$=new Stmt();
-        $$->cond=std::shared_ptr<Cond>($3);
-        $$->stmt1=std::shared_ptr<Stmt>($5);
-        $$->isSelect=true;
+        $$->selectStmt = std::shared_ptr<SelectStmt>($1);
     }
-    |IF LB Cond RB Stmt ELSE Stmt{
+    |IterationStmt{
         $$=new Stmt();
-        $$->cond=std::shared_ptr<Cond>($3);
-        $$->stmt1=std::shared_ptr<Stmt>($5);
-        $$->stmt2=std::shared_ptr<Stmt>($7);
-        $$->isSelect=true;
+        $$->iterationStmt = std::shared_ptr<IterationStmt>($1);
     }
-    |WHILE LB Cond RB Stmt{
+    |BreakStmt{
         $$=new Stmt();
-        $$->cond=std::shared_ptr<Cond>($3);
-        $$->stmt1=std::shared_ptr<Stmt>($5);
-        $$->isIteration=true;
+        $$->breakStmt = std::shared_ptr<BreakStmt>($1);
     }
-    |BREAK SEMICOLON{
+    |ContinueStmt{
         $$=new Stmt();
-        $$->isBreak=true;
+        $$->continueStmt = std::shared_ptr<ContinueStmt>($1);
     }
-    |CONTINUE SEMICOLON{
+    |ReturnStmt{
         $$=new Stmt();
-        $$->isContinue=true;
-    }
-    |RETURN SEMICOLON{
-        $$=new Stmt();
-        $$->isReturn=true;
-    }
-    |RETURN Exp SEMICOLON{
-        $$=new Stmt();
-        $$->exp=std::shared_ptr<Exp>($2);
-        $$->isReturn=true;
+        $$->returnStmt = std::shared_ptr<ReturnStmt>($1);
     }
     ;
-
+AssignStmt:LVal ASSIGN Exp SEMICOLON{
+        $$=new AssignStmt();
+        $$->lVal=std::shared_ptr<LVal>($1);
+        $$->exp=std::shared_ptr<Exp>($3);
+       }
+       ;
+SelectStmt:IF LB Cond RB Stmt{
+        $$=new SelectStmt();
+        $$->cond=std::shared_ptr<Cond>($3);
+        $$->ifStmt=std::shared_ptr<Stmt>($5);
+}
+    |IF LB Cond RB Stmt ELSE Stmt{
+        $$=new SelectStmt();
+        $$->cond=std::shared_ptr<Cond>($3);
+        $$->ifStmt=std::shared_ptr<Stmt>($5);
+        $$->elseStmt=std::shared_ptr<Stmt>($7);
+    }
+    ;
+IterationStmt:WHILE LB Cond RB Stmt{
+        $$=new IterationStmt();
+        $$->cond=std::shared_ptr<Cond>($3);
+        $$->stmt=std::shared_ptr<Stmt>($5);
+    }
+    ;
+BreakStmt:BREAK SEMICOLON{
+        $$=new BreakStmt();
+    }
+    ;
+ContinueStmt:CONTINUE SEMICOLON{
+        $$=new ContinueStmt();
+    }
+    ;
+ReturnStmt: RETURN SEMICOLON{
+     $$=new ReturnStmt();
+}
+    |RETURN Exp SEMICOLON{
+        $$=new ReturnStmt();
+        $$->exp=std::shared_ptr<Exp>($2);
+    }
+    ;
 Exp:AddExp{
     $$=new Exp();
     $$->addExp=std::shared_ptr<AddExp>($1);

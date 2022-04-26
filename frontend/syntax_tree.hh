@@ -61,6 +61,12 @@ class Block;
 class BlockItemList;
 class BlockItem;
 class Stmt;
+class AssignStmt;
+class SelectStmt;
+class IterationStmt;
+class BreakStmt;
+class ContinueStmt;
+class ReturnStmt;
 class Exp;
 class Cond;
 class LVal;
@@ -212,17 +218,45 @@ public:
 class Stmt:TreeNode{
 public:
     void visit(int depth) final;
-    std::shared_ptr<LVal> lVal = nullptr;
-    std::shared_ptr<Exp> exp = nullptr;
+    std::shared_ptr<AssignStmt> assignStmt = nullptr;
     std::shared_ptr<Block> block = nullptr;
+    std::shared_ptr<SelectStmt> selectStmt = nullptr;
+    std::shared_ptr<IterationStmt> iterationStmt = nullptr;
+    std::shared_ptr<BreakStmt> breakStmt = nullptr;
+    std::shared_ptr<ContinueStmt> continueStmt = nullptr;
+    std::shared_ptr<ReturnStmt> returnStmt = nullptr;
+};
+class AssignStmt:TreeNode{
+public:
+    void visit(int depth) final;
+    std::shared_ptr<LVal> lVal;
+    std::shared_ptr<Exp> exp;
+};
+class SelectStmt:TreeNode{
+public:
+    void visit(int depth) final;
     std::shared_ptr<Cond> cond = nullptr;
-    std::shared_ptr<Stmt> stmt1 = nullptr;
-    std::shared_ptr<Stmt> stmt2 = nullptr;
-    bool isSelect;
-    bool isIteration;
-    bool isBreak;
-    bool isContinue;
-    bool isReturn;
+    std::shared_ptr<Stmt> ifStmt = nullptr;
+    std::shared_ptr<Stmt> elseStmt = nullptr;
+};
+class IterationStmt:TreeNode{
+public:
+    void visit(int depth) final;
+    std::shared_ptr<Cond> cond = nullptr;
+    std::shared_ptr<Stmt> stmt = nullptr;
+};
+class BreakStmt:TreeNode{
+public:
+    void visit(int depth) final;
+};
+class ContinueStmt:TreeNode{
+public:
+    void visit(int depth) final;
+};
+class ReturnStmt:TreeNode{
+public:
+    void visit(int depth) final;
+    std::shared_ptr<Exp> exp;
 };
 class Exp:TreeNode{
 public:
