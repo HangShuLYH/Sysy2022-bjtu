@@ -83,17 +83,33 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/driver.dir/driver.cc.s"
 	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hangshu/桌面/Sysy2022-bjtu/src/frontend/driver.cc -o CMakeFiles/driver.dir/driver.cc.s
 
+src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: src/frontend/CMakeFiles/driver.dir/flags.make
+src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc
+src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: src/frontend/CMakeFiles/driver.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o"
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o -MF CMakeFiles/driver.dir/IrVisitor.cc.o.d -o CMakeFiles/driver.dir/IrVisitor.cc.o -c /home/hangshu/桌面/Sysy2022-bjtu/src/frontend/IrVisitor.cc
+
+src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/driver.dir/IrVisitor.cc.i"
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hangshu/桌面/Sysy2022-bjtu/src/frontend/IrVisitor.cc > CMakeFiles/driver.dir/IrVisitor.cc.i
+
+src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/driver.dir/IrVisitor.cc.s"
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hangshu/桌面/Sysy2022-bjtu/src/frontend/IrVisitor.cc -o CMakeFiles/driver.dir/IrVisitor.cc.s
+
 # Object files for target driver
 driver_OBJECTS = \
-"CMakeFiles/driver.dir/driver.cc.o"
+"CMakeFiles/driver.dir/driver.cc.o" \
+"CMakeFiles/driver.dir/IrVisitor.cc.o"
 
 # External object files for target driver
 driver_EXTERNAL_OBJECTS =
 
 src/frontend/libdriver.a: src/frontend/CMakeFiles/driver.dir/driver.cc.o
+src/frontend/libdriver.a: src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o
 src/frontend/libdriver.a: src/frontend/CMakeFiles/driver.dir/build.make
 src/frontend/libdriver.a: src/frontend/CMakeFiles/driver.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libdriver.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libdriver.a"
 	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && $(CMAKE_COMMAND) -P CMakeFiles/driver.dir/cmake_clean_target.cmake
 	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/src/frontend && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/driver.dir/link.txt --verbose=$(VERBOSE)
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "driver.hh"
 #include "syntax_tree.hh"
-
+#include "IrVisitor.hh"
 driver ddriver;
 CompUnit *root;
 
@@ -14,6 +14,8 @@ int main (int argc, char *argv[])
     }
     root = ddriver.parse(argv[1]);
     root->visit(0);
+    IrVisitor irVisitor;
+    irVisitor.visit(root);
     std::cout << "end..." <<std::endl;
     return 0;
 }

@@ -112,7 +112,7 @@ CMakeFiles/compiler.dir/all: src/frontend/CMakeFiles/syntax_tree.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/compiler.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/compiler.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/compiler.dir/rule
@@ -135,12 +135,12 @@ src/frontend/CMakeFiles/driver.dir/all: src/frontend/CMakeFiles/parser.dir/all
 src/frontend/CMakeFiles/driver.dir/all: src/frontend/CMakeFiles/syntax_tree.dir/all
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/driver.dir/build.make src/frontend/CMakeFiles/driver.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/driver.dir/build.make src/frontend/CMakeFiles/driver.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target driver"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=3,4,5 "Built target driver"
 .PHONY : src/frontend/CMakeFiles/driver.dir/all
 
 # Build rule for subdir invocation for target.
 src/frontend/CMakeFiles/driver.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 9
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/frontend/CMakeFiles/driver.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles 0
 .PHONY : src/frontend/CMakeFiles/driver.dir/rule
@@ -161,7 +161,7 @@ src/frontend/CMakeFiles/driver.dir/clean:
 src/frontend/CMakeFiles/lexer.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/lexer.dir/build.make src/frontend/CMakeFiles/lexer.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/lexer.dir/build.make src/frontend/CMakeFiles/lexer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target lexer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=6,7 "Built target lexer"
 .PHONY : src/frontend/CMakeFiles/lexer.dir/all
 
 # Build rule for subdir invocation for target.
@@ -187,7 +187,7 @@ src/frontend/CMakeFiles/lexer.dir/clean:
 src/frontend/CMakeFiles/parser.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/parser.dir/build.make src/frontend/CMakeFiles/parser.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/parser.dir/build.make src/frontend/CMakeFiles/parser.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=7,8 "Built target parser"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=8,9 "Built target parser"
 .PHONY : src/frontend/CMakeFiles/parser.dir/all
 
 # Build rule for subdir invocation for target.
@@ -213,7 +213,7 @@ src/frontend/CMakeFiles/parser.dir/clean:
 src/frontend/CMakeFiles/syntax_tree.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/syntax_tree.dir/build.make src/frontend/CMakeFiles/syntax_tree.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/syntax_tree.dir/build.make src/frontend/CMakeFiles/syntax_tree.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=9,10 "Built target syntax_tree"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug/CMakeFiles --progress-num=10,11 "Built target syntax_tree"
 .PHONY : src/frontend/CMakeFiles/syntax_tree.dir/all
 
 # Build rule for subdir invocation for target.

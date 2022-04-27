@@ -172,6 +172,30 @@ syntax_tree/fast:
 	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug && $(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/syntax_tree.dir/build.make src/frontend/CMakeFiles/syntax_tree.dir/build
 .PHONY : syntax_tree/fast
 
+IrVisitor.o: IrVisitor.cc.o
+.PHONY : IrVisitor.o
+
+# target to build an object file
+IrVisitor.cc.o:
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug && $(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/driver.dir/build.make src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o
+.PHONY : IrVisitor.cc.o
+
+IrVisitor.i: IrVisitor.cc.i
+.PHONY : IrVisitor.i
+
+# target to preprocess a source file
+IrVisitor.cc.i:
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug && $(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/driver.dir/build.make src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.i
+.PHONY : IrVisitor.cc.i
+
+IrVisitor.s: IrVisitor.cc.s
+.PHONY : IrVisitor.s
+
+# target to generate assembly for a file
+IrVisitor.cc.s:
+	cd /home/hangshu/桌面/Sysy2022-bjtu/cmake-build-debug && $(MAKE) $(MAKESILENT) -f src/frontend/CMakeFiles/driver.dir/build.make src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.s
+.PHONY : IrVisitor.cc.s
+
 driver.o: driver.cc.o
 .PHONY : driver.o
 
@@ -280,6 +304,9 @@ help:
 	@echo "... lexer"
 	@echo "... parser"
 	@echo "... syntax_tree"
+	@echo "... IrVisitor.o"
+	@echo "... IrVisitor.i"
+	@echo "... IrVisitor.s"
 	@echo "... driver.o"
 	@echo "... driver.i"
 	@echo "... driver.s"

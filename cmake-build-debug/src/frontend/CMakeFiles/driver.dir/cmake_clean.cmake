@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/driver.dir/IrVisitor.cc.o"
+  "CMakeFiles/driver.dir/IrVisitor.cc.o.d"
   "CMakeFiles/driver.dir/driver.cc.o"
   "CMakeFiles/driver.dir/driver.cc.o.d"
   "libdriver.a"

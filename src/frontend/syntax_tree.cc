@@ -721,3 +721,133 @@ void ConstExp::visit(int depth) {
     std::cout << "ConstExp" << std::endl;
 #endif
 }
+
+void CompUnit::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void DeclDef::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstDecl::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstDefList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstDef::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstExpList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstInitVal::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstInitValList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void VarDecl::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void VarDef::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void VarDefList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void InitVal::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void InitValList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void FuncDef::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void DefType::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void FuncFParams::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void FuncFParam::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ParamArrayExpList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void Block::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void BlockItemList::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void BlockItem::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void Stmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void AssignStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void SelectStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void IterationStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void BreakStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ContinueStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ReturnStmt::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void Exp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void Cond::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void LVal::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void PrimaryExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void Number::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void UnaryExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void UnaryOp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void FuncRParams::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void MulExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void AddExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void RelExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void EqExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void LAndExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void LOrExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}
+void ConstExp::accept(Visitor &visitor) {
+    visitor.visit(this);
+}

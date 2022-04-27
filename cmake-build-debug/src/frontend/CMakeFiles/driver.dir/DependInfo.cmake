@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/hangshu/桌面/Sysy2022-bjtu/src/frontend/IrVisitor.cc" "src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o" "gcc" "src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o.d"
   "/home/hangshu/桌面/Sysy2022-bjtu/src/frontend/driver.cc" "src/frontend/CMakeFiles/driver.dir/driver.cc.o" "gcc" "src/frontend/CMakeFiles/driver.dir/driver.cc.o.d"
   )
 
