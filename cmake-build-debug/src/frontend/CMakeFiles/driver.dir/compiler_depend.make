@@ -208,7 +208,12 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/istream.tcc \
   /usr/include/c++/9/cassert \
   /usr/include/assert.h \
-  ../include/frontend/location.hh
+  ../include/frontend/location.hh \
+  /usr/include/c++/9/stack \
+  /usr/include/c++/9/deque \
+  /usr/include/c++/9/bits/stl_deque.h \
+  /usr/include/c++/9/bits/deque.tcc \
+  /usr/include/c++/9/bits/stl_stack.h
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
   /usr/include/stdc-predef.h \
@@ -450,6 +455,10 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../src/frontend/driver.cc:
 
+/usr/include/c++/9/bits/stl_stack.h:
+
+/usr/include/c++/9/bits/stl_deque.h:
+
 ../include/frontend/location.hh:
 
 /usr/include/assert.h:
@@ -476,6 +485,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/Instruction.hh:
 
+/usr/include/c++/9/bits/deque.tcc:
+
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
@@ -483,6 +494,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
 /usr/include/c++/9/bits/char_traits.h:
+
+/usr/include/c++/9/stack:
 
 /usr/include/c++/9/cstdio:
 
@@ -699,6 +712,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
 ../include/frontend/BasicBlock.hh:
+
+/usr/include/c++/9/deque:
 
 /usr/include/c++/9/bits/cxxabi_init_exception.h:
 

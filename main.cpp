@@ -16,6 +16,7 @@ int main (int argc, char *argv[])
     root->visit(0);
     IrVisitor irVisitor;
     irVisitor.visit(root);
+    irVisitor.print();
     std::cout << "end..." <<std::endl;
     return 0;
 }

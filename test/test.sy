@@ -1,12 +1,26 @@
 int x;
 int main(){
-float x;
-{
-    {
-        int w;
-    }
-}
+{}
     int y;
     x = y;
     int w;
+    if(x == 1){
+        x = 1;
+        {
+            w = 1;
+        }
+        y = 1;
+        if(y == 1){
+            int mm = 0;
+        }
+    }else {
+        int xx = 0;
+    }
+    while(x == 1){
+        if(x == 1){
+            y = 1;
+        }
+        int x = 0;
+    }
+    x = y;
 }

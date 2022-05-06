@@ -210,6 +210,11 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o
  /usr/include/c++/9/cassert
  /usr/include/assert.h
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh
+ /usr/include/c++/9/stack
+ /usr/include/c++/9/deque
+ /usr/include/c++/9/bits/stl_deque.h
+ /usr/include/c++/9/bits/deque.tcc
+ /usr/include/c++/9/bits/stl_stack.h
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o
  /home/hangshu/桌面/Sysy2022-bjtu/src/frontend/driver.cc

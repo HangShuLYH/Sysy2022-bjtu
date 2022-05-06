@@ -222,8 +222,17 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   ../include/frontend/Instruction.hh \
   ../include/frontend/Value.hh \
   ../include/frontend/BasicBlock.hh \
-  ../include/frontend/Function.hh
+  ../include/frontend/Function.hh \
+  /usr/include/c++/9/stack \
+  /usr/include/c++/9/deque \
+  /usr/include/c++/9/bits/stl_deque.h \
+  /usr/include/c++/9/bits/deque.tcc \
+  /usr/include/c++/9/bits/stl_stack.h
 
+
+/usr/include/c++/9/bits/stl_stack.h:
+
+/usr/include/c++/9/bits/stl_deque.h:
 
 ../include/frontend/Function.hh:
 
@@ -267,6 +276,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 
 /usr/include/sched.h:
 
+/usr/include/c++/9/bits/deque.tcc:
+
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
@@ -296,6 +307,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
 /usr/include/c++/9/bits/char_traits.h:
+
+/usr/include/c++/9/stack:
 
 /usr/include/c++/9/cstdio:
 
@@ -380,6 +393,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/errno.h:
+
+/usr/include/c++/9/deque:
 
 /usr/include/c++/9/bits/cxxabi_init_exception.h:
 

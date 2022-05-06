@@ -166,4 +166,7 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/ostream.tcc /usr/include/c++/9/istream \
  /usr/include/c++/9/bits/istream.tcc /usr/include/c++/9/cassert \
  /usr/include/assert.h \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
+ /usr/include/c++/9/stack /usr/include/c++/9/deque \
+ /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
+ /usr/include/c++/9/bits/stl_stack.h

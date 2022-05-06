@@ -7,6 +7,9 @@ void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < compUnit->declDefList.size(); ++i) {
         compUnit->declDefList[i]->accept(*this);
     }
+    for (size_t i = 0; i < functions.size(); ++i) {
+        functions[i]->clear();
+    }
 }
 void IrVisitor::visit(DeclDef *declDef) {
     if (declDef->varDecl) {
@@ -32,9 +35,6 @@ void IrVisitor::visit(ConstDecl *constDecl) {
     }
 }
 void IrVisitor::visit(ConstDef *constDef) {
-    if (findLocalVal(constDef->identifier)) {
-        std::cerr << "Duplicate var definition:" << constDef->identifier << std::endl;
-    }
     if (constDef->constExpList.empty()) {
         constDef->constInitVal->accept(*this);
         Value *var = nullptr;
@@ -107,9 +107,6 @@ void IrVisitor::visit(VarDecl *varDecl) {
 }
 void IrVisitor::visit(VarDefList *varDefList) {}
 void IrVisitor::visit(VarDef *varDef) {
-    if (findLocalVal(varDef->identifier)) {
-        std::cerr << "Duplicate var definition:" << varDef->identifier << std::endl;
-    }
     if (varDef->constExpList.empty()){
         if (varDef->initVal) {
             varDef->initVal->accept(*this);
@@ -188,7 +185,7 @@ void IrVisitor::visit(FuncDef *funcDef) {
     if (findFunc(funcDef->identifier)) {
         std::cerr << "Duplicate Function Definition of " << funcDef->identifier << std::endl;
     }
-    auto en = new NormalBlock(entry, nullptr);
+    auto en = new NormalBlock(entry);
     cur_bb = en;
     Function* function;
     if (funcDef->defType->type == type_specifier::TYPE_INT){
@@ -213,9 +210,6 @@ void IrVisitor::visit(FuncFParams *funcFParams) {
 }
 void IrVisitor::visit(FuncFParam *funcFParam) {
     if (!funcFParam->isArray) {
-        if (findLocalVal(funcFParam->identifier)) {
-            std::cerr << "Duplicate var definition:" << funcFParam->identifier << std::endl;
-        }
         if (funcFParam->defType->type == type_specifier::TYPE_FLOAT) {
             tempVal = new Value(funcFParam->identifier,TYPE::FLOAT, false, false,0,0);
             new AllocFIR(tempVal,cur_bb);
@@ -230,20 +224,35 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
 }
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 void IrVisitor::visit(Block *block) {
-    auto parent_bb = cur_bb;
-    cur_bb = new NormalBlock(cur_bb, nullptr);
-    cur_func->pushBB(cur_bb);
+    cur_bb = new NormalBlock(cur_bb);
+    pushBB(cur_bb);
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
         block->blockItemList[i]->accept(*this);
+        if (block->blockItemList[i]->stmt && (block->blockItemList[i]->stmt->block||
+        block->blockItemList[i]->stmt->selectStmt ||
+        block->blockItemList[i]->stmt->iterationStmt)) {
+            cur_bb = new NormalBlock(cur_bb);
+            pushBB(cur_bb);
+        }
     }
-    cur_bb = parent_bb->parent;
+    cur_bb = cur_bb->parent;
 }
 void IrVisitor::visit(BlockItemList *blockItemList) {}
 void IrVisitor::visit(BlockItem *blockItem) {
-    if (blockItem->varDecl || blockItem->constDecl) {
+    if (blockItem->varDecl || blockItem->constDecl || (blockItem->stmt &&
+    blockItem->stmt->assignStmt || blockItem->stmt->returnStmt ||
+    blockItem->stmt->breakStmt)) {
         if (cur_bb == cur_func->entry) {
-            cur_bb = new NormalBlock(cur_bb, nullptr);
-            cur_func->pushBB(cur_bb);
+            cur_bb = new NormalBlock(cur_bb);
+            if (!ifBB.empty()){
+                if (isIF) {
+                    ifBB.top()->ifStmt.push_back(cur_bb);
+                }else {
+                    ifBB.top()->elseStmt.push_back(cur_bb);
+                }
+            }else {
+                cur_func->pushBB(cur_bb);
+            }
         }
     }
     if (blockItem->varDecl) {
@@ -295,49 +304,30 @@ void IrVisitor::visit(AssignStmt *assignStmt) {
     }
 }
 void IrVisitor::visit(SelectStmt *selectStmt) {
-//    auto begin = cur_bb;
-//    auto condFirstBB = cur_bb;
-//    selectStmt->cond->accept(*this);
-//    auto condLastBB = cur_bb;
-//    if (selectStmt->ifStmt->assignStmt || selectStmt->ifStmt->breakStmt
-//        || selectStmt->ifStmt->returnStmt || (selectStmt->ifStmt->block &&
-//                                              (selectStmt->ifStmt->block->blockItemList[0]->constDecl
-//                                               || selectStmt->ifStmt->block->blockItemList[0]->varDecl))){
-//        cur_bb = new BasicBlock(begin,nullptr);
-//        cur_func->pushBB(cur_bb);
-//    }
-//    auto ifFirstBB = cur_bb;
-//    selectStmt->ifStmt->accept(*this);
-//    auto ifLastBB = cur_bb;
-//    for (size_t i = 0; i < cur_func->basicBlocks.size(); ++i) {
-//        if (cur_func->basicBlocks[i] == condLastBB) {
-//            condFirstBB->trueBB = cur_func->basicBlocks[i+1];
-//            break;
-//        }
-//    }
-//    if (!selectStmt->elseStmt) {
-//        condFirstBB->isCond = true;
-//        cur_cond = condFirstBB;
-//    }else {
-//        if (selectStmt->elseStmt->assignStmt || selectStmt->elseStmt->breakStmt
-//            || selectStmt->elseStmt->returnStmt || (selectStmt->elseStmt->block &&
-//                                                  (selectStmt->elseStmt->block->blockItemList[0]->constDecl
-//                                                   || selectStmt->elseStmt->block->blockItemList[0]->varDecl))){
-//            cur_bb = new BasicBlock(begin,nullptr);
-//            cur_func->pushBB(cur_bb);
-//        }
-//        selectStmt->elseStmt->accept(*this);
-//        for (size_t i = 0; i < cur_func->basicBlocks.size(); ++i) {
-//            if (cur_func->basicBlocks[i] == ifLastBB) {
-//                condFirstBB->falseBB = cur_func->basicBlocks[i+1];
-//                break;
-//            }
-//        }
-//        ifFirstBB->isIfStmt = true;
-//        cur_cond = ifFirstBB;
-//    }
+    auto tempBB = cur_bb;
+    cur_bb = new SelectBlock(cur_bb);
+    pushBB(cur_bb);
+    ifBB.push(dynamic_cast<SelectBlock*>(cur_bb));
+    selectStmt->cond->accept(*this);
+    isIF = true;
+    selectStmt->ifStmt->accept(*this);
+    if (selectStmt->elseStmt) {
+        isIF = false;
+        selectStmt->elseStmt->accept(*this);
+    }
+    cur_bb = tempBB;
+    ifBB.pop();
 }
-void IrVisitor::visit(IterationStmt *iterationStmt) {}
+void IrVisitor::visit(IterationStmt *iterationStmt) {
+    auto tempBB = cur_bb;
+    cur_bb = new IterationBlock(cur_bb);
+    pushBB(cur_bb);
+    whileBB.push(dynamic_cast<IterationBlock*>(cur_bb));
+    iterationStmt->cond->accept(*this);
+    iterationStmt->stmt->accept(*this);
+    cur_bb = tempBB;
+    whileBB.pop();
+}
 void IrVisitor::visit(BreakStmt *breakStmt) {}
 void IrVisitor::visit(ContinueStmt *continueStmt) {}
 void IrVisitor::visit(ReturnStmt *returnStmt) {}
