@@ -1817,608 +1817,610 @@ namespace yy {
                             yylhs.value.as < FuncFParam* > ()=new FuncFParam();
                             yylhs.value.as < FuncFParam* > ()->defType=std::shared_ptr<DefType>(yystack_[4].value.as < DefType* > ());
                             yylhs.value.as < FuncFParam* > ()->identifier=yystack_[3].value.as < std::string > ();
+                            yylhs.value.as < FuncFParam* > ()->isArray = true;
                             yylhs.value.as < FuncFParam* > ()->expList.swap(yystack_[0].value.as < ParamArrayExpList* > ()->expList);
                         }
-#line 1823 "parser.cc"
+#line 1824 "parser.cc"
                             break;
 
                         case 37:
-#line 275 "parser.yy"
+#line 276 "parser.yy"
                         {
                             yylhs.value.as < FuncFParam* > ()=new FuncFParam();
+                            yylhs.value.as < FuncFParam* > ()->isArray = false;
                             yylhs.value.as < FuncFParam* > ()->defType=std::shared_ptr<DefType>(yystack_[1].value.as < DefType* > ());
                             yylhs.value.as < FuncFParam* > ()->identifier=yystack_[0].value.as < std::string > ();
                         }
-#line 1833 "parser.cc"
+#line 1835 "parser.cc"
                             break;
 
                         case 38:
-#line 282 "parser.yy"
+#line 284 "parser.yy"
                         {
                             yystack_[3].value.as < ParamArrayExpList* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ()));
                             yylhs.value.as < ParamArrayExpList* > ()=yystack_[3].value.as < ParamArrayExpList* > ();
                         }
-#line 1842 "parser.cc"
+#line 1844 "parser.cc"
                             break;
 
                         case 39:
-#line 286 "parser.yy"
+#line 288 "parser.yy"
                         {
                             yylhs.value.as < ParamArrayExpList* > ()=new ParamArrayExpList();
                         }
-#line 1850 "parser.cc"
+#line 1852 "parser.cc"
                             break;
 
                         case 40:
-#line 291 "parser.yy"
+#line 293 "parser.yy"
                         {
                             yylhs.value.as < Block* > ()=new Block();
                             yylhs.value.as < Block* > ()->blockItemList.swap(yystack_[1].value.as < BlockItemList* > ()->blockItemList);
                         }
-#line 1859 "parser.cc"
+#line 1861 "parser.cc"
                             break;
 
                         case 41:
-#line 297 "parser.yy"
+#line 299 "parser.yy"
                         {
                             yystack_[1].value.as < BlockItemList* > ()->blockItemList.push_back(std::shared_ptr<BlockItem>(yystack_[0].value.as < BlockItem* > ()));
                             yylhs.value.as < BlockItemList* > ()=yystack_[1].value.as < BlockItemList* > ();
                         }
-#line 1868 "parser.cc"
+#line 1870 "parser.cc"
                             break;
 
                         case 42:
-#line 301 "parser.yy"
+#line 303 "parser.yy"
                         {
                             yylhs.value.as < BlockItemList* > ()=new BlockItemList();
                         }
-#line 1876 "parser.cc"
+#line 1878 "parser.cc"
                             break;
 
                         case 43:
-#line 306 "parser.yy"
+#line 308 "parser.yy"
                         {
                             yylhs.value.as < BlockItem* > ()=new BlockItem();
                             yylhs.value.as < BlockItem* > ()->constDecl=std::shared_ptr<ConstDecl>(yystack_[0].value.as < ConstDecl* > ());
                         }
-#line 1885 "parser.cc"
+#line 1887 "parser.cc"
                             break;
 
                         case 44:
-#line 310 "parser.yy"
+#line 312 "parser.yy"
                         {
                             yylhs.value.as < BlockItem* > ()=new BlockItem();
                             yylhs.value.as < BlockItem* > ()->varDecl=std::shared_ptr<VarDecl>(yystack_[0].value.as < VarDecl* > ());
                         }
-#line 1894 "parser.cc"
+#line 1896 "parser.cc"
                             break;
 
                         case 45:
-#line 314 "parser.yy"
+#line 316 "parser.yy"
                         {
                             yylhs.value.as < BlockItem* > ()=new BlockItem();
                             yylhs.value.as < BlockItem* > ()->stmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
                         }
-#line 1903 "parser.cc"
+#line 1905 "parser.cc"
                             break;
 
                         case 46:
-#line 320 "parser.yy"
+#line 322 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->assignStmt = std::shared_ptr<AssignStmt>(yystack_[0].value.as < AssignStmt* > ());
                         }
-#line 1912 "parser.cc"
+#line 1914 "parser.cc"
                             break;
 
                         case 47:
-#line 324 "parser.yy"
+#line 326 "parser.yy"
                         {
 
                         }
-#line 1920 "parser.cc"
+#line 1922 "parser.cc"
                             break;
 
                         case 48:
-#line 327 "parser.yy"
+#line 329 "parser.yy"
                         {
 
                         }
-#line 1928 "parser.cc"
+#line 1930 "parser.cc"
                             break;
 
                         case 49:
-#line 330 "parser.yy"
+#line 332 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->block=std::shared_ptr<Block>(yystack_[0].value.as < Block* > ());
                         }
-#line 1937 "parser.cc"
+#line 1939 "parser.cc"
                             break;
 
                         case 50:
-#line 334 "parser.yy"
+#line 336 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->selectStmt = std::shared_ptr<SelectStmt>(yystack_[0].value.as < SelectStmt* > ());
                         }
-#line 1946 "parser.cc"
+#line 1948 "parser.cc"
                             break;
 
                         case 51:
-#line 338 "parser.yy"
+#line 340 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->iterationStmt = std::shared_ptr<IterationStmt>(yystack_[0].value.as < IterationStmt* > ());
                         }
-#line 1955 "parser.cc"
+#line 1957 "parser.cc"
                             break;
 
                         case 52:
-#line 342 "parser.yy"
+#line 344 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->breakStmt = std::shared_ptr<BreakStmt>(yystack_[0].value.as < BreakStmt* > ());
                         }
-#line 1964 "parser.cc"
+#line 1966 "parser.cc"
                             break;
 
                         case 53:
-#line 346 "parser.yy"
+#line 348 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->continueStmt = std::shared_ptr<ContinueStmt>(yystack_[0].value.as < ContinueStmt* > ());
                         }
-#line 1973 "parser.cc"
+#line 1975 "parser.cc"
                             break;
 
                         case 54:
-#line 350 "parser.yy"
+#line 352 "parser.yy"
                         {
                             yylhs.value.as < Stmt* > ()=new Stmt();
                             yylhs.value.as < Stmt* > ()->returnStmt = std::shared_ptr<ReturnStmt>(yystack_[0].value.as < ReturnStmt* > ());
                         }
-#line 1982 "parser.cc"
+#line 1984 "parser.cc"
                             break;
 
                         case 55:
-#line 355 "parser.yy"
+#line 357 "parser.yy"
                         {
                             yylhs.value.as < AssignStmt* > ()=new AssignStmt();
                             yylhs.value.as < AssignStmt* > ()->lVal=std::shared_ptr<LVal>(yystack_[3].value.as < LVal* > ());
                             yylhs.value.as < AssignStmt* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
                         }
-#line 1992 "parser.cc"
+#line 1994 "parser.cc"
                             break;
 
                         case 56:
-#line 361 "parser.yy"
+#line 363 "parser.yy"
                         {
                             yylhs.value.as < SelectStmt* > ()=new SelectStmt();
                             yylhs.value.as < SelectStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[2].value.as < Cond* > ());
                             yylhs.value.as < SelectStmt* > ()->ifStmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
                         }
-#line 2002 "parser.cc"
+#line 2004 "parser.cc"
                             break;
 
                         case 57:
-#line 366 "parser.yy"
+#line 368 "parser.yy"
                         {
                             yylhs.value.as < SelectStmt* > ()=new SelectStmt();
                             yylhs.value.as < SelectStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[4].value.as < Cond* > ());
                             yylhs.value.as < SelectStmt* > ()->ifStmt=std::shared_ptr<Stmt>(yystack_[2].value.as < Stmt* > ());
                             yylhs.value.as < SelectStmt* > ()->elseStmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
                         }
-#line 2013 "parser.cc"
+#line 2015 "parser.cc"
                             break;
 
                         case 58:
-#line 373 "parser.yy"
+#line 375 "parser.yy"
                         {
                             yylhs.value.as < IterationStmt* > ()=new IterationStmt();
                             yylhs.value.as < IterationStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[2].value.as < Cond* > ());
                             yylhs.value.as < IterationStmt* > ()->stmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
                         }
-#line 2023 "parser.cc"
+#line 2025 "parser.cc"
                             break;
 
                         case 59:
-#line 379 "parser.yy"
+#line 381 "parser.yy"
                         {
                             yylhs.value.as < BreakStmt* > ()=new BreakStmt();
                         }
-#line 2031 "parser.cc"
+#line 2033 "parser.cc"
                             break;
 
                         case 60:
-#line 383 "parser.yy"
+#line 385 "parser.yy"
                         {
                             yylhs.value.as < ContinueStmt* > ()=new ContinueStmt();
                         }
-#line 2039 "parser.cc"
+#line 2041 "parser.cc"
                             break;
 
                         case 61:
-#line 387 "parser.yy"
+#line 389 "parser.yy"
                         {
                             yylhs.value.as < ReturnStmt* > ()=new ReturnStmt();
                         }
-#line 2047 "parser.cc"
+#line 2049 "parser.cc"
                             break;
 
                         case 62:
-#line 390 "parser.yy"
+#line 392 "parser.yy"
                         {
                             yylhs.value.as < ReturnStmt* > ()=new ReturnStmt();
                             yylhs.value.as < ReturnStmt* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
                         }
-#line 2056 "parser.cc"
+#line 2058 "parser.cc"
                             break;
 
                         case 63:
-#line 395 "parser.yy"
+#line 397 "parser.yy"
                         {
                             yylhs.value.as < Exp* > ()=new Exp();
                             yylhs.value.as < Exp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                         }
-#line 2065 "parser.cc"
+#line 2067 "parser.cc"
                             break;
 
                         case 64:
-#line 401 "parser.yy"
+#line 403 "parser.yy"
                         {
                             yylhs.value.as < Cond* > ()=new Cond();
                             yylhs.value.as < Cond* > ()->lOrExp=std::shared_ptr<LOrExp>(yystack_[0].value.as < LOrExp* > ());
                         }
-#line 2074 "parser.cc"
+#line 2076 "parser.cc"
                             break;
 
                         case 65:
-#line 406 "parser.yy"
+#line 408 "parser.yy"
                         {
                             yylhs.value.as < LVal* > ()=new LVal();
                             yylhs.value.as < LVal* > ()->identifier=yystack_[1].value.as < std::string > ();
                             yylhs.value.as < LVal* > ()->expList.swap(yystack_[0].value.as < ParamArrayExpList* > ()->expList);
                         }
-#line 2084 "parser.cc"
+#line 2086 "parser.cc"
                             break;
 
                         case 66:
-#line 413 "parser.yy"
+#line 415 "parser.yy"
                         {
                             yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
                             yylhs.value.as < PrimaryExp* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
                         }
-#line 2093 "parser.cc"
+#line 2095 "parser.cc"
                             break;
 
                         case 67:
-#line 417 "parser.yy"
+#line 419 "parser.yy"
                         {
                             yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
                             yylhs.value.as < PrimaryExp* > ()->lVal=std::shared_ptr<LVal>(yystack_[0].value.as < LVal* > ());
                         }
-#line 2102 "parser.cc"
+#line 2104 "parser.cc"
                             break;
 
                         case 68:
-#line 421 "parser.yy"
+#line 423 "parser.yy"
                         {
                             yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
                             yylhs.value.as < PrimaryExp* > ()->number=std::shared_ptr<Number>(yystack_[0].value.as < Number* > ());
                         }
-#line 2111 "parser.cc"
+#line 2113 "parser.cc"
                             break;
 
                         case 69:
-#line 426 "parser.yy"
+#line 428 "parser.yy"
                         {
                             yylhs.value.as < Number* > ()=new Number();
                             yylhs.value.as < Number* > ()->type=type_specifier::TYPE_INT;
                             yylhs.value.as < Number* > ()->intNum=yystack_[0].value.as < int > ();
                         }
-#line 2121 "parser.cc"
+#line 2123 "parser.cc"
                             break;
 
                         case 70:
-#line 431 "parser.yy"
+#line 433 "parser.yy"
                         {
                             yylhs.value.as < Number* > ()=new Number();
                             yylhs.value.as < Number* > ()->type=type_specifier::TYPE_FLOAT;
                             yylhs.value.as < Number* > ()->floatNum=yystack_[0].value.as < float > ();
                         }
-#line 2131 "parser.cc"
+#line 2133 "parser.cc"
                             break;
 
                         case 71:
-#line 438 "parser.yy"
+#line 440 "parser.yy"
                         {
                             yylhs.value.as < UnaryExp* > ()=new UnaryExp();
                             yylhs.value.as < UnaryExp* > ()->primaryExp=std::shared_ptr<PrimaryExp>(yystack_[0].value.as < PrimaryExp* > ());
                         }
-#line 2140 "parser.cc"
+#line 2142 "parser.cc"
                             break;
 
                         case 72:
-#line 442 "parser.yy"
+#line 444 "parser.yy"
                         {
                             yylhs.value.as < UnaryExp* > ()=new UnaryExp();
                             yylhs.value.as < UnaryExp* > ()->identifier=yystack_[3].value.as < std::string > ();
                             yylhs.value.as < UnaryExp* > ()->funcRParams=std::shared_ptr<FuncRParams>(yystack_[1].value.as < FuncRParams* > ());
                         }
-#line 2150 "parser.cc"
+#line 2152 "parser.cc"
                             break;
 
                         case 73:
-#line 447 "parser.yy"
+#line 449 "parser.yy"
                         {
                             yylhs.value.as < UnaryExp* > ()=new UnaryExp();
                             yylhs.value.as < UnaryExp* > ()->identifier=yystack_[2].value.as < std::string > ();
                         }
-#line 2159 "parser.cc"
+#line 2161 "parser.cc"
                             break;
 
                         case 74:
-#line 451 "parser.yy"
+#line 453 "parser.yy"
                         {
                             yylhs.value.as < UnaryExp* > ()=new UnaryExp();
                             yylhs.value.as < UnaryExp* > ()->unaryOp=std::shared_ptr<UnaryOp>(yystack_[1].value.as < UnaryOp* > ());
                             yylhs.value.as < UnaryExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
                         }
-#line 2169 "parser.cc"
+#line 2171 "parser.cc"
                             break;
 
                         case 75:
-#line 457 "parser.yy"
+#line 459 "parser.yy"
                         {
                             yylhs.value.as < UnaryOp* > ()=new UnaryOp();
                             yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_POS;
                         }
-#line 2178 "parser.cc"
+#line 2180 "parser.cc"
                             break;
 
                         case 76:
-#line 461 "parser.yy"
+#line 463 "parser.yy"
                         {
                             yylhs.value.as < UnaryOp* > ()=new UnaryOp();
                             yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_NEG;
                         }
-#line 2187 "parser.cc"
+#line 2189 "parser.cc"
                             break;
 
                         case 77:
-#line 465 "parser.yy"
+#line 467 "parser.yy"
                         {
                             yylhs.value.as < UnaryOp* > ()=new UnaryOp();
                             yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_NOT;
                         }
-#line 2196 "parser.cc"
+#line 2198 "parser.cc"
                             break;
 
                         case 78:
-#line 470 "parser.yy"
+#line 472 "parser.yy"
                         {
                             yystack_[2].value.as < FuncRParams* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[0].value.as < Exp* > ()));
                             yylhs.value.as < FuncRParams* > ()=yystack_[2].value.as < FuncRParams* > ();
                         }
-#line 2205 "parser.cc"
+#line 2207 "parser.cc"
                             break;
 
                         case 79:
-#line 474 "parser.yy"
+#line 476 "parser.yy"
                         {
                             yylhs.value.as < FuncRParams* > ()=new FuncRParams();
                             yylhs.value.as < FuncRParams* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[0].value.as < Exp* > ()));
                         }
-#line 2214 "parser.cc"
+#line 2216 "parser.cc"
                             break;
 
                         case 80:
-#line 480 "parser.yy"
+#line 482 "parser.yy"
                         {
                             yylhs.value.as < MulExp* > ()=new MulExp();
                             yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
                         }
-#line 2223 "parser.cc"
+#line 2225 "parser.cc"
                             break;
 
                         case 81:
-#line 484 "parser.yy"
+#line 486 "parser.yy"
                         {
                             yylhs.value.as < MulExp* > ()=new MulExp();
                             yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
                             yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
                             yylhs.value.as < MulExp* > ()->op=mulop::OP_MUL;
                         }
-#line 2234 "parser.cc"
+#line 2236 "parser.cc"
                             break;
 
                         case 82:
-#line 490 "parser.yy"
+#line 492 "parser.yy"
                         {
                             yylhs.value.as < MulExp* > ()=new MulExp();
                             yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
                             yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
                             yylhs.value.as < MulExp* > ()->op=mulop::OP_DIV;
                         }
-#line 2245 "parser.cc"
+#line 2247 "parser.cc"
                             break;
 
                         case 83:
-#line 496 "parser.yy"
+#line 498 "parser.yy"
                         {
                             yylhs.value.as < MulExp* > ()=new MulExp();
                             yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
                             yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
                             yylhs.value.as < MulExp* > ()->op=mulop::OP_MOD;
                         }
-#line 2256 "parser.cc"
+#line 2258 "parser.cc"
                             break;
 
                         case 84:
-#line 504 "parser.yy"
+#line 506 "parser.yy"
                         {
                             yylhs.value.as < AddExp* > ()=new AddExp();
                             yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
                         }
-#line 2265 "parser.cc"
+#line 2267 "parser.cc"
                             break;
 
                         case 85:
-#line 508 "parser.yy"
+#line 510 "parser.yy"
                         {
                             yylhs.value.as < AddExp* > ()=new AddExp();
                             yylhs.value.as < AddExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[2].value.as < AddExp* > ());
                             yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
                             yylhs.value.as < AddExp* > ()->op=addop::OP_ADD;
                         }
-#line 2276 "parser.cc"
+#line 2278 "parser.cc"
                             break;
 
                         case 86:
-#line 514 "parser.yy"
+#line 516 "parser.yy"
                         {
                             yylhs.value.as < AddExp* > ()=new AddExp();
                             yylhs.value.as < AddExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[2].value.as < AddExp* > ());
                             yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
                             yylhs.value.as < AddExp* > ()->op=addop::OP_SUB;
                         }
-#line 2287 "parser.cc"
+#line 2289 "parser.cc"
                             break;
 
                         case 87:
-#line 522 "parser.yy"
+#line 524 "parser.yy"
                         {
                             yylhs.value.as < RelExp* > ()=new RelExp();
                             yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                         }
-#line 2296 "parser.cc"
+#line 2298 "parser.cc"
                             break;
 
                         case 88:
-#line 526 "parser.yy"
+#line 528 "parser.yy"
                         {
                             yylhs.value.as < RelExp* > ()=new RelExp();
                             yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
                             yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                             yylhs.value.as < RelExp* > ()->op=relop::OP_LT;
                         }
-#line 2307 "parser.cc"
+#line 2309 "parser.cc"
                             break;
 
                         case 89:
-#line 532 "parser.yy"
+#line 534 "parser.yy"
                         {
                             yylhs.value.as < RelExp* > ()=new RelExp();
                             yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
                             yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                             yylhs.value.as < RelExp* > ()->op=relop::OP_GT;
                         }
-#line 2318 "parser.cc"
+#line 2320 "parser.cc"
                             break;
 
                         case 90:
-#line 538 "parser.yy"
+#line 540 "parser.yy"
                         {
                             yylhs.value.as < RelExp* > ()=new RelExp();
                             yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
                             yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                             yylhs.value.as < RelExp* > ()->op=relop::OP_LE;
                         }
-#line 2329 "parser.cc"
+#line 2331 "parser.cc"
                             break;
 
                         case 91:
-#line 544 "parser.yy"
+#line 546 "parser.yy"
                         {
                             yylhs.value.as < RelExp* > ()=new RelExp();
                             yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
                             yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                             yylhs.value.as < RelExp* > ()->op=relop::OP_GE;
                         }
-#line 2340 "parser.cc"
+#line 2342 "parser.cc"
                             break;
 
                         case 92:
-#line 551 "parser.yy"
+#line 553 "parser.yy"
                         {
                             yylhs.value.as < EqExp* > ()=new EqExp();
                             yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
                         }
-#line 2349 "parser.cc"
+#line 2351 "parser.cc"
                             break;
 
                         case 93:
-#line 555 "parser.yy"
+#line 557 "parser.yy"
                         {
                             yylhs.value.as < EqExp* > ()=new EqExp();
                             yylhs.value.as < EqExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[2].value.as < EqExp* > ());
                             yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
                             yylhs.value.as < EqExp* > ()->op=relop::OP_EQU;
                         }
-#line 2360 "parser.cc"
+#line 2362 "parser.cc"
                             break;
 
                         case 94:
-#line 561 "parser.yy"
+#line 563 "parser.yy"
                         {
                             yylhs.value.as < EqExp* > ()=new EqExp();
                             yylhs.value.as < EqExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[2].value.as < EqExp* > ());
                             yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
                             yylhs.value.as < EqExp* > ()->op=relop::OP_NE;
                         }
-#line 2371 "parser.cc"
+#line 2373 "parser.cc"
                             break;
 
                         case 95:
-#line 568 "parser.yy"
+#line 570 "parser.yy"
                         {
                             yylhs.value.as < LAndExp* > ()=new LAndExp();
                             yylhs.value.as < LAndExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[0].value.as < EqExp* > ());
                         }
-#line 2380 "parser.cc"
+#line 2382 "parser.cc"
                             break;
 
                         case 96:
-#line 572 "parser.yy"
+#line 574 "parser.yy"
                         {
                             yylhs.value.as < LAndExp* > ()=new LAndExp();
                             yylhs.value.as < LAndExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[2].value.as < LAndExp* > ());
                             yylhs.value.as < LAndExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[0].value.as < EqExp* > ());
                         }
-#line 2390 "parser.cc"
+#line 2392 "parser.cc"
                             break;
 
                         case 97:
-#line 578 "parser.yy"
+#line 580 "parser.yy"
                         {
                             yylhs.value.as < LOrExp* > ()=new LOrExp();
                             yylhs.value.as < LOrExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[0].value.as < LAndExp* > ());
                         }
-#line 2399 "parser.cc"
+#line 2401 "parser.cc"
                             break;
 
                         case 98:
-#line 582 "parser.yy"
+#line 584 "parser.yy"
                         {
                             yylhs.value.as < LOrExp* > ()=new LOrExp();
                             yylhs.value.as < LOrExp* > ()->lOrExp=std::shared_ptr<LOrExp>(yystack_[2].value.as < LOrExp* > ());
                             yylhs.value.as < LOrExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[0].value.as < LAndExp* > ());
                         }
-#line 2409 "parser.cc"
+#line 2411 "parser.cc"
                             break;
 
                         case 99:
-#line 588 "parser.yy"
+#line 590 "parser.yy"
                         {
                             yylhs.value.as < ConstExp* > ()=new ConstExp();
                             yylhs.value.as < ConstExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
                         }
-#line 2418 "parser.cc"
+#line 2420 "parser.cc"
                             break;
 
 
-#line 2422 "parser.cc"
+#line 2424 "parser.cc"
 
                         default:
                             break;
@@ -2899,13 +2901,13 @@ namespace yy {
                     0,   100,   100,   105,   109,   114,   118,   122,   127,   133,
                     137,   143,   150,   154,   159,   163,   167,   171,   175,   181,
                     188,   192,   198,   203,   210,   214,   217,   222,   226,   232,
-                    238,   246,   250,   254,   259,   263,   269,   275,   282,   286,
-                    291,   297,   301,   306,   310,   314,   320,   324,   327,   330,
-                    334,   338,   342,   346,   350,   355,   361,   366,   373,   379,
-                    383,   387,   390,   395,   401,   406,   413,   417,   421,   426,
-                    431,   438,   442,   447,   451,   457,   461,   465,   470,   474,
-                    480,   484,   490,   496,   504,   508,   514,   522,   526,   532,
-                    538,   544,   551,   555,   561,   568,   572,   578,   582,   588
+                    238,   246,   250,   254,   259,   263,   269,   276,   284,   288,
+                    293,   299,   303,   308,   312,   316,   322,   326,   329,   332,
+                    336,   340,   344,   348,   352,   357,   363,   368,   375,   381,
+                    385,   389,   392,   397,   403,   408,   415,   419,   423,   428,
+                    433,   440,   444,   449,   453,   459,   463,   467,   472,   476,
+                    482,   486,   492,   498,   506,   510,   516,   524,   528,   534,
+                    540,   546,   553,   557,   563,   570,   574,   580,   584,   590
             };
 
     // Print the state stack on the debug stream.
@@ -2939,9 +2941,9 @@ namespace yy {
 
 
 } // yy
-#line 2943 "parser.cc"
+#line 2945 "parser.cc"
 
-#line 593 "parser.yy"
+#line 595 "parser.yy"
 
 /*Parser实现错误处理接口*/
 void yy::parser::error (const location_type& l,

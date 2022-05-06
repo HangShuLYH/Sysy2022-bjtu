@@ -144,8 +144,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/CompileUnit.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /usr/include/c++/9/iostream /usr/include/c++/9/ostream \

@@ -12,8 +12,16 @@
 class Function{
 public:
     std::string name;
-    std::vector<std::shared_ptr<BasicBlock>> basicBlocks;
-    std::vector<std::shared_ptr<Value>> params;
-    std::shared_ptr<BasicBlock> entry;
+    TYPE return_type;
+    std::vector<BasicBlock*> basicBlocks;
+    BasicBlock* entry;
+    Function(std::string name,BasicBlock* entry,TYPE type){
+        this->name = name;
+        this->entry = entry;
+        return_type = type;
+    }
+    void pushBB(BasicBlock* basicBlock) {
+        basicBlocks.push_back(basicBlock);
+    }
 };
 #endif //SYSY2022_BJTU_FUNCTION_HH

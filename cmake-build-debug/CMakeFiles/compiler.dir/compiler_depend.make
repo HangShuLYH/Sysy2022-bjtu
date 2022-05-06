@@ -221,13 +221,13 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   ../include/frontend/CompileUnit.hh \
   ../include/frontend/Instruction.hh \
   ../include/frontend/Value.hh \
-  ../include/frontend/Function.hh \
-  ../include/frontend/BasicBlock.hh
+  ../include/frontend/BasicBlock.hh \
+  ../include/frontend/Function.hh
 
-
-../include/frontend/BasicBlock.hh:
 
 ../include/frontend/Function.hh:
+
+../include/frontend/BasicBlock.hh:
 
 ../include/frontend/Value.hh:
 

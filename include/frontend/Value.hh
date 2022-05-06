@@ -10,6 +10,7 @@ enum TYPE{
     INT,
     FLOAT,
     VOID,
+    BOOL,
 };
 class Value{
 public:
@@ -17,25 +18,25 @@ public:
     bool isConst;
     bool isInit;
     bool isArray;
+    bool isTrue;
     std::string name;
     TYPE type;
     int initIntVal;
     float initFloatVal;
     std::vector<int> dims;
-    std::vector<int> initIntVals;
-    std::vector<float> initFloatVals;
-    Value(std::string,TYPE type) {
+    std::vector<Value*> initVals;
+    Value(std::string name,TYPE type,bool isArray) {
         this->name = name;
         this->type = type;
-    }
-    Value(std::string name, TYPE type,
-          bool isGlobal, bool isConst, bool isArray){
-        this->name = name;
-        this->type = type;
-        this->isGlobal = isGlobal;
-        this->isConst = isConst;
-        this->isInit = isInit;
         this->isArray = isArray;
+    }
+    Value(std::string name,TYPE type,bool isInit,bool isConst,int initIntVal,float initFloatVal) {
+        this->name = name;
+        this->type = type;
+        this->isInit = isInit;
+        this->isConst = isConst;
+        this->initIntVal = initIntVal;
+        this->initFloatVal = initFloatVal;
     }
     Value(Value *v) {
         isGlobal = v->isGlobal;
@@ -47,8 +48,7 @@ public:
         initIntVal = v->initIntVal;
         initFloatVal = v->initFloatVal;
         dims.swap(v->dims);
-        initIntVals.swap(v->initIntVals);
-        initFloatVals.swap(v->initFloatVals);
+        initVals.swap(v->initVals);
     }
 };
 

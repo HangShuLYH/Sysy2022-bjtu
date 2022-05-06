@@ -252,6 +252,7 @@ public:
     void accept(Visitor &visitor) override final;
     std::shared_ptr<DefType> defType = nullptr;
     std::string identifier;
+    bool isArray;
     std::vector<std::shared_ptr<Exp>> expList;
 };
 class ParamArrayExpList:TreeNode{

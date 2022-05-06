@@ -179,8 +179,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   ../include/frontend/CompileUnit.hh \
   ../include/frontend/Instruction.hh \
   ../include/frontend/Value.hh \
-  ../include/frontend/Function.hh \
   ../include/frontend/BasicBlock.hh \
+  ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   ../include/frontend/syntax_tree.hh \
   /usr/include/c++/9/iostream \

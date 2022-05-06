@@ -14,16 +14,84 @@ void IrVisitor::visit(DeclDef *declDef) {
     }else if (declDef->funcDef){
         declDef->funcDef->accept(*this);
     }else if (declDef->constDecl){
-        declDef->funcDef->accept(*this);
+        declDef->constDecl->accept(*this);
     }else {
         std::cerr << "This should never be seen in IrVisitor(DeclDef)!" << std::endl;
     }
 }
-void IrVisitor::visit(ConstDecl *constDecl) {}
-void IrVisitor::visit(ConstDef *constDef) {}
+void IrVisitor::visit(ConstDecl *constDecl) {
+    if (constDecl->defType->type == type_specifier::TYPE_INT) {
+        curDefType = TYPE::INT;
+    } else if (constDecl->defType->type == type_specifier::TYPE_FLOAT) {
+        curDefType = TYPE::FLOAT;
+    } else {
+        std::cerr << "Void should not be type of Value!" << std::endl;
+    }
+    for (size_t i = 0; i < constDecl->constDefList.size(); ++i) {
+        constDecl->constDefList[i]->accept(*this);
+    }
+}
+void IrVisitor::visit(ConstDef *constDef) {
+    if (findLocalVal(constDef->identifier)) {
+        std::cerr << "Duplicate var definition:" << constDef->identifier << std::endl;
+    }
+    if (constDef->constExpList.empty()) {
+        constDef->constInitVal->accept(*this);
+        Value *var = nullptr;
+        if (useConst) {
+            if (curDefType == TYPE::INT) {
+                if (curValType == TYPE::INT) {
+                    var = new Value(constDef->identifier,TYPE::INT,true,true,tempInt,tempInt);
+                } else if (curValType == TYPE::FLOAT) {
+                    var = new Value(constDef->identifier,TYPE::INT,true,true,tempFloat,tempFloat);
+                }
+                new AllocIIR(var,cur_bb);
+            } else if (curDefType == TYPE::FLOAT) {
+                if (curValType == TYPE::INT) {
+                    var = new Value(constDef->identifier,TYPE::FLOAT,true,true,tempInt,tempInt);
+                } else if (curValType == TYPE::FLOAT) {
+                    var = new Value(constDef->identifier,TYPE::FLOAT,true,true,tempFloat,tempFloat);
+                }
+                new AllocFIR(var,cur_bb);
+            }
+        }else {
+            if (curDefType == TYPE::FLOAT) {
+                var = new Value(constDef->identifier,TYPE::FLOAT,false,true,0,0);
+                new AllocIIR(var,cur_bb);
+            }else {
+                var = new Value(constDef->identifier,TYPE::INT,false,true,0,0);
+                new AllocFIR(var,cur_bb);
+            }
+            Value* v = nullptr;
+            if (tempVal->type != curDefType){
+                if (curDefType == TYPE::INT) {
+                    v = new Value(tempVal);
+                    v->type = TYPE::INT;
+                    new CastFloat2IntIR(v,tempVal,cur_bb);
+                }else if (curDefType == TYPE::FLOAT){
+                    v = new Value(tempVal);
+                    v->type = TYPE::FLOAT;
+                    new CastInt2FloatIR(v,tempVal,cur_bb);
+                }
+            }
+            new StoreIR(var,v,cur_bb);
+        }
+        cur_bb->pushVar(var);
+    }else {
+
+    }
+}
 void IrVisitor::visit(ConstDefList *constDefList) {}
 void IrVisitor::visit(ConstExpList *constExpList) {}
-void IrVisitor::visit(ConstInitVal *constInitVal) {}
+void IrVisitor::visit(ConstInitVal *constInitVal) {
+    if (constInitVal->constExp) {
+        constInitVal->constExp->accept(*this);
+    }else {
+        for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
+            constInitVal->constInitValList[i]->accept(*this);
+        }
+    }
+}
 void IrVisitor::visit(ConstInitValList *constInitValList) {}
 void IrVisitor::visit(VarDecl *varDecl) {
     if (varDecl->defType->type == type_specifier::TYPE_INT) {
@@ -39,55 +107,70 @@ void IrVisitor::visit(VarDecl *varDecl) {
 }
 void IrVisitor::visit(VarDefList *varDefList) {}
 void IrVisitor::visit(VarDef *varDef) {
-    if (varDef->constExpList.size() == 0){
+    if (findLocalVal(varDef->identifier)) {
+        std::cerr << "Duplicate var definition:" << varDef->identifier << std::endl;
+    }
+    if (varDef->constExpList.empty()){
         if (varDef->initVal) {
             varDef->initVal->accept(*this);
         }
-        Instruction *ir = new Instruction;
         Value *var = nullptr;
-        if (curDefType == TYPE::FLOAT) {
-            if (useConst && varDef->initVal) {
-                var = Instruction::CreateAllocFIR(varDef->identifier, true,tempFloat,ir);
+        if(useConst && varDef->initVal) {
+            if (curDefType == TYPE::INT) {
+                if (curValType == TYPE::INT) {
+                    var = new Value(varDef->identifier,TYPE::INT,true,false,tempInt,tempInt);
+                } else if (curValType == TYPE::FLOAT) {
+                    var = new Value(varDef->identifier,TYPE::INT,true,false,tempFloat,tempFloat);
+                }
+                new AllocIIR(var,cur_bb);
+            } else if (curDefType == TYPE::FLOAT) {
+                if (curValType == TYPE::INT) {
+                    var = new Value(varDef->identifier,TYPE::FLOAT,true,false,tempInt,tempInt);
+                } else if (curValType == TYPE::FLOAT) {
+                    var = new Value(varDef->identifier,TYPE::FLOAT,true,false,tempFloat,tempFloat);
+                }
+                new AllocFIR(var,cur_bb);
+            }
+        }else {
+            if (curDefType == TYPE::FLOAT) {
+                if (isGlobal()) {
+                    var = new Value(varDef->identifier,TYPE::FLOAT,true,false,0,0);
+                }else {
+                    var = new Value(varDef->identifier, TYPE::FLOAT, false, false, 0, 0);
+                }
+                new AllocFIR(var,cur_bb);
             }else {
-                var = Instruction::CreateAllocFIR(varDef->identifier, false,0,ir);
+                if (isGlobal()){
+                    var = new Value(varDef->identifier,TYPE::INT,true,false,0,0);
+                }else {
+                    var = new Value(varDef->identifier, TYPE::INT, false, false, 0, 0);
+                }
+                new AllocIIR(var,cur_bb);
             }
-        }else if (curDefType == TYPE::INT){
-            if (useConst && varDef->initVal) {
-                if (curValType == TYPE::FLOAT) {
-                    var = Instruction::CreateAllocIIR(varDef->identifier, true, tempFloat, ir);
-                }else if(curValType == TYPE::INT){
-                    var = Instruction::CreateAllocIIR(varDef->identifier, true, tempInt, ir);
+            if (varDef->initVal) {
+                Value *v = nullptr;
+                if (tempVal->type != curDefType) {
+                    if (curDefType == TYPE::INT) {
+                        v = new Value(tempVal);
+                        v->type = TYPE::INT;
+                        new CastFloat2IntIR(v, tempVal, cur_bb);
+                    } else if (curDefType == TYPE::FLOAT) {
+                        v = new Value(tempVal);
+                        v->type = TYPE::FLOAT;
+                        new CastInt2FloatIR(v, tempVal, cur_bb);
+                    }
                 }
-            }else {
-                if (curValType == TYPE::FLOAT) {
-                    var = Instruction::CreateAllocFIR(varDef->identifier, true, tempFloat, ir);
-                }else if(curValType == TYPE::INT){
-                    var = Instruction::CreateAllocFIR(varDef->identifier, true, tempInt, ir);
-                }
+                new StoreIR(var, v, cur_bb);
             }
         }
-        var->name = varDef->identifier;
-        cur_bb->push(ir);
-        ir = new Instruction;
-        if (!useConst && varDef->initVal) {
-            if (tempVal->type != curDefType){
-                if (curDefType == TYPE::INT) {
-                    tempVal = Instruction::CreateCastFloat2IntIR(tempVal,ir);
-                }else if (curDefType == TYPE::FLOAT){
-                    tempVal = Instruction::CreateCastInt2FloatIR(tempVal,ir);
-                }
-                cur_bb->push(ir);
-            }
-            ir = new Instruction;
-            tempVal = Instruction::CreateLoadIR(var,tempVal,ir);
-            cur_bb->push(ir);
-        }
-        auto v = std::shared_ptr<Value>(var);
-        if (isGlobal()) {
-            globalVars.push_back(v);
-        }
-        vars.push_back(v);
+        cur_bb->pushVar(var);
     }else{
+        auto t = new Value(varDef->identifier,curDefType,true);
+        for (size_t i = 0; i < varDef->constExpList.size(); ++i) {
+            varDef->constExpList[i]->accept(*this);
+            assert(curValType == INT);
+            t->dims.push_back(tempInt);
+        }
 
     }
 }
@@ -101,17 +184,159 @@ void IrVisitor::visit(InitVal *initVal) {
     }
 }
 void IrVisitor::visit(InitValList *initValList) {}
-void IrVisitor::visit(FuncDef *funcDef) {}
+void IrVisitor::visit(FuncDef *funcDef) {
+    if (findFunc(funcDef->identifier)) {
+        std::cerr << "Duplicate Function Definition of " << funcDef->identifier << std::endl;
+    }
+    auto en = new NormalBlock(entry, nullptr);
+    cur_bb = en;
+    Function* function;
+    if (funcDef->defType->type == type_specifier::TYPE_INT){
+        function = new Function(funcDef->identifier,en,TYPE::INT);
+    }else if (funcDef->defType->type == type_specifier::TYPE_FLOAT) {
+        function = new Function(funcDef->identifier,en,TYPE::FLOAT);
+    }else {
+        function = new Function(funcDef->identifier,en,TYPE::VOID);
+    }
+    cur_func = function;
+    functions.push_back(cur_func);
+    if (funcDef->funcFParams) {
+        funcDef->funcFParams->accept(*this);
+    }
+    funcDef->block->accept(*this);
+}
 void IrVisitor::visit(DefType *defType) {}
-void IrVisitor::visit(FuncFParams *funcFParams) {}
-void IrVisitor::visit(FuncFParam *funcFParam) {}
+void IrVisitor::visit(FuncFParams *funcFParams) {
+    for (size_t i = 0; i < funcFParams->funcFParamList.size(); ++i) {
+        funcFParams->funcFParamList[i]->accept(*this);
+    }
+}
+void IrVisitor::visit(FuncFParam *funcFParam) {
+    if (!funcFParam->isArray) {
+        if (findLocalVal(funcFParam->identifier)) {
+            std::cerr << "Duplicate var definition:" << funcFParam->identifier << std::endl;
+        }
+        if (funcFParam->defType->type == type_specifier::TYPE_FLOAT) {
+            tempVal = new Value(funcFParam->identifier,TYPE::FLOAT, false, false,0,0);
+            new AllocFIR(tempVal,cur_bb);
+        }else if (funcFParam->defType->type == type_specifier::TYPE_INT){
+            tempVal = new Value(funcFParam->identifier,TYPE::INT, false, false,0,0);
+            new AllocIIR(tempVal,cur_bb);
+        }
+        cur_bb->pushVar(tempVal);
+    }else {
+
+    }
+}
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
-void IrVisitor::visit(Block *block) {}
+void IrVisitor::visit(Block *block) {
+    auto parent_bb = cur_bb;
+    cur_bb = new NormalBlock(cur_bb, nullptr);
+    cur_func->pushBB(cur_bb);
+    for (size_t i = 0; i < block->blockItemList.size(); ++i) {
+        block->blockItemList[i]->accept(*this);
+    }
+    cur_bb = parent_bb->parent;
+}
 void IrVisitor::visit(BlockItemList *blockItemList) {}
-void IrVisitor::visit(BlockItem *blockItem) {}
-void IrVisitor::visit(Stmt *stmt) {}
-void IrVisitor::visit(AssignStmt *assignStmt) {}
-void IrVisitor::visit(SelectStmt *selectStmt) {}
+void IrVisitor::visit(BlockItem *blockItem) {
+    if (blockItem->varDecl || blockItem->constDecl) {
+        if (cur_bb == cur_func->entry) {
+            cur_bb = new NormalBlock(cur_bb, nullptr);
+            cur_func->pushBB(cur_bb);
+        }
+    }
+    if (blockItem->varDecl) {
+        blockItem->varDecl->accept(*this);
+    }else if (blockItem->constDecl){
+        blockItem->constDecl->accept(*this);
+    }else if (blockItem->stmt) {
+        blockItem->stmt->accept(*this);
+    }
+}
+void IrVisitor::visit(Stmt *stmt) {
+    if (stmt->assignStmt){
+       stmt->assignStmt->accept(*this);
+    }else if (stmt->block){
+        stmt->block->accept(*this);
+    }else if (stmt->selectStmt) {
+        stmt->selectStmt->accept(*this);
+    }else if (stmt->iterationStmt) {
+        stmt->iterationStmt->accept(*this);
+    }else if (stmt->breakStmt) {
+        stmt->breakStmt->accept(*this);
+    }else if (stmt->returnStmt) {
+        stmt->returnStmt->accept(*this);
+    }
+}
+void IrVisitor::visit(AssignStmt *assignStmt) {
+    assignStmt->lVal->accept(*this);
+    auto left = tempVal;
+    assignStmt->exp->accept(*this);
+    if (useConst) {
+        if (curValType == TYPE::INT) {
+            new StoreIR(left,tempInt,cur_bb);
+        }else if (curValType == TYPE::FLOAT) {
+            new StoreIR(left,tempFloat,cur_bb);
+        }
+    }else {
+        if (left->type != tempVal->type) {
+            if (left->type == TYPE::INT) {
+                auto v = new Value(tempVal);
+                v->type = TYPE::INT;
+                new CastFloat2IntIR(v,tempVal,cur_bb);
+            }else if (left->type == TYPE::FLOAT){
+                auto v = new Value(tempVal);
+                v->type = TYPE::FLOAT;
+                new CastInt2FloatIR(v,tempVal,cur_bb);
+            }
+        }
+        new StoreIR(left,tempVal,cur_bb);
+    }
+}
+void IrVisitor::visit(SelectStmt *selectStmt) {
+//    auto begin = cur_bb;
+//    auto condFirstBB = cur_bb;
+//    selectStmt->cond->accept(*this);
+//    auto condLastBB = cur_bb;
+//    if (selectStmt->ifStmt->assignStmt || selectStmt->ifStmt->breakStmt
+//        || selectStmt->ifStmt->returnStmt || (selectStmt->ifStmt->block &&
+//                                              (selectStmt->ifStmt->block->blockItemList[0]->constDecl
+//                                               || selectStmt->ifStmt->block->blockItemList[0]->varDecl))){
+//        cur_bb = new BasicBlock(begin,nullptr);
+//        cur_func->pushBB(cur_bb);
+//    }
+//    auto ifFirstBB = cur_bb;
+//    selectStmt->ifStmt->accept(*this);
+//    auto ifLastBB = cur_bb;
+//    for (size_t i = 0; i < cur_func->basicBlocks.size(); ++i) {
+//        if (cur_func->basicBlocks[i] == condLastBB) {
+//            condFirstBB->trueBB = cur_func->basicBlocks[i+1];
+//            break;
+//        }
+//    }
+//    if (!selectStmt->elseStmt) {
+//        condFirstBB->isCond = true;
+//        cur_cond = condFirstBB;
+//    }else {
+//        if (selectStmt->elseStmt->assignStmt || selectStmt->elseStmt->breakStmt
+//            || selectStmt->elseStmt->returnStmt || (selectStmt->elseStmt->block &&
+//                                                  (selectStmt->elseStmt->block->blockItemList[0]->constDecl
+//                                                   || selectStmt->elseStmt->block->blockItemList[0]->varDecl))){
+//            cur_bb = new BasicBlock(begin,nullptr);
+//            cur_func->pushBB(cur_bb);
+//        }
+//        selectStmt->elseStmt->accept(*this);
+//        for (size_t i = 0; i < cur_func->basicBlocks.size(); ++i) {
+//            if (cur_func->basicBlocks[i] == ifLastBB) {
+//                condFirstBB->falseBB = cur_func->basicBlocks[i+1];
+//                break;
+//            }
+//        }
+//        ifFirstBB->isIfStmt = true;
+//        cur_cond = ifFirstBB;
+//    }
+}
 void IrVisitor::visit(IterationStmt *iterationStmt) {}
 void IrVisitor::visit(BreakStmt *breakStmt) {}
 void IrVisitor::visit(ContinueStmt *continueStmt) {}
@@ -119,8 +344,29 @@ void IrVisitor::visit(ReturnStmt *returnStmt) {}
 void IrVisitor::visit(Exp *exp) {
     exp->addExp->accept(*this);
 }
-void IrVisitor::visit(Cond *cond) {}
-void IrVisitor::visit(LVal *lVal) {}
+void IrVisitor::visit(Cond *cond) {
+    cond->lOrExp->accept(*this);
+    if (useConst) {
+        useConst = false;
+        if ((curDefType == TYPE::INT && tempInt != 0 )||
+                (curDefType == TYPE::FLOAT && tempFloat != 0)) {
+            tempVal = new Value("",TYPE::INT,true,false,1,1);
+        }else {
+            tempVal = new Value("",TYPE::INT,true,false,0,1);
+        }
+    }
+}
+void IrVisitor::visit(LVal *lVal) {
+    useConst = false;
+    if (lVal->expList.empty()) {
+        tempVal = findAllVal(lVal->identifier);
+        if (!tempVal) {
+            std::cerr << "Undefined Identifier of "  << lVal->identifier << std::endl;
+        }
+    }else {
+
+    }
+}
 void IrVisitor::visit(PrimaryExp *primaryExp) {
     if (primaryExp->exp) {
         primaryExp->exp->accept(*this);
@@ -147,8 +393,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
         unaryExp->unaryExp->accept(*this);
         if (useConst){
             if (unaryExp->unaryOp->op == unaryop::OP_POS) {
-                tempInt = tempInt;
-                tempFloat = tempFloat;
+
             } else if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
                 tempInt = -tempInt;
                 tempFloat = -tempFloat;
@@ -157,15 +402,15 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
                 tempFloat = !tempFloat;
             }
         }else {
-            Instruction* ir = new Instruction;
+            auto ir = new Instruction;
+            auto v = new Value(tempVal);
             if (unaryExp->unaryOp->op == unaryop::OP_POS) {
-                tempVal = Instruction::CreateUnaryPOSIR(tempVal, ir);
+                new UnaryIR(v,tempVal,OP::POS,cur_bb);
             } else if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
-                tempVal = Instruction::CreateUnaryNEGIR(tempVal, ir);
+                new UnaryIR(v,tempVal,OP::NEG,cur_bb);
             } else if (unaryExp->unaryOp->op == unaryop::OP_NOT) {
-                tempVal = Instruction::CreateUnaryNOTIR(tempVal, ir);
+                new UnaryIR(v,tempVal,OP::NOT,cur_bb);
             }
-            cur_bb->push(ir);
         }
     }else {
 
@@ -176,17 +421,19 @@ void IrVisitor::visit(MulExp *mulExp) {
     if (!mulExp->mulExp) {
         mulExp->unaryExp->accept(*this);
     }else {
-        mulExp->unaryExp->accept(*this);
+        mulExp->mulExp->accept(*this);
         auto left = tempVal;
         int li = tempInt;
         float lf = tempFloat;
         TYPE lt = curValType;
-        mulExp->mulExp->accept(*this);
+        bool lUseConst = useConst;
+        mulExp->unaryExp->accept(*this);
         auto right = tempVal;
         int ri = tempInt;
         float rf = tempFloat;
         TYPE rt = curValType;
-        if (useConst){
+        bool rUseConst = useConst;
+        if (lUseConst && rUseConst){
             assert(!(mulExp->op == mulop::OP_MOD &&
                     (lt == TYPE::FLOAT || rt == TYPE::FLOAT)));
             if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
@@ -220,41 +467,57 @@ void IrVisitor::visit(MulExp *mulExp) {
             }
         }else {
             useConst = false;
+            if (lUseConst) {
+                if (lt == TYPE::INT) {
+                    left = new Value("",TYPE::INT,true,false,li,0);
+                }else if (lt == TYPE::FLOAT) {
+                    left = new Value("",TYPE::FLOAT,true,false,0,lf);
+                }
+            }
+            if (rUseConst) {
+                if (rt == TYPE::INT) {
+                    right = new Value("",TYPE::INT,true,false,ri,0);
+                }else if (rt == TYPE::FLOAT) {
+                    right = new Value("",TYPE::FLOAT,true,false,0,rf);
+                }
+            }
             assert(!(mulExp->op == mulop::OP_MOD &&
                      (left->type == TYPE::FLOAT || right->type == TYPE::FLOAT)));
             if (left->type != right->type) {
-                Instruction *ir = new Instruction;
                 if (left->type == TYPE::FLOAT) {
-                    right = Instruction::CreateCastInt2FloatIR(right, ir);
+                    auto v = new Value(right);
+                    v->type = TYPE::FLOAT;
+                    new CastInt2FloatIR(v,right,cur_bb);
+                    right = v;
                 } else {
-                    left = Instruction::CreateCastInt2FloatIR(left, ir);
+                    auto v = new Value(left);
+                    v->type = TYPE::FLOAT;
+                    new CastInt2FloatIR(v,left,cur_bb);
+                    left = v;
                 }
-                cur_bb->push(ir);
-                ir = new Instruction;
+                tempVal = new Value(left);
                 if (mulExp->op == mulop::OP_MUL) {
-                    tempVal = Instruction::CreateMULFIR(left, right, ir);
+                    new BinaryIR(tempVal,left,right,OP::MULF,cur_bb);
                 } else {
-                    tempVal = Instruction::CreateDIVFIR(left, right, ir);
+                    new BinaryIR(tempVal,left,right,OP::DIVF,cur_bb);
                 }
-                cur_bb->push(ir);
             } else {
-                Instruction *ir = new Instruction;
+                tempVal = new Value(left);
                 if (left->type == TYPE::INT) {
                     if (mulExp->op == mulop::OP_MUL) {
-                        tempVal = Instruction::CreateMULIIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::MULI,cur_bb);
                     } else if (mulExp->op == mulop::OP_DIV) {
-                        tempVal = Instruction::CreateDIVIIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::DIVI,cur_bb);
                     } else if (mulExp->op == mulop::OP_MOD) {
-                        tempVal = Instruction::CreateMODIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::MOD,cur_bb);
                     }
                 } else {
                     if (mulExp->op == mulop::OP_MUL) {
-                        tempVal = Instruction::CreateMULFIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::MULF,cur_bb);
                     } else if (mulExp->op == mulop::OP_DIV) {
-                        tempVal = Instruction::CreateDIVFIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::DIVF,cur_bb);
                     }
                 }
-                cur_bb->push(ir);
             }
         }
     }
@@ -268,12 +531,15 @@ void IrVisitor::visit(AddExp *addExp) {
         int li = tempInt;
         float lf = tempFloat;
         TYPE lt = curValType;
+        bool lUseConst = useConst;
         addExp->mulExp->accept(*this);
         auto right = tempVal;
         int ri = tempInt;
         float rf = tempFloat;
         TYPE rt = curValType;
-        if (useConst) {
+        bool rUseConst = useConst;
+        if (lUseConst && rUseConst) {
+            useConst = true;
             if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
                 if (addExp->op == addop::OP_ADD) {
                     tempFloat = lf + rf;
@@ -303,44 +569,417 @@ void IrVisitor::visit(AddExp *addExp) {
             }
         }else {
             useConst = false;
+            if (lUseConst) {
+                if (lt == TYPE::INT) {
+                    left = new Value("",TYPE::INT,true,false,li,0);
+                }else if (lt == TYPE::FLOAT) {
+                    left = new Value("",TYPE::FLOAT,true,false,0,lf);
+                }
+            }
+            if (rUseConst) {
+                if (rt == TYPE::INT) {
+                    right = new Value("",TYPE::INT,true,false,ri,0);
+                }else if (rt == TYPE::FLOAT) {
+                    right = new Value("",TYPE::FLOAT,true,false,0,rf);
+                }
+            }
             if (left->type != right->type) {
-                Instruction *ir = new Instruction;
                 if (left->type == TYPE::FLOAT) {
-                    right = Instruction::CreateCastInt2FloatIR(right, ir);
+                    auto v = new Value(right);
+                    v->type = TYPE::FLOAT;
+                    new CastInt2FloatIR(v,right,cur_bb);
+                    right = v;
                 } else {
-                    left = Instruction::CreateCastInt2FloatIR(left, ir);
+                    auto v = new Value(left);
+                    v->type = TYPE::FLOAT;
+                    new CastInt2FloatIR(v,left,cur_bb);
+                    left = v;
                 }
-                cur_bb->push(ir);
-                ir = new Instruction;
+                tempVal = new Value(left);
                 if (addExp->op == addop::OP_ADD) {
-                    tempVal = Instruction::CreateADDFIR(left, right, ir);
+                    new BinaryIR(tempVal,left,right,OP::ADDF,cur_bb);
                 } else if (addExp->op == addop::OP_SUB) {
-                    tempVal = Instruction::CreateSUBFIR(left, right, ir);
+                    new BinaryIR(tempVal,left,right,OP::SUBF,cur_bb);
                 }
-                cur_bb->push(ir);
             } else {
-                Instruction *ir = new Instruction;
                 if (left->type == TYPE::INT) {
                     if (addExp->op == addop::OP_ADD) {
-                        tempVal = Instruction::CreateADDIIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::ADDI,cur_bb);
                     } else if (addExp->op == addop::OP_SUB) {
-                        tempVal = Instruction::CreateSUBIIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::SUBI,cur_bb);
                     }
                 } else {
                     if (addExp->op == addop::OP_ADD) {
-                        tempVal = Instruction::CreateADDFIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::ADDF,cur_bb);
                     } else if (addExp->op == addop::OP_SUB) {
-                        tempVal = Instruction::CreateSUBFIR(left, right, ir);
+                        new BinaryIR(tempVal,left,right,OP::SUBF,cur_bb);
                     }
                 }
-                cur_bb->push(ir);
             }
         }
     }
 }
-void IrVisitor::visit(RelExp *relExp) {}
-void IrVisitor::visit(EqExp *eqExp) {}
-void IrVisitor::visit(LAndExp *lAndEXp) {}
-void IrVisitor::visit(LOrExp *lOrExp) {}
-void IrVisitor::visit(ConstExp *constExp) {}
+void IrVisitor::visit(RelExp *relExp) {
+//    if (!relExp->relExp) {
+//        relExp->addExp->accept(*this);
+//    }else {
+//        relExp->relExp->accept(*this);
+//        auto left = tempVal;
+//        int li = tempInt;
+//        float lf = tempFloat;
+//        TYPE lt = curValType;
+//        bool lUseConst = useConst;
+//        relExp->addExp->accept(*this);
+//        auto right = tempVal;
+//        int ri = tempInt;
+//        float rf = tempFloat;
+//        TYPE rt = curValType;
+//        bool rUseConst = useConst;
+//        if (lUseConst && rUseConst) {
+//            useConst = true;
+//            float x = 0;
+//            float y = 0;
+//            if (lt == TYPE::INT && rt == TYPE::INT) {
+//                x = li;
+//                y = ri;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
+//                x = lf;
+//                y = lf;
+//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+//                x = li;
+//                y = rf;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
+//                x = lf;
+//                y = ri;
+//            }
+//            if (relExp->op == relop::OP_LT) {
+//                tempInt = (x < y);
+//            }else if (relExp->op == relop::OP_GT){
+//                tempInt = (x > y);
+//            }else if (relExp->op == relop::OP_LE) {
+//                tempInt = (x <= y);
+//            }else if (relExp->op == relop::OP_GE){
+//                tempInt = (x >= y);
+//            }
+//            curDefType = TYPE::INT;
+//        }else {
+//            useConst = false;
+//            auto ir = new Instruction;
+//            if (lUseConst) {
+//                if (lt == TYPE::INT) {
+//                    left = new Value("",TYPE::INT,true,false,li,0);
+//                    new AllocIIR(left,cur_bb);
+//                }else if (lt == TYPE::FLOAT) {
+//                    left = new Value("",TYPE::FLOAT,true,false,0,lf);
+//                    new AllocFIR(left,cur_bb);
+//                }
+//            }
+//            if (rUseConst) {
+//                if (rt == TYPE::INT) {
+//                    right = new Value("",TYPE::INT,true,false,li,0);
+//                    new AllocIIR(right,cur_bb);
+//                }else if (rt == TYPE::FLOAT) {
+//                    right = new Value("",TYPE::FLOAT,true,false,0,lf);
+//                    new AllocFIR(right,cur_bb);
+//                }
+//            }
+//            if (left->type != right->type) {
+//                if (left->type == TYPE::FLOAT) {
+//                    auto v = new Value(right);
+//                    v->type = TYPE::FLOAT;
+//                    new CastInt2FloatIR(v,right,cur_bb);
+//                    right = v;
+//                } else {
+//                    auto v = new Value(left);
+//                    v->type = TYPE::FLOAT;
+//                    new CastInt2FloatIR(v,left,cur_bb);
+//                    left = v;
+//                }
+//                if (relExp->op == relop::OP_LT) {
+//                    tempVal = Instruction::CreateCmpLtFIR(left,right,ir);
+//                } else if (relExp->op == relop::OP_GT){
+//                    tempVal = Instruction::CreateCmpGtFIR(left,right,ir);
+//                }else if (relExp->op == relop::OP_LE){
+//                    tempVal = Instruction::CreateCmpLeFIR(left,right,ir);
+//                }else if (relExp->op == relop::OP_GE){
+//                    tempVal = Instruction::CreateCmpGeFIR(left,right,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//            } else {
+//                if (left->type == TYPE::INT) {
+//                    if (relExp->op == relop::OP_LT) {
+//                        tempVal = Instruction::CreateCmpLtIIR(left,right,ir);
+//                    } else if (relExp->op == relop::OP_GT){
+//                        tempVal = Instruction::CreateCmpGtIIR(left,right,ir);
+//                    }else if (relExp->op == relop::OP_LE){
+//                        tempVal = Instruction::CreateCmpLeIIR(left,right,ir);
+//                    }else if (relExp->op == relop::OP_GE){
+//                        tempVal = Instruction::CreateCmpGeIIR(left,right,ir);
+//                    }
+//                } else {
+//                    if (relExp->op == relop::OP_LT) {
+//                        tempVal = Instruction::CreateCmpLtFIR(left,right,ir);
+//                    } else if (relExp->op == relop::OP_GT){
+//                        tempVal = Instruction::CreateCmpGtFIR(left,right,ir);
+//                    }else if (relExp->op == relop::OP_LE){
+//                        tempVal = Instruction::CreateCmpLeFIR(left,right,ir);
+//                    }else if (relExp->op == relop::OP_GE){
+//                        tempVal = Instruction::CreateCmpGeFIR(left,right,ir);
+//                    }
+//                }
+//                cur_bb->pushIr(ir);
+//            }
+//        }
+//    }
+}
+void IrVisitor::visit(EqExp *eqExp) {
+//    if (!eqExp->eqExp) {
+//        eqExp->relExp->accept(*this);
+//    }else {
+//        eqExp->eqExp->accept(*this);
+//        auto left = tempVal;
+//        int li = tempInt;
+//        float lf = tempFloat;
+//        TYPE lt = curValType;
+//        bool lUseConst = useConst;
+//        eqExp->relExp->accept(*this);
+//        auto right = tempVal;
+//        int ri = tempInt;
+//        float rf = tempFloat;
+//        TYPE rt = curValType;
+//        bool rUseConst = useConst;
+//        if (lUseConst && rUseConst) {
+//            useConst = true;
+//            float x = 0;
+//            float y = 0;
+//            if (lt == TYPE::INT && rt == TYPE::INT) {
+//                x = li;
+//                y = ri;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
+//                x = lf;
+//                y = lf;
+//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+//                x = li;
+//                y = rf;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
+//                x = lf;
+//                y = ri;
+//            }
+//            if (eqExp->op == relop::OP_EQU) {
+//                tempInt = (x == y);
+//            }else if (eqExp->op == relop::OP_NE){
+//                tempInt = (x != y);
+//            }
+//            curDefType = TYPE::INT;
+//        }else {
+//            useConst = false;
+//            auto ir = new Instruction;
+//            if (lUseConst) {
+//                if (lt == TYPE::INT) {
+//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
+//                }else if (lt == TYPE::FLOAT) {
+//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (rUseConst) {
+//                if (rt == TYPE::INT) {
+//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
+//                }else if (rt == TYPE::FLOAT) {
+//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (left->type != right->type) {
+//                if (left->type == TYPE::FLOAT) {
+//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
+//                } else {
+//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//                if (eqExp->op == relop::OP_EQU) {
+//                    tempVal = Instruction::CreateCmpEqFIR(left,right,ir);
+//                } else if (eqExp->op == relop::OP_NE) {
+//                    tempVal = Instruction::CreateCmpNeFIR(left,right,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//            } else {
+//                if (left->type == TYPE::INT) {
+//                    if (eqExp->op == relop::OP_EQU) {
+//                        tempVal = Instruction::CreateCmpEqIIR(left,right,ir);
+//                    }else if (eqExp->op == relop::OP_NE){
+//                        tempVal = Instruction::CreateCmpNeIIR(left,right,ir);
+//                    }
+//                } else {
+//                    if (eqExp->op == relop::OP_EQU) {
+//                        tempVal = Instruction::CreateCmpEqFIR(left,right,ir);
+//                    }else if (eqExp->op == relop::OP_NE){
+//                        tempVal = Instruction::CreateCmpNeFIR(left,right,ir);
+//                    }
+//                }
+//                cur_bb->pushIr(ir);
+//            }
+//        }
+//    }
+}
+void IrVisitor::visit(LAndExp *lAndEXp) {
+//    if (!lAndEXp->lAndExp) {
+//        lAndEXp->eqExp->accept(*this);
+//    }else {
+//        lAndEXp->lAndExp->accept(*this);
+//        auto left = tempVal;
+//        int li = tempInt;
+//        float lf = tempFloat;
+//        TYPE lt = curValType;
+//        bool lUseConst = useConst;
+//        lAndEXp->eqExp->accept(*this);
+//        auto right = tempVal;
+//        int ri = tempInt;
+//        float rf = tempFloat;
+//        TYPE rt = curValType;
+//        bool rUseConst = useConst;
+//        if (lUseConst && rUseConst) {
+//            useConst = true;
+//            float x = 0;
+//            float y = 0;
+//            if (lt == TYPE::INT && rt == TYPE::INT) {
+//                x = li;
+//                y = ri;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
+//                x = lf;
+//                y = lf;
+//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+//                x = li;
+//                y = rf;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
+//                x = lf;
+//                y = ri;
+//            }
+//            tempInt = (x && y);
+//            curDefType = TYPE::INT;
+//        }else {
+//            useConst = false;
+//            auto ir = new Instruction;
+//            if (lUseConst) {
+//                if (lt == TYPE::INT) {
+//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
+//                }else if (lt == TYPE::FLOAT) {
+//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (rUseConst) {
+//                if (rt == TYPE::INT) {
+//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
+//                }else if (rt == TYPE::FLOAT) {
+//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (left->type != right->type) {
+//                if (left->type == TYPE::FLOAT) {
+//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
+//                } else {
+//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//                tempVal = Instruction::CreateAndFIR(left,right,ir);
+//                cur_bb->pushIr(ir);
+//            } else {
+//                if (left->type == TYPE::INT) {
+//                    tempVal = Instruction::CreateAndIIR(left,right,ir);
+//                } else {
+//                    tempVal = Instruction::CreateAndFIR(left,right,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//            }
+//        }
+//    }
+}
+void IrVisitor::visit(LOrExp *lOrExp) {
+//    if (!lOrExp->lOrExp) {
+//        lOrExp->lAndExp->accept(*this);
+//    }else {
+//        lOrExp->lOrExp->accept(*this);
+//        auto left = tempVal;
+//        int li = tempInt;
+//        float lf = tempFloat;
+//        TYPE lt = curValType;
+//        bool lUseConst = useConst;
+//        lOrExp->lAndExp->accept(*this);
+//        auto right = tempVal;
+//        int ri = tempInt;
+//        float rf = tempFloat;
+//        TYPE rt = curValType;
+//        bool rUseConst = useConst;
+//        if (lUseConst && rUseConst) {
+//            useConst = true;
+//            float x = 0;
+//            float y = 0;
+//            if (lt == TYPE::INT && rt == TYPE::INT) {
+//                x = li;
+//                y = ri;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
+//                x = lf;
+//                y = lf;
+//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+//                x = li;
+//                y = rf;
+//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
+//                x = lf;
+//                y = ri;
+//            }
+//            tempInt = (x || y);
+//            curDefType = TYPE::INT;
+//        }else {
+//            useConst = false;
+//            auto ir = new Instruction;
+//            if (lUseConst) {
+//                if (lt == TYPE::INT) {
+//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
+//                }else if (lt == TYPE::FLOAT) {
+//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (rUseConst) {
+//                if (rt == TYPE::INT) {
+//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
+//                }else if (rt == TYPE::FLOAT) {
+//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//            }
+//            if (left->type != right->type) {
+//                if (left->type == TYPE::FLOAT) {
+//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
+//                } else {
+//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
+//                }
+//                cur_bb->pushIr(ir);
+//                ir = new Instruction;
+//                tempVal = Instruction::CreateOrFIR(left,right,ir);
+//                cur_bb->pushIr(ir);
+//            } else {
+//                if (left->type == TYPE::INT) {
+//                    tempVal = Instruction::CreateOrIIR(left,right,ir);
+//                } else {
+//                    tempVal = Instruction::CreateOrFIR(left,right,ir);
+//                }
+//                cur_bb->pushIr(ir);
+//            }
+//        }
+//    }
+}
+void IrVisitor::visit(ConstExp *constExp) {
+    constExp->addExp->accept(*this);
+}
 void IrVisitor::visit(UnaryOp *unaryOp) {}

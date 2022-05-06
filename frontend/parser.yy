@@ -270,10 +270,12 @@ FuncFParam:DefType IDENTIFIER MLB MRB ParamArrayExpList{
     $$=new FuncFParam();
     $$->defType=std::shared_ptr<DefType>($1);
     $$->identifier=$2;
+    $$->isArray = true;
     $$->expList.swap($5->expList);
 }
 	| DefType IDENTIFIER{
     $$=new FuncFParam();
+    $$->isArray = false;
     $$->defType=std::shared_ptr<DefType>($1);
     $$->identifier=$2;
   }

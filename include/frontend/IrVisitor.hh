@@ -12,31 +12,61 @@
 #include "syntax_tree.hh"
 class IrVisitor:public Visitor{
 public:
-    std::vector<std::shared_ptr<Function>> functions;
-    std::vector<std::shared_ptr<Value>> globalVars;
-    std::vector<std::shared_ptr<Value>> vars;
-    std::vector<std::shared_ptr<Value>> cur_val;
-    std::shared_ptr<Function> cur_func;
-    std::shared_ptr<BasicBlock> entry;
-    std::shared_ptr<BasicBlock> cur_bb;
+    std::vector<Function*> functions;
+    std::vector<Value*> cur_val;
+    Function* cur_func;
+    BasicBlock* entry = nullptr;
+    BasicBlock* cur_bb = nullptr;
+    BasicBlock* cur_cond = nullptr;
     TYPE curDefType;
     bool useConst;
     TYPE curValType;
     int tempInt;
     float tempFloat;
-
-    std::string cur_name;
-    int var_cnt;
+    bool tempTrue;
     std::vector<int> tempIntList;
     std::vector<float> tempFloatList;
     Value* tempVal;
     IrVisitor() {
-        entry = std::shared_ptr<BasicBlock>(new BasicBlock(".init"));
+        entry = new BasicBlock(nullptr, nullptr);
         cur_bb = entry;
-        var_cnt = 0;
     }
     inline bool isGlobal() {
-        return cur_bb->name == ".init";
+        if (!cur_bb->parent){
+            return true;
+        }
+        return false;
+    }
+    inline Value*
+    findAllVal(std::string name) {
+        BasicBlock* bb = cur_bb;
+        while(bb) {
+            for (size_t i = 0; i < bb->vars.size(); ++i) {
+                if (bb->vars[i]->name == name) {
+                    return bb->vars[i];
+                }
+            }
+            bb = bb->parent;
+        }
+        return nullptr;
+    }
+    inline bool findLocalVal(std::string name) {
+        BasicBlock* bb = cur_bb;
+        while(bb) {
+            for (size_t i = 0; i < bb->vars.size(); ++i) {
+                if(bb->vars[i]->name == name) {
+                    return true;
+                }
+            }
+            bb = bb->last;
+        }
+        return false;
+    }
+    inline bool findFunc(std::string name) {
+        for (size_t i = 0; i < functions.size(); ++i) {
+            if (functions[i]->name == name) return true;
+        }
+        return false;
     }
     virtual void visit(CompUnit* compUnit);
     virtual void visit(DeclDef* declDef);
