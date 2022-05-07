@@ -143,11 +143,6 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/backward/auto_ptr.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/CompileUnit.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /usr/include/c++/9/iostream /usr/include/c++/9/ostream \
  /usr/include/c++/9/ios /usr/include/c++/9/bits/ios_base.h \
  /usr/include/c++/9/bits/locale_classes.h \
@@ -164,8 +159,13 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/locale_facets.tcc \
  /usr/include/c++/9/bits/basic_ios.tcc \
  /usr/include/c++/9/bits/ostream.tcc /usr/include/c++/9/istream \
- /usr/include/c++/9/bits/istream.tcc /usr/include/c++/9/cassert \
- /usr/include/assert.h \
+ /usr/include/c++/9/bits/istream.tcc \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
+ /usr/include/c++/9/cassert /usr/include/assert.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \

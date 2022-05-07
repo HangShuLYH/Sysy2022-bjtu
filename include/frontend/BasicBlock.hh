@@ -12,8 +12,10 @@ public:
     std::vector<Instruction*> ir;
     BasicBlock* parent;
     std::vector<Value*> vars;
-    BasicBlock(BasicBlock* parent) {
+    int cnt;
+    BasicBlock(BasicBlock* parent,int cnt) {
         this->parent = parent;
+        this->cnt = cnt;
     }
     void pushIr(Instruction* instruction) {
         ir.push_back(instruction);
@@ -27,9 +29,13 @@ public:
 };
 class NormalBlock:public BasicBlock{
 public:
-    NormalBlock(BasicBlock* parent) : BasicBlock(parent){}
+    NormalBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
     void print() override final{
-
+        std::cout << "<label>" << cnt << std::endl;
+        for (size_t i = 0; i < ir.size(); ++i) {
+            std::cout << "\t";
+            ir[i]->print();
+        }
     };
     void clear() override final{}
 };
@@ -39,7 +45,7 @@ public:
     std::vector<BasicBlock*> ifStmt;
     std::vector<BasicBlock*> elseStmt;
     BasicBlock* next;
-    SelectBlock(BasicBlock* parent) : BasicBlock(parent){}
+    SelectBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
     void print() override final{};
     void clear() override final{
         auto iter = cond.begin();
@@ -72,8 +78,10 @@ class IterationBlock:public BasicBlock{
 public:
     std::vector<BasicBlock*> cond;
     std::vector<BasicBlock*> whileStmt;
-    IterationBlock(BasicBlock* parent) : BasicBlock(parent){}
-    void print() override final{};
+    IterationBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
+    void print() override final{
+
+    }
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){

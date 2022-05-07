@@ -12,13 +12,14 @@
 #include <iostream>
 class Function{
 public:
+    int bbCnt = 0;
+    int varCnt = 0;
     std::string name;
     TYPE return_type;
     std::vector<BasicBlock*> basicBlocks;
-    BasicBlock* entry;
-    Function(std::string name,BasicBlock* entry,TYPE type){
+    std::vector<Value*> params;
+    Function(std::string name,TYPE type){
         this->name = name;
-        this->entry = entry;
         return_type = type;
     }
     void pushBB(BasicBlock* basicBlock) {
@@ -41,17 +42,15 @@ public:
     }
     inline void print() {
         std::cout << "define ";
-        if (return_type == TYPE::INT) {
-            std::cout << "int";
-        }else if (return_type == TYPE::FLOAT){
-            std::cout << "float";
-        }else {
-            std::cout << "float";
-        }
+        std::cout << return_type;
         std::cout << "@" << name << "(";
-        for (size_t i = 0; i < entry->vars.size(); ++i) {
-            
+        for (size_t i = 0; i < params.size(); ++i) {
+            params[i]->print();
+            if (i != params.size() - 1){
+                std::cout << ",";
+            }
         }
+        std::cout << ")" <<std::endl;
         for (size_t i = 0; i < basicBlocks.size(); ++i) {
             basicBlocks[i]->print();
         }

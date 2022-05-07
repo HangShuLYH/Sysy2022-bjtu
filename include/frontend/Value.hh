@@ -5,51 +5,74 @@
 #ifndef SYSY2022_BJTU_VALUE_HH
 #define SYSY2022_BJTU_VALUE_HH
 #include <string>
+#include <iostream>
 #include <vector>
-enum TYPE{
+
+enum class TYPE{
     INT,
     FLOAT,
     VOID,
-    BOOL,
+    INTPOINTER,
+    FLOATPOINTER
 };
+inline std::ostream& operator << (std::ostream& out,TYPE tp) {
+    switch (tp) {
+        case TYPE::INT:
+            out << "int";break;
+        case TYPE::FLOAT:
+            out << "float";break;
+        case TYPE::VOID:
+            out << "void";break;
+        case TYPE::INTPOINTER:
+            out << "int*";break;
+        case TYPE::FLOATPOINTER:
+            out << "float*";break;
+    }
+    return out;
+}
 class Value{
 public:
-    bool isGlobal;
-    bool isConst;
-    bool isInit;
-    bool isArray;
-    bool isTrue;
+    int num;
     std::string name;
     TYPE type;
-    int initIntVal;
-    float initFloatVal;
-    std::vector<int> dims;
-    std::vector<Value*> initVals;
-    Value(std::string name,TYPE type,bool isArray) {
+    bool isGlobal = false;
+    Value(){}
+    virtual ~Value(){}
+    virtual void print() = 0;
+};
+class VarValue:public Value{
+public:
+    VarValue(int num,std::string name,TYPE type) {
+        this->num = num;
         this->name = name;
         this->type = type;
-        this->isArray = isArray;
     }
-    Value(std::string name,TYPE type,bool isInit,bool isConst,int initIntVal,float initFloatVal) {
-        this->name = name;
-        this->type = type;
-        this->isInit = isInit;
-        this->isConst = isConst;
-        this->initIntVal = initIntVal;
-        this->initFloatVal = initFloatVal;
-    }
-    Value(Value *v) {
-        isGlobal = v->isGlobal;
-        isConst = v->isConst;
-        isInit = v->isInit;
-        isArray = v->isArray;
-        name = v->name;
-        type = v->type;
-        initIntVal = v->initIntVal;
-        initFloatVal = v->initFloatVal;
-        dims.swap(v->dims);
-        initVals.swap(v->initVals);
+    void print() override final {
+        if (isGlobal){
+            std::cout << type << " @" << name;
+        }else {
+            std::cout << type << " @" << num;
+        }
     }
 };
-
+class ConstValue:public Value{
+public:
+    int intVal;
+    float floatVal;
+    void setInt(int val) {intVal = val;}
+    void setFloat(float val) {floatVal = val;}
+    ConstValue(int num,std::string name,TYPE type){
+        this->num = num;
+        this->name = name;
+        this->type = type;
+    }
+    void print() override final {
+        std::cout <<"const "<< type << " @" << name;
+        if (type == TYPE::INT) {
+            std::cout << " = " <<intVal;
+        }else{
+            std::cout << " = " << floatVal;
+        }
+    }
+};
 #endif //SYSY2022_BJTU_VALUE_HH

@@ -15,38 +15,41 @@
 
 class IrVisitor : public Visitor {
 public:
-    std::vector<Function *> functions;
-    std::vector<Value *> cur_val;
-    Function *cur_func;
+    std::vector<Function*> functions;
+    std::vector<Value*> globalVars;
+    Function *cur_func = nullptr;
     BasicBlock *entry = nullptr;
+    int cnt = 0;
     BasicBlock *cur_bb = nullptr;
     std::stack<SelectBlock *> ifBB;
     std::stack<IterationBlock *> whileBB;
     bool isIF = false;
-    std::vector<BasicBlock *> v;
     TYPE curDefType;
     bool useConst;
     TYPE curValType;
     int tempInt;
     float tempFloat;
-    bool tempTrue;
-    std::vector<int> tempIntList;
-    std::vector<float> tempFloatList;
     Value *tempVal;
 
     IrVisitor() {
-        entry = new NormalBlock(nullptr);
+        entry = new NormalBlock(nullptr,0);
         cur_bb = entry;
     }
     void print() {
-        std::cout << "Global Vars:" << std::endl;
+        std::cout << "globalVars:" << std::endl;
+        for (size_t i = 0; i < globalVars.size(); ++i) {
+            std::cout << "\t";
+            globalVars[i]->print();
+            std::cout << std::endl;
+        }
+        std::cout << ".entryBB:" << std::endl;
         entry->print();
         for (size_t i = 0; i < functions.size(); ++i) {
             functions[i]->print();
         }
     }
     inline bool isGlobal() {
-        if (!cur_bb->parent) {
+        if (cur_bb == entry) {
             return true;
         }
         return false;
@@ -62,6 +65,11 @@ public:
                 }
             }
             bb = bb->parent;
+        }
+        for (size_t i = 0; i < globalVars.size(); ++i) {
+            if (globalVars[i]->name == name) {
+                return globalVars[i];
+            }
         }
         return nullptr;
     }

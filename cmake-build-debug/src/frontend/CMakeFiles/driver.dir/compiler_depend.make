@@ -178,11 +178,6 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/backward/auto_ptr.h \
   ../include/frontend/CompileUnit.hh \
   ../include/frontend/Instruction.hh \
-  ../include/frontend/Value.hh \
-  ../include/frontend/BasicBlock.hh \
-  ../include/frontend/Function.hh \
-  ../include/frontend/parser.hh \
-  ../include/frontend/syntax_tree.hh \
   /usr/include/c++/9/iostream \
   /usr/include/c++/9/ostream \
   /usr/include/c++/9/ios \
@@ -206,6 +201,11 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/ostream.tcc \
   /usr/include/c++/9/istream \
   /usr/include/c++/9/bits/istream.tcc \
+  ../include/frontend/Value.hh \
+  ../include/frontend/Function.hh \
+  ../include/frontend/BasicBlock.hh \
+  ../include/frontend/parser.hh \
+  ../include/frontend/syntax_tree.hh \
   /usr/include/c++/9/cassert \
   /usr/include/assert.h \
   ../include/frontend/location.hh \
@@ -465,15 +465,19 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/cassert:
 
+../include/frontend/syntax_tree.hh:
+
+../include/frontend/parser.hh:
+
+../include/frontend/BasicBlock.hh:
+
+../include/frontend/Function.hh:
+
+../include/frontend/Value.hh:
+
 /usr/include/c++/9/bits/istream.tcc:
 
 /usr/include/c++/9/istream:
-
-/usr/include/c++/9/bits/ostream.tcc:
-
-/usr/include/c++/9/bits/locale_facets.tcc:
-
-/usr/include/c++/9/bits/streambuf_iterator.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
 
@@ -587,12 +591,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/bits/atomic_base.h:
 
-/usr/include/c++/9/bits/basic_ios.tcc:
-
-/usr/include/c++/9/bits/stringfwd.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
 /usr/include/c++/9/ext/aligned_buffer.h:
@@ -659,8 +657,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
-../include/frontend/syntax_tree.hh:
-
 /usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h:
 
 /usr/include/c++/9/ext/type_traits.h:
@@ -711,8 +707,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
-../include/frontend/BasicBlock.hh:
-
 /usr/include/c++/9/deque:
 
 /usr/include/c++/9/bits/cxxabi_init_exception.h:
@@ -753,7 +747,7 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/asm-generic/errno-base.h:
 
-../include/frontend/parser.hh:
+/usr/include/c++/9/bits/locale_facets.tcc:
 
 /usr/include/c++/9/ext/concurrence.h:
 
@@ -776,8 +770,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
 
 /usr/include/c++/9/stdexcept:
-
-../include/frontend/Value.hh:
 
 /usr/include/c++/9/string:
 
@@ -853,17 +845,11 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/bits/shared_ptr_atomic.h:
 
-/usr/include/x86_64-linux-gnu/c++/9/bits/ctype_inline.h:
-
-/usr/include/c++/9/bits/atomic_lockfree_defines.h:
-
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/os_defines.h:
 
 /usr/include/c++/9/bits/locale_classes.h:
-
-../include/frontend/Function.hh:
 
 ../include/frontend/CompileUnit.hh:
 
@@ -886,3 +872,17 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/functional_hash.h:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/ctype_base.h:
+
+/usr/include/c++/9/bits/streambuf_iterator.h:
+
+/usr/include/c++/9/bits/atomic_lockfree_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/9/bits/ctype_inline.h:
+
+/usr/include/c++/9/bits/stringfwd.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/c++/9/bits/basic_ios.tcc:
+
+/usr/include/c++/9/bits/ostream.tcc:

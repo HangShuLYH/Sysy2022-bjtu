@@ -13,7 +13,7 @@ int main (int argc, char *argv[])
         exit(0);
     }
     root = ddriver.parse(argv[1]);
-    root->visit(0);
+    //root->visit(0);
     IrVisitor irVisitor;
     irVisitor.visit(root);
     irVisitor.print();
