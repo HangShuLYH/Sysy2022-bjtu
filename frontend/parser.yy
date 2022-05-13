@@ -147,7 +147,7 @@ ConstDef: IDENTIFIER ConstExpList ASSIGN ConstInitVal{
         $$->constInitVal=std::shared_ptr<ConstInitVal>($4);
     }
     ;
-ConstExpList: ConstExpList BLB ConstExp BRB{
+ConstExpList: ConstExpList MLB ConstExp MRB{
         $1->constExpList.push_back(std::shared_ptr<ConstExp>($3));
         $$=$1;
     }
