@@ -37,9 +37,13 @@ public:
     TYPE type;
     bool isGlobal = false;
     bool isArray = false;
+    int arrayLen = 0;
     Value(){}
     virtual ~Value(){}
     virtual void print() = 0;
+    void push() {
+        if(isArray) this->arrayLen++;
+    }
 };
 class VarValue:public Value{
 public:
@@ -76,38 +80,4 @@ public:
         }
     }
 };
-class ArrayValue:public Value{
-public:
-    int *intList;
-    float *floatList;
-    int arrayLen;
-    int cur;
-    ArrayValue(int num, int arrayLen, std::string name, TYPE type) {
-        this->num = num;
-        if(type == TYPE::INTPOINTER)
-            this->intList = new int[arrayLen];
-        else if(type == TYPE::FLOATPOINTER)
-            this->floatList = new float[arrayLen];
-        this->arrayLen = arrayLen;
-        this->name = name;
-        this->type = type;
-        this->cur = 0;
-        this->isArray = true;
-    }
-    void pushBackInt(int val)
-    {
-        intList[this->cur++] = val;
-    }
-    void pushBackFloat(float val)
-    {
-        floatList[this->cur++] = val;
-    }
-    void print() override final {
-        if (isGlobal){
-            std::cout << type << " @" << name << "[" << arrayLen << "]";
-        } else {
-            std::cout << type << " @" << num << "[" << arrayLen << "]";
-        }
-    }
-};
-#endif //SYSY2022_BJTU_VALUE_HH
+#endif
