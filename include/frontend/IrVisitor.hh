@@ -31,6 +31,7 @@ public:
     int tempInt;
     float tempFloat;
     Value *tempVal;
+    ArrayValue *tempArray;
 
     IrVisitor() {
         entry = new NormalBlock(nullptr,0);

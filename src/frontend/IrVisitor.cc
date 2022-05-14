@@ -182,6 +182,52 @@ void IrVisitor::visit(VarDef *varDef) {
         }
 
     } else {
+        ArrayValue *array(nullptr);
+        int arrayLen(1);
+        
+        for(size_t i(0); i < varDef->constExpList.size(); i++) {
+            varDef->constExpList[i]->accept(*this);
+            arrayLen *= tempInt;
+        }
+
+        if(curDefType == TYPE::INT) {
+            if(!isGlobal()) {
+                array = new ArrayValue(cur_func->varCnt++, arrayLen, varDef->identifier, TYPE::INTPOINTER);
+            }
+            else {
+                array = new ArrayValue(0, arrayLen, varDef->identifier, TYPE::INTPOINTER);
+            }
+            AllocIIR *ir = new AllocIIR(array);
+            cur_bb->pushIr(ir);
+        } else {
+            if(!isGlobal()) {
+                array = new ArrayValue(cur_func->varCnt++, arrayLen, varDef->identifier, TYPE::FLOATPOINTER);
+            }
+            else {
+                array = new ArrayValue(0, arrayLen, varDef->identifier, TYPE::FLOATPOINTER);
+            }
+            AllocFIR *ir = new AllocFIR(array);
+            cur_bb->pushIr(ir);
+        }
+        if(isGlobal()) {
+            array->isGlobal = true;
+            globalVars.push_back(array);
+        } else {
+            cur_bb->pushVar(array);
+        }
+
+        if(varDef->initVal) {
+            tempArray = array;
+            varDef->initVal->accept(*this);
+            if (array->type == TYPE::INTPOINTER) {
+                StoreIIR *ir = new StoreIIR(array, tempArray);
+                cur_bb->pushIr(ir);
+            } else {
+                StoreFIR *ir = new StoreFIR(array, tempArray);
+                cur_bb->pushIr(ir);
+            }
+        }
+
 //        auto t = new Value(varCnt++, varDef->identifier, curDefType, true);
 //        for (size_t i = 0; i < varDef->constExpList.size(); ++i) {
 //            varDef->constExpList[i]->accept(*this);
@@ -198,6 +244,13 @@ void IrVisitor::visit(InitVal *initVal) {
     } else {
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
             initVal->initValList[i]->accept(*this);
+            if(initVal->initValList[i]->exp) {
+                if(tempArray->type == TYPE::INTPOINTER) {
+                    tempArray->pushBackInt(tempInt);
+                } else if(tempArray->type == TYPE::FLOATPOINTER) {
+                    tempArray->pushBackFloat(tempFloat);
+                }
+            }
         }
     }
 }
