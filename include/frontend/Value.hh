@@ -64,6 +64,8 @@ class ConstValue:public Value{
 public:
     int intVal;
     float floatVal;
+    std::vector<int> intValList;
+    std::vector<float> floatValList;
     void setInt(int val) {intVal = val;}
     void setFloat(float val) {floatVal = val;}
     ConstValue(int num,std::string name,TYPE type){
@@ -78,6 +80,12 @@ public:
         }else{
             std::cout << " = " << floatVal;
         }
+    }
+    void push(int val) {
+        if(isArray) intValList.push_back(val);
+    }
+    void push(float val) {
+        if(isArray) floatValList.push_back(val);
     }
 };
 #endif
