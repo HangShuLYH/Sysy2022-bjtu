@@ -30,6 +30,7 @@ public:
     TYPE curValType;
     int tempInt;
     float tempFloat;
+    int tempDims;
     Value *tempVal;
 
     IrVisitor() {

@@ -37,13 +37,11 @@ public:
     TYPE type;
     bool isGlobal = false;
     bool isArray = false;
+    std::vector<int> arrayDims;
     int arrayLen = 0;
     Value(){}
     virtual ~Value(){}
     virtual void print() = 0;
-    void push() {
-        if(isArray) this->arrayLen++;
-    }
 };
 class VarValue:public Value{
 public:
@@ -58,6 +56,9 @@ public:
         }else {
             std::cout << type << " @" << num;
         }
+    }
+    void push() {
+        if(isArray) this->arrayLen++;
     }
 };
 class ConstValue:public Value{
@@ -74,12 +75,24 @@ public:
         this->type = type;
     }
     void print() override final {
-        std::cout <<"const "<< type << " @" << name;
-        if (type == TYPE::INT) {
-            std::cout << " = " <<intVal;
-        }else{
-            std::cout << " = " << floatVal;
+        if(!isArray)
+        {
+            std::cout <<"const "<< type << " @" << name;
+            if (type == TYPE::INT) {
+                std::cout << " = " <<intVal;
+            }else{
+                std::cout << " = " << floatVal;
+            }
         }
+        else
+        {
+            if (isGlobal){
+                std::cout <<"const "<< type << " @" << name;
+            }else {
+                std::cout <<"const "<< type << " @" << num;
+            }
+        }
+
     }
     void push(int val) {
         if(isArray) intValList.push_back(val);

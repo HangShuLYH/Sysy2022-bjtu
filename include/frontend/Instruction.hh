@@ -45,31 +45,60 @@ public:
 };
 class AllocIIR:public Instruction{
 public:
+    bool isArray = false;
+    int arrayLen;
     Value* v;
     AllocIIR(Value* v){
         this->v = v;
     }
-    void print() override final{
-        v->print();
-        std::cout << " = AllocaI" << std::endl;
-    }
-};
-class AllocFIR:public Instruction{
-public:
-    Value* v;
-    AllocFIR(Value* v){
+    AllocIIR(Value* v, int arrayLen) {
+        this->isArray = true;
+        this->arrayLen = arrayLen;
         this->v = v;
     }
     void print() override final{
         v->print();
-        std::cout << " = AllocaF" << std::endl;
+        std::cout << " = AllocaI";
+        if(isArray)
+            std::cout << "(" << arrayLen << ")";
+        std::cout << std::endl;
+    }
+};
+class AllocFIR:public Instruction{
+public:
+    bool isArray = false;
+    int arrayLen;
+    Value* v;
+    AllocFIR(Value* v){
+        this->v = v;
+    }
+    AllocFIR(Value* v, int arrayLen) {
+        this->isArray = true;
+        this->arrayLen = arrayLen;
+        this->v = v;
+    }
+    void print() override final{
+        v->print();
+        std::cout << " = AllocaF";
+        if(isArray)
+            std::cout << "(" << arrayLen << ")";
+        std::cout << std::endl;
     }
 };
 class LoadIIR:public Instruction{
 public:
+    bool isArray = false;
+    int arrayIndex;
     Value* v1;
     Value* v2;
     LoadIIR(Value* v1,Value* v2){
+        this->v1 = v1;
+        this->v2 = v2;
+    }
+    LoadIIR(Value* v1,Value* v2, int arrayIndex){
+        this->isArray = true;
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
         this->v1 = v1;
         this->v2 = v2;
     }
@@ -77,14 +106,25 @@ public:
         v1->print();
         std::cout << " = LoadI ";
         v2->print();
+        if(isArray)
+            std::cout << "[" << arrayIndex << "]";
         std::cout << std::endl;
     }
 };
 class LoadFIR:public Instruction{
 public:
+    bool isArray = false;
+    int arrayIndex;
     Value* v1;
     Value* v2;
     LoadFIR(Value* v1,Value* v2){
+        this->v1 = v1;
+        this->v2 = v2;
+    }
+    LoadFIR(Value* v1,Value* v2, int arrayIndex){
+        this->isArray = true;
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
         this->v1 = v1;
         this->v2 = v2;
     }
@@ -92,11 +132,16 @@ public:
         v1->print();
         std::cout << " = LoadF ";
         v2->print();
+        if(isArray)
+            std::cout << "[" << arrayIndex << "]";
         std::cout << std::endl;
     }
 };
 class StoreIIR:public Instruction{
 public:
+    bool isArray = false;
+    int arrayIndex;
+
     Value* v1;
     Value* v2;
     bool useConst;
@@ -111,6 +156,20 @@ public:
         this->val = val;
         useConst = true;
     }
+    StoreIIR(Value* v1,Value* v2, int arrayIndex){
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        useConst = false;
+    }
+    StoreIIR(Value* v1,int val, int arrayIndex){
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
+        this->v1 = v1;
+        this->val = val;
+        useConst = true;
+    }
     void print() override final{
         std::cout << "StoreI ";
         if (useConst) {
@@ -120,11 +179,16 @@ public:
             std::cout << " ";
         }
         v1->print();
+        if(isArray)
+            std::cout << "[" << arrayIndex << "]";
         std::cout << std::endl;
     }
 };
 class StoreFIR:public Instruction{
 public:
+    bool isArray = false;
+    int arrayIndex;
+
     Value* v1;
     Value* v2;
     bool useConst;
@@ -139,6 +203,20 @@ public:
         this->val = val;
         useConst = true;
     }
+    StoreFIR(Value* v1,Value* v2, int arrayIndex){
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        useConst = false;
+    }
+    StoreFIR(Value* v1,int val, int arrayIndex){
+        this->arrayIndex = arrayIndex;
+        this->isArray = true;
+        this->v1 = v1;
+        this->val = val;
+        useConst = true;
+    }
     void print() override final{
         std::cout << "StoreF ";
         if (useConst) {
@@ -148,6 +226,8 @@ public:
             std::cout << " ";
         }
         v1->print();
+        if(isArray)
+            std::cout << "[" << arrayIndex << "]";
         std::cout << std::endl;
     }
 };
