@@ -185,6 +185,18 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                 }
             }
         }
+
+        if(!flag && var->arrayDims[dims - 1] - constInitVal->constInitValList.size())
+        {
+            int cnt(var->arrayDims[dims - 1] - constInitVal->constInitValList.size());
+            for(int i(dims); i < tempDims; i++)
+            {
+                cnt *= var->arrayDims[i];
+            }
+            
+            index += cnt;
+        }
+
         dims--;
 
         if(dims == 0)
@@ -414,6 +426,18 @@ void IrVisitor::visit(InitVal *initVal) {
                 }
             }
         }
+
+        if(!flag && var->arrayDims[dims - 1] - initVal->initValList.size())
+        {
+            int cnt(var->arrayDims[dims - 1] - initVal->initValList.size());
+            for(int i(dims); i < tempDims; i++)
+            {
+                cnt *= var->arrayDims[i];
+            }
+            
+            index += cnt;
+        }
+
         dims--;
 
         if(dims == 0)
