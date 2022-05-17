@@ -29,6 +29,7 @@ public:
 };
 class NormalBlock:public BasicBlock{
 public:
+    BasicBlock* nextBB = nullptr;
     NormalBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
     void print() override final{
         std::cout << "<label>" << cnt << std::endl;
@@ -39,12 +40,25 @@ public:
     };
     void clear() override final{}
 };
+class CondBlock:public BasicBlock{
+public:
+    BasicBlock* trueBB = nullptr;
+    BasicBlock* falseBB = nullptr;
+    Value* val = nullptr;
+    bool isAnd = false;
+    bool alwaysTrue = false;
+    bool alwaysFalse = false;
+    CondBlock(BasicBlock* parent,int cnt): BasicBlock(parent,cnt){}
+    void print() override final{
+
+    }
+    void clear() override final{}
+};
 class SelectBlock:public BasicBlock{
 public:
     std::vector<BasicBlock*> cond;
     std::vector<BasicBlock*> ifStmt;
     std::vector<BasicBlock*> elseStmt;
-    BasicBlock* next;
     SelectBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
     void print() override final{};
     void clear() override final{
@@ -58,17 +72,27 @@ public:
         }
         iter = ifStmt.begin();
         while (iter != ifStmt.end()){
-            if ((*iter)->ir.empty()) {
-                iter = ifStmt.erase(iter);
+            if (typeid(**iter) == typeid(NormalBlock)){
+                if ((*iter)->ir.empty()) {
+                    iter = ifStmt.erase(iter);
+                }else {
+                    ++iter;
+                }
             }else {
+                (*iter)->clear();
                 ++iter;
             }
         }
         iter = elseStmt.begin();
         while (iter != elseStmt.end()){
-            if ((*iter)->ir.empty()) {
-                iter = elseStmt.erase(iter);
+            if (typeid(**iter) == typeid(NormalBlock)){
+                if ((*iter)->ir.empty()) {
+                    iter = elseStmt.erase(iter);
+                }else {
+                    ++iter;
+                }
             }else {
+                (*iter)->clear();
                 ++iter;
             }
         }
@@ -93,9 +117,14 @@ public:
         }
         iter = whileStmt.begin();
         while (iter != whileStmt.end()){
-            if ((*iter)->ir.empty()) {
-                iter = whileStmt.erase(iter);
+            if (typeid(**iter) == typeid(NormalBlock)){
+                if ((*iter)->ir.empty()) {
+                    iter = whileStmt.erase(iter);
+                }else {
+                    ++iter;
+                }
             }else {
+                (*iter)->clear();
                 ++iter;
             }
         }

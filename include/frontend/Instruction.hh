@@ -8,35 +8,15 @@
 #include <iostream>
 #include "Value.hh"
 enum class OP{
-    ADDI,
-    ADDF,
-    SUBI,
-    SUBF,
-    MULI,
-    MULF,
-    DIVI,
-    DIVF,
-    MOD,
     POS,
     NEG,
     NOT,
-    GOTO,
-    ORI,
-    ANDI,
-    ORF,
-    ANDF,
-    CMPLTI,
-    CMPGTI,
-    CMPLEI,
-    CMPGEI,
-    CMPEQI,
-    CMPNEI,
-    CMPLTF,
-    CMPGTF,
-    CMPLEF,
-    CMPGEF,
-    CMPEQF,
-    CMPNEF,
+    LT,
+    GT,
+    LE,
+    GE,
+    EQU,
+    NE
 };
 class Instruction{
 public:
@@ -628,5 +608,176 @@ public:
         std::cout << std::endl;
     }
 };
-
+class RelIIR:public Instruction{
+public:
+    Value* v1;
+    Value* v2;
+    OP op;
+    int val;
+    bool constFirst = false;
+    RelIIR(Value* v1,Value* v2,int val,OP op){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->val = val;
+        this->op = op;
+    }
+    RelIIR(Value* v1,int val,Value* v2,OP op){
+        constFirst = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        this->val = val;
+        this->op = op;
+    }
+    void print() override final{
+        v1->print();
+        switch (op) {
+            case OP::LT:
+                std::cout << " = LT ";
+                break;
+            case OP::GT:
+                std::cout << " = GT ";
+                break;
+            case OP::LE:
+                std::cout << " = LE ";
+                break;
+            case OP::GE:
+                std::cout << " = GE ";
+                break;
+        }
+        if (!constFirst) {
+            v2->print();
+            std::cout << " int " << val;
+            std::cout << std::endl;
+        }else {
+            std::cout << " int "<<val;
+            v2->print();
+            std::cout << std::endl;
+        }
+    }
+};
+class RelFIR:public Instruction{
+public:
+    Value* v1;
+    Value* v2;
+    OP op;
+    float val;
+    bool constFirst = false;
+    RelFIR(Value* v1,Value* v2,float val,OP op){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->val = val;
+        this->op = op;
+    }
+    RelFIR(Value* v1,float val,Value* v2,OP op){
+        constFirst = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        this->val = val;
+        this->op = op;
+    }
+    void print() override final{
+        v1->print();
+        switch (op) {
+            case OP::LT:
+                std::cout << " = LT ";
+                break;
+            case OP::GT:
+                std::cout << " = GT ";
+                break;
+            case OP::LE:
+                std::cout << " = LE ";
+                break;
+            case OP::GE:
+                std::cout << " = GE ";
+                break;
+        }
+        if (!constFirst) {
+            v2->print();
+            std::cout << " float " << val;
+            std::cout << std::endl;
+        }else {
+            std::cout << " float "<<val;
+            v2->print();
+            std::cout << std::endl;
+        }
+    }
+};
+class RelIR:public Instruction{
+public:
+    Value* v1;
+    Value* v2;
+    Value* v3;
+    OP op;
+    RelIR(Value* v1,Value* v2,Value* v3,OP op){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->v3 = v3;
+        this->op = op;
+    }
+    void print() override final{
+        v1->print();
+        switch (op) {
+            case OP::LT:
+                std::cout << " = LT ";
+                break;
+            case OP::GT:
+                std::cout << " = GT ";
+                break;
+            case OP::LE:
+                std::cout << " = LE ";
+                break;
+            case OP::GE:
+                std::cout << " = GE ";
+                break;
+        }
+        v2->print();
+        std::cout << " ";
+        v3->print();
+        std::cout << std::endl;
+    }
+};
+class BreakIR:public Instruction{
+public:
+    BreakIR(){};
+    void print() override final{
+        std::cout << "break" << std::endl;
+    }
+};
+class ContinueIR:public Instruction{
+public:
+    ContinueIR(){};
+    void print() override final{
+        std::cout << "continue" << std::endl;
+    }
+};
+class ReturnIR:public Instruction{
+public:
+    Value* v = nullptr;
+    int retInt;
+    float retFloat;
+    bool useInt = false;
+    bool useFloat = false;
+    ReturnIR(Value* v){
+        this->v = v;
+    }
+    ReturnIR(int val) {
+        retInt = val;
+        useInt = true;
+    }
+    ReturnIR(float val){
+        retFloat = val;
+        useFloat = true;
+    }
+    void print() override final{
+        std::cout << "ret ";
+        if (v) {
+            v->print();
+        }else if (useInt) {
+            std::cout << "int " << retInt;
+        }else if (useFloat){
+            std::cout << "float " << retFloat;
+        }
+        std::cout << "\n";
+    }
+};
 #endif //SYSY2022_BJTU_INSTRUCTION_HH

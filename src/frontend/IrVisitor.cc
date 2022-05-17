@@ -11,6 +11,7 @@ void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < functions.size(); ++i) {
         functions[i]->clear();
     }
+
 }
 
 void IrVisitor::visit(DeclDef *declDef) {
@@ -71,26 +72,24 @@ void IrVisitor::visit(ConstDef *constDef) {
         ConstValue *var(nullptr);
         std::vector<int> arrayDims;
         int arrayLen(1);
-        for(size_t i(0); i < constDef->constExpList.size(); i++) {
+        for (size_t i(0); i < constDef->constExpList.size(); i++) {
             constDef->constExpList[i]->accept(*this);
             arrayDims.push_back(tempInt);
             arrayLen *= tempInt;
         }
 
-        if(curDefType == TYPE::INT) {
-            if(!isGlobal()) {
+        if (curDefType == TYPE::INT) {
+            if (!isGlobal()) {
                 var = new ConstValue(cur_func->varCnt++, constDef->identifier, TYPE::INT);
-            }
-            else {
+            } else {
                 var = new ConstValue(0, constDef->identifier, TYPE::INT);
             }
             AllocIIR *ir = new AllocIIR(var, arrayLen);
             cur_bb->pushIr(ir);
         } else {
-            if(!isGlobal()) {
+            if (!isGlobal()) {
                 var = new ConstValue(cur_func->varCnt++, constDef->identifier, TYPE::FLOAT);
-            }
-            else {
+            } else {
                 var = new ConstValue(0, constDef->identifier, TYPE::FLOAT);
             }
             AllocFIR *ir = new AllocFIR(var, arrayLen);
@@ -99,14 +98,14 @@ void IrVisitor::visit(ConstDef *constDef) {
         var->isArray = true;
         var->arrayDims = arrayDims;
 
-        if(isGlobal()) {
+        if (isGlobal()) {
             var->isGlobal = true;
             globalVars.push_back(var);
         } else {
             cur_bb->pushVar(var);
         }
 
-        if(constDef->constInitVal) {
+        if (constDef->constInitVal) {
             tempDims = constDef->constExpList.size();
             tempVal = var;
             constDef->constInitVal->accept(*this);
@@ -126,16 +125,16 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
         dims++;
         static ConstValue *var = nullptr;
         static bool flag = true;
-        if(flag && dims == tempDims) {
+        if (flag && dims == tempDims) {
             var = dynamic_cast<ConstValue *>(tempVal);
             var->isArray = true;
             flag = false;
         }
         for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
             constInitVal->constInitValList[i]->accept(*this);
-            if(useConst && dims == tempDims) {
-                if(var->type == TYPE::INT) {
-                    if(curValType == TYPE::INT) {
+            if (useConst && dims == tempDims) {
+                if (var->type == TYPE::INT) {
+                    if (curValType == TYPE::INT) {
                         var->push(tempInt);
                         StoreIIR *ir = new StoreIIR(var, tempInt, index++);
                         cur_bb->pushIr(ir);
@@ -144,7 +143,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                         StoreIIR *ir = new StoreIIR(var, tempFloat, index++);
                         cur_bb->pushIr(ir);
                     }
-                }  else {
+                } else {
                     if (curValType == TYPE::INT) {
                         var->push(tempInt);
                         StoreFIR *ir = new StoreFIR(var, tempInt, index++);
@@ -155,7 +154,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                         cur_bb->pushIr(ir);
                     }
                 }
-            } else if(!useConst && dims == tempDims) {
+            } else if (!useConst && dims == tempDims) {
                 VarValue *t = nullptr;
                 if (var->type == TYPE::INT && tempVal->type == TYPE::FLOAT) {
                     if (!isGlobal()) {
@@ -187,8 +186,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
         }
         dims--;
 
-        if(dims == 0)
-        {
+        if (dims == 0) {
             tempVal = var;
             var = nullptr;
             index = 0;
@@ -220,19 +218,19 @@ void IrVisitor::visit(VarDef *varDef) {
         if (curDefType == TYPE::INT) {
             if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::INTPOINTER);
+                AllocIIR *ir = new AllocIIR(var);
+                cur_bb->pushIr(ir);
             } else {
                 var = new VarValue(0, varDef->identifier, TYPE::INTPOINTER);
             }
-            AllocIIR *ir = new AllocIIR(var);
-            cur_bb->pushIr(ir);
         } else {
             if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::FLOATPOINTER);
+                AllocFIR *ir = new AllocFIR(var);
+                cur_bb->pushIr(ir);
             } else {
                 var = new VarValue(0, varDef->identifier, TYPE::FLOATPOINTER);
             }
-            AllocFIR *ir = new AllocFIR(var);
-            cur_bb->pushIr(ir);
         }
         if (isGlobal()) {
             var->isGlobal = true;
@@ -297,41 +295,39 @@ void IrVisitor::visit(VarDef *varDef) {
         std::vector<int> arrayDims;
         int arrayLen(1);
 
-        for(size_t i(0); i < varDef->constExpList.size(); i++) {
+        for (size_t i(0); i < varDef->constExpList.size(); i++) {
             varDef->constExpList[i]->accept(*this);
             arrayDims.push_back(tempInt);
             arrayLen *= tempInt;
         }
 
-        if(curDefType == TYPE::INT) {
-            if(!isGlobal()) {
+        if (curDefType == TYPE::INT) {
+            if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::INTPOINTER);
-            }
-            else {
+                AllocIIR *ir = new AllocIIR(var, arrayLen);
+                cur_bb->pushIr(ir);
+            } else {
                 var = new VarValue(0, varDef->identifier, TYPE::INTPOINTER);
             }
-            AllocIIR *ir = new AllocIIR(var, arrayLen);
-            cur_bb->pushIr(ir);
         } else {
-            if(!isGlobal()) {
+            if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::FLOATPOINTER);
-            }
-            else {
+                AllocFIR *ir = new AllocFIR(var, arrayLen);
+                cur_bb->pushIr(ir);
+            } else {
                 var = new VarValue(0, varDef->identifier, TYPE::FLOATPOINTER);
             }
-            AllocFIR *ir = new AllocFIR(var, arrayLen);
-            cur_bb->pushIr(ir);
         }
         var->isArray = true;
         var->arrayDims = arrayDims;
 
-        if(isGlobal()) {
+        if (isGlobal()) {
             var->isGlobal = true;
             globalVars.push_back(var);
         } else {
             cur_bb->pushVar(var);
         }
-        if(varDef->initVal) {
+        if (varDef->initVal) {
             tempDims = varDef->constExpList.size();
             tempVal = var;
             varDef->initVal->accept(*this);
@@ -355,16 +351,16 @@ void IrVisitor::visit(InitVal *initVal) {
         dims++;
         static VarValue *var = nullptr;
         static bool flag = true;
-        if(flag && dims == tempDims) {
+        if (flag && dims == tempDims) {
             var = dynamic_cast<VarValue *>(tempVal);
             var->isArray = true;
             flag = false;
         }
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
             initVal->initValList[i]->accept(*this);
-            if(useConst && dims == tempDims) {
-                if(var->type == TYPE::INTPOINTER) {
-                    if(curValType == TYPE::INT) {
+            if (useConst && dims == tempDims) {
+                if (var->type == TYPE::INTPOINTER) {
+                    if (curValType == TYPE::INT) {
                         var->push();
                         StoreIIR *ir = new StoreIIR(var, tempInt, index++);
                         cur_bb->pushIr(ir);
@@ -373,7 +369,7 @@ void IrVisitor::visit(InitVal *initVal) {
                         StoreIIR *ir = new StoreIIR(var, tempFloat, index++);
                         cur_bb->pushIr(ir);
                     }
-                }  else {
+                } else {
                     if (curValType == TYPE::INT) {
                         var->push();
                         StoreFIR *ir = new StoreFIR(var, tempInt, index++);
@@ -384,7 +380,7 @@ void IrVisitor::visit(InitVal *initVal) {
                         cur_bb->pushIr(ir);
                     }
                 }
-            } else if(!useConst && dims == tempDims) {
+            } else if (!useConst && dims == tempDims) {
                 VarValue *t = nullptr;
                 if (var->type == TYPE::INTPOINTER && tempVal->type == TYPE::FLOAT) {
                     if (!isGlobal()) {
@@ -416,8 +412,7 @@ void IrVisitor::visit(InitVal *initVal) {
         }
         dims--;
 
-        if(dims == 0)
-        {
+        if (dims == 0) {
             tempVal = var;
             var = nullptr;
             index = 0;
@@ -493,14 +488,14 @@ void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 
 void IrVisitor::visit(Block *block) {
     cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
-    pushBB(cur_bb);
+    pushBB();
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
         block->blockItemList[i]->accept(*this);
         if (block->blockItemList[i]->stmt && (block->blockItemList[i]->stmt->block ||
                                               block->blockItemList[i]->stmt->selectStmt ||
                                               block->blockItemList[i]->stmt->iterationStmt)) {
             cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
-            pushBB(cur_bb);
+            pushBB();
         }
     }
     cur_bb = cur_bb->parent;
@@ -514,15 +509,7 @@ void IrVisitor::visit(BlockItem *blockItem) {
                                                        blockItem->stmt->breakStmt)) {
         if (cur_bb == entry) {
             cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
-            if (!ifBB.empty()) {
-                if (isIF) {
-                    ifBB.top()->ifStmt.push_back(cur_bb);
-                } else {
-                    ifBB.top()->elseStmt.push_back(cur_bb);
-                }
-            } else {
-                cur_func->pushBB(cur_bb);
-            }
+            pushBB();
         }
     }
     if (blockItem->varDecl) {
@@ -609,9 +596,11 @@ void IrVisitor::visit(AssignStmt *assignStmt) {
 void IrVisitor::visit(SelectStmt *selectStmt) {
     auto tempBB = cur_bb;
     cur_bb = new SelectBlock(cur_bb, cur_func->bbCnt++);
-    pushBB(cur_bb);
-    ifBB.push(dynamic_cast<SelectBlock *>(cur_bb));
+    pushBB();
+    condBB.push(cur_bb);
+    auto temp = cur_bb;
     selectStmt->cond->accept(*this);
+    cur_bb = temp;
     isIF = true;
     selectStmt->ifStmt->accept(*this);
     if (selectStmt->elseStmt) {
@@ -619,25 +608,62 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
         selectStmt->elseStmt->accept(*this);
     }
     cur_bb = tempBB;
-    ifBB.pop();
+    condBB.pop();
 }
 
 void IrVisitor::visit(IterationStmt *iterationStmt) {
     auto tempBB = cur_bb;
     cur_bb = new IterationBlock(cur_bb, cur_func->bbCnt++);
-    pushBB(cur_bb);
-    whileBB.push(dynamic_cast<IterationBlock *>(cur_bb));
+    pushBB();
+    condBB.push(cur_bb);
+    dynamic_cast<IterationBlock*>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->bbCnt++));
     iterationStmt->cond->accept(*this);
     iterationStmt->stmt->accept(*this);
     cur_bb = tempBB;
-    whileBB.pop();
+    condBB.pop();
 }
 
-void IrVisitor::visit(BreakStmt *breakStmt) {}
+void IrVisitor::visit(BreakStmt *breakStmt) {
+    cur_bb->pushIr(new BreakIR);
+}
 
-void IrVisitor::visit(ContinueStmt *continueStmt) {}
+void IrVisitor::visit(ContinueStmt *continueStmt) {
+    cur_bb->pushIr(new ContinueIR);
+}
 
-void IrVisitor::visit(ReturnStmt *returnStmt) {}
+void IrVisitor::visit(ReturnStmt *returnStmt) {
+    if (returnStmt->exp) {
+        returnStmt->exp->accept(*this);
+        if (useConst) {
+            if (curDefType == TYPE::INT) {
+                if (curValType == TYPE::INT) {
+                    cur_bb->pushIr(new ReturnIR(tempInt));
+                } else {
+                    cur_bb->pushIr(new ReturnIR((int) tempFloat));
+                }
+            } else {
+                if (curValType == TYPE::INT) {
+                    cur_bb->pushIr(new ReturnIR((float) tempInt));
+                } else {
+                    cur_bb->pushIr(new ReturnIR(tempFloat));
+                }
+            }
+        } else {
+            if (curDefType == TYPE::INT && tempVal->type == TYPE::FLOAT) {
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::INT);;
+                cur_bb->pushIr(new CastFloat2IntIR(t, tempVal));
+                tempVal = t;
+            } else if (curDefType == TYPE::FLOAT && tempVal->type == TYPE::INT){
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);;
+                cur_bb->pushIr(new CastInt2FloatIR(t, tempVal));
+                tempVal = t;
+            }
+            cur_bb->pushIr(new ReturnIR(tempVal));
+        }
+    } else {
+        cur_bb->pushIr(new ReturnIR(nullptr));
+    }
+}
 
 void IrVisitor::visit(Exp *exp) {
     exp->addExp->accept(*this);
@@ -645,15 +671,25 @@ void IrVisitor::visit(Exp *exp) {
 
 void IrVisitor::visit(Cond *cond) {
     cond->lOrExp->accept(*this);
-//    if (useConst) {
-//        useConst = false;
-//        if ((curDefType == TYPE::INT && tempInt != 0) ||
-//            (curDefType == TYPE::FLOAT && tempFloat != 0)) {
-//            tempVal = new Value(varCnt++, "", TYPE::INT, true, false, 1, 1);
-//        } else {
-//            tempVal = new Value(varCnt++, "", TYPE::INT, true, false, 0, 1);
-//        }
-//    }
+    if (useConst) {
+        CondBlock* bb = dynamic_cast<CondBlock*>(cur_bb);
+        if ((curValType == TYPE::INT && tempInt != 0 )||
+            (curValType==TYPE::FLOAT && tempFloat != 0)){
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,1));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }else {
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,0));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }
+    }
 }
 
 void IrVisitor::visit(LVal *lVal) {
@@ -675,13 +711,13 @@ void IrVisitor::visit(LVal *lVal) {
             useConst = false;
         }
     } else {
-        Value* val = findAllVal(lVal->identifier);
+        Value *val = findAllVal(lVal->identifier);
         if (!val) {
             std::cerr << "Undefined Identifier of " << lVal->identifier << std::endl;
         }
 
         int arrayIndex(0), arrayDimLen(1);
-        for(int i(lVal->expList.size() - 1); i >= 0; i--) {
+        for (int i(lVal->expList.size() - 1); i >= 0; i--) {
             lVal->expList[i]->accept(*this);
             arrayIndex += arrayDimLen * tempInt;
             arrayDimLen *= val->arrayDims[i];
@@ -709,7 +745,9 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
         primaryExp->exp->accept(*this);
     } else if (primaryExp->lVal) {
         primaryExp->lVal->accept(*this);
-        useConst = false;
+        if (useConst) {
+            return;
+        }
         if (tempVal->type == TYPE::INTPOINTER) {
             VarValue *v = nullptr;
             if (!isGlobal()) {
@@ -718,10 +756,9 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
                 v = new VarValue(cnt++, "", TYPE::INT);
             }
             LoadIIR *ir = nullptr;
-            if(tempVal->isArray) {
+            if (tempVal->isArray) {
                 ir = new LoadIIR(v, tempVal, tempInt);
-            }
-            else ir = new LoadIIR(v, tempVal);
+            } else ir = new LoadIIR(v, tempVal);
             tempVal = v;
             cur_bb->pushIr(ir);
         } else if (tempVal->type == TYPE::FLOATPOINTER) {
@@ -732,10 +769,9 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
                 v = new VarValue(cnt++, "", TYPE::FLOAT);
             }
             LoadFIR *ir = nullptr;
-            if(tempVal->isArray) {
+            if (tempVal->isArray) {
                 ir = new LoadFIR(v, tempVal, tempInt);
-            }
-            else ir = new LoadFIR(v, tempVal);
+            } else ir = new LoadFIR(v, tempVal);
             tempVal = v;
             cur_bb->pushIr(ir);
         }
@@ -1338,13 +1374,13 @@ void IrVisitor::visit(AddExp *addExp) {
             if (!isGlobal()) {
                 if (left->type == TYPE::INT) {
                     v = new VarValue(cur_func->varCnt++, "", TYPE::INT);
-                }else {
+                } else {
                     v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                 }
             } else {
                 if (left->type == TYPE::INT) {
                     v = new VarValue(cnt++, "", TYPE::INT);
-                }else {
+                } else {
                     v = new VarValue(cnt++, "", TYPE::FLOAT);
                 }
             }
@@ -1365,367 +1401,576 @@ void IrVisitor::visit(AddExp *addExp) {
 }
 
 void IrVisitor::visit(RelExp *relExp) {
-//    if (!relExp->relExp) {
-//        relExp->addExp->accept(*this);
-//    }else {
-//        relExp->relExp->accept(*this);
-//        auto left = tempVal;
-//        int li = tempInt;
-//        float lf = tempFloat;
-//        TYPE lt = curValType;
-//        bool lUseConst = useConst;
-//        relExp->addExp->accept(*this);
-//        auto right = tempVal;
-//        int ri = tempInt;
-//        float rf = tempFloat;
-//        TYPE rt = curValType;
-//        bool rUseConst = useConst;
-//        if (lUseConst && rUseConst) {
-//            useConst = true;
-//            float x = 0;
-//            float y = 0;
-//            if (lt == TYPE::INT && rt == TYPE::INT) {
-//                x = li;
-//                y = ri;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
-//                x = lf;
-//                y = lf;
-//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
-//                x = li;
-//                y = rf;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
-//                x = lf;
-//                y = ri;
-//            }
-//            if (relExp->op == relop::OP_LT) {
-//                tempInt = (x < y);
-//            }else if (relExp->op == relop::OP_GT){
-//                tempInt = (x > y);
-//            }else if (relExp->op == relop::OP_LE) {
-//                tempInt = (x <= y);
-//            }else if (relExp->op == relop::OP_GE){
-//                tempInt = (x >= y);
-//            }
-//            curDefType = TYPE::INT;
-//        }else {
-//            useConst = false;
-//            auto ir = new Instruction;
-//            if (lUseConst) {
-//                if (lt == TYPE::INT) {
-//                    left = new Value("",TYPE::INT,true,false,li,0);
-//                    new AllocIIR(left,cur_bb);
-//                }else if (lt == TYPE::FLOAT) {
-//                    left = new Value("",TYPE::FLOAT,true,false,0,lf);
-//                    new AllocFIR(left,cur_bb);
-//                }
-//            }
-//            if (rUseConst) {
-//                if (rt == TYPE::INT) {
-//                    right = new Value("",TYPE::INT,true,false,li,0);
-//                    new AllocIIR(right,cur_bb);
-//                }else if (rt == TYPE::FLOAT) {
-//                    right = new Value("",TYPE::FLOAT,true,false,0,lf);
-//                    new AllocFIR(right,cur_bb);
-//                }
-//            }
-//            if (left->type != right->type) {
-//                if (left->type == TYPE::FLOAT) {
-//                    auto v = new Value(right);
-//                    v->type = TYPE::FLOAT;
-//                    new CastInt2FloatIR(v,right,cur_bb);
-//                    right = v;
-//                } else {
-//                    auto v = new Value(left);
-//                    v->type = TYPE::FLOAT;
-//                    new CastInt2FloatIR(v,left,cur_bb);
-//                    left = v;
-//                }
-//                if (relExp->op == relop::OP_LT) {
-//                    tempVal = Instruction::CreateCmpLtFIR(left,right,ir);
-//                } else if (relExp->op == relop::OP_GT){
-//                    tempVal = Instruction::CreateCmpGtFIR(left,right,ir);
-//                }else if (relExp->op == relop::OP_LE){
-//                    tempVal = Instruction::CreateCmpLeFIR(left,right,ir);
-//                }else if (relExp->op == relop::OP_GE){
-//                    tempVal = Instruction::CreateCmpGeFIR(left,right,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//            } else {
-//                if (left->type == TYPE::INT) {
-//                    if (relExp->op == relop::OP_LT) {
-//                        tempVal = Instruction::CreateCmpLtIIR(left,right,ir);
-//                    } else if (relExp->op == relop::OP_GT){
-//                        tempVal = Instruction::CreateCmpGtIIR(left,right,ir);
-//                    }else if (relExp->op == relop::OP_LE){
-//                        tempVal = Instruction::CreateCmpLeIIR(left,right,ir);
-//                    }else if (relExp->op == relop::OP_GE){
-//                        tempVal = Instruction::CreateCmpGeIIR(left,right,ir);
-//                    }
-//                } else {
-//                    if (relExp->op == relop::OP_LT) {
-//                        tempVal = Instruction::CreateCmpLtFIR(left,right,ir);
-//                    } else if (relExp->op == relop::OP_GT){
-//                        tempVal = Instruction::CreateCmpGtFIR(left,right,ir);
-//                    }else if (relExp->op == relop::OP_LE){
-//                        tempVal = Instruction::CreateCmpLeFIR(left,right,ir);
-//                    }else if (relExp->op == relop::OP_GE){
-//                        tempVal = Instruction::CreateCmpGeFIR(left,right,ir);
-//                    }
-//                }
-//                cur_bb->pushIr(ir);
-//            }
-//        }
-//    }
+    if (!relExp->relExp) {
+        relExp->addExp->accept(*this);
+    }else {
+        relExp->relExp->accept(*this);
+        auto left = tempVal;
+        int li = tempInt;
+        float lf = tempFloat;
+        TYPE lt = curValType;
+        bool lUseConst = useConst;
+        relExp->addExp->accept(*this);
+        auto right = tempVal;
+        int ri = tempInt;
+        float rf = tempFloat;
+        TYPE rt = curValType;
+        bool rUseConst = useConst;
+        useConst = false;
+        if (lUseConst && rUseConst) {
+            useConst = true;
+            curValType = TYPE::INT;
+            switch (relExp->op) {
+                case relop::OP_LT:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li < ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf < rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li < rf);
+                    }else {
+                        tempInt = (lf < ri);
+                    }
+                    break;
+                case relop::OP_GT:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li > ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf > rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li > rf);
+                    }else {
+                        tempInt = (lf > ri);
+                    }
+                    break;
+                case relop::OP_LE:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li <= ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf <= rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li <= rf);
+                    }else {
+                        tempInt = (lf <= ri);
+                    }
+                    break;
+                case relop::OP_GE:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li >= ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf >= rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li >= rf);
+                    }else {
+                        tempInt = (lf >= ri);
+                    }
+                    break;
+            }
+        }else if (lUseConst && !rUseConst){
+            if (lt == TYPE::INT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,li,right,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,li,right,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,li,right,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,li,right,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::INT && right->type == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::INT);;
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelIIR(v,li,right,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelIIR(v,li,right,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelIIR(v,li,right,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelIIR(v,li,right,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::FLOAT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,lf,right,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,lf,right,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,lf,right,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,lf,right,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::FLOAT && right->type == TYPE::INT) {
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(t, right));
+                right = t;
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,lf,right,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,lf,right,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,lf,right,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,lf,right,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            }
+        }else if (!lUseConst && rUseConst) {
+            if (left->type == TYPE::INT && rt == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::INT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelIIR(v,left,ri,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelIIR(v,left,ri,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelIIR(v,left,ri,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelIIR(v,left,ri,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::INT && rt == TYPE::FLOAT) {
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(t, left));
+                left = t;
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,left,rf,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,left,rf,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,left,rf,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,left,rf,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::FLOAT && rt == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,left,ri,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,left,ri,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,left,ri,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,left,ri,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::FLOAT && rt == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (relExp->op) {
+                    case relop::OP_LT:
+                        ir = new RelFIR(v,left,rf,OP::LT);
+                        break;
+                    case relop::OP_GT:
+                        ir = new RelFIR(v,left,rf,OP::GT);
+                        break;
+                    case relop::OP_LE:
+                        ir = new RelFIR(v,left,rf,OP::LE);
+                        break;
+                    case relop::OP_GE:
+                        ir = new RelFIR(v,left,rf,OP::GE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            }
+        }else if (!lUseConst && !rUseConst){
+            if (left->type == TYPE::INT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(v, left));
+                left = v;
+            } else if (left->type == TYPE::FLOAT && right->type == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(v, right));
+                right = v;
+            }
+            VarValue *v = nullptr;
+            if (left->type == TYPE::INT) {
+                v = new VarValue(cur_func->varCnt++, "", TYPE::INT);
+            } else {
+                v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+            }
+            Instruction *ir = nullptr;
+            switch (relExp->op) {
+                case relop::OP_LT:
+                    ir = new RelIR(v,left,right,OP::LT);
+                    break;
+                case relop::OP_GT:
+                    ir = new RelIR(v,left,right,OP::GT);
+                    break;
+                case relop::OP_LE:
+                    ir = new RelIR(v,left,right,OP::LE);
+                    break;
+                case relop::OP_GE:
+                    ir = new RelIR(v,left,right,OP::GE);
+                    break;
+            }
+            tempVal = v;
+            cur_bb->pushIr(ir);
+        }
+    }
 }
 
-void IrVisitor::visit(EqExp *eqExp) {
-//    if (!eqExp->eqExp) {
-//        eqExp->relExp->accept(*this);
-//    }else {
-//        eqExp->eqExp->accept(*this);
-//        auto left = tempVal;
-//        int li = tempInt;
-//        float lf = tempFloat;
-//        TYPE lt = curValType;
-//        bool lUseConst = useConst;
-//        eqExp->relExp->accept(*this);
-//        auto right = tempVal;
-//        int ri = tempInt;
-//        float rf = tempFloat;
-//        TYPE rt = curValType;
-//        bool rUseConst = useConst;
-//        if (lUseConst && rUseConst) {
-//            useConst = true;
-//            float x = 0;
-//            float y = 0;
-//            if (lt == TYPE::INT && rt == TYPE::INT) {
-//                x = li;
-//                y = ri;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
-//                x = lf;
-//                y = lf;
-//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
-//                x = li;
-//                y = rf;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
-//                x = lf;
-//                y = ri;
-//            }
-//            if (eqExp->op == relop::OP_EQU) {
-//                tempInt = (x == y);
-//            }else if (eqExp->op == relop::OP_NE){
-//                tempInt = (x != y);
-//            }
-//            curDefType = TYPE::INT;
-//        }else {
-//            useConst = false;
-//            auto ir = new Instruction;
-//            if (lUseConst) {
-//                if (lt == TYPE::INT) {
-//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
-//                }else if (lt == TYPE::FLOAT) {
-//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (rUseConst) {
-//                if (rt == TYPE::INT) {
-//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
-//                }else if (rt == TYPE::FLOAT) {
-//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (left->type != right->type) {
-//                if (left->type == TYPE::FLOAT) {
-//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
-//                } else {
-//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//                if (eqExp->op == relop::OP_EQU) {
-//                    tempVal = Instruction::CreateCmpEqFIR(left,right,ir);
-//                } else if (eqExp->op == relop::OP_NE) {
-//                    tempVal = Instruction::CreateCmpNeFIR(left,right,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//            } else {
-//                if (left->type == TYPE::INT) {
-//                    if (eqExp->op == relop::OP_EQU) {
-//                        tempVal = Instruction::CreateCmpEqIIR(left,right,ir);
-//                    }else if (eqExp->op == relop::OP_NE){
-//                        tempVal = Instruction::CreateCmpNeIIR(left,right,ir);
-//                    }
-//                } else {
-//                    if (eqExp->op == relop::OP_EQU) {
-//                        tempVal = Instruction::CreateCmpEqFIR(left,right,ir);
-//                    }else if (eqExp->op == relop::OP_NE){
-//                        tempVal = Instruction::CreateCmpNeFIR(left,right,ir);
-//                    }
-//                }
-//                cur_bb->pushIr(ir);
-//            }
-//        }
-//    }
+void IrVisitor::visit(EqExp* eqExp) {
+    if (!eqExp->eqExp) {
+        eqExp->relExp->accept(*this);
+    }else {
+        eqExp->eqExp->accept(*this);
+        auto left = tempVal;
+        int li = tempInt;
+        float lf = tempFloat;
+        TYPE lt = curValType;
+        bool lUseConst = useConst;
+        eqExp->relExp->accept(*this);
+        auto right = tempVal;
+        int ri = tempInt;
+        float rf = tempFloat;
+        TYPE rt = curValType;
+        bool rUseConst = useConst;
+        useConst = false;
+        if (lUseConst && rUseConst) {
+            useConst = true;
+            curValType = TYPE::INT;
+            switch (eqExp->op) {
+                case relop::OP_EQU:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li == ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf == rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li == rf);
+                    }else {
+                        tempInt = (lf == ri);
+                    }
+                    break;
+                case relop::OP_NE:
+                    if (lt == TYPE::INT && rt == TYPE::INT) {
+                        tempInt = (li != ri);
+                    }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT){
+                        tempInt = (lf != rf);
+                    }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
+                        tempInt = (li != rf);
+                    }else {
+                        tempInt = (lf != ri);
+                    }
+                    break;
+            }
+        }else if (lUseConst && !rUseConst){
+            if (lt == TYPE::INT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,li,right,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,li,right,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::INT && right->type == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::INT);;
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelIIR(v,li,right,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelIIR(v,li,right,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::FLOAT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,lf,right,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,lf,right,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (lt == TYPE::FLOAT && right->type == TYPE::INT) {
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(t, right));
+                right = t;
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,lf,right,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,lf,right,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            }
+        }else if (!lUseConst && rUseConst) {
+            if (left->type == TYPE::INT && rt == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::INT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelIIR(v,left,ri,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelIIR(v,left,ri,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::INT && rt == TYPE::FLOAT) {
+                VarValue *t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(t, left));
+                left = t;
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,left,rf,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,left,rf,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::FLOAT && rt == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,left,ri,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,left,ri,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            } else if (left->type == TYPE::FLOAT && rt == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                Instruction *ir = nullptr;
+                switch (eqExp->op) {
+                    case relop::OP_EQU:
+                        ir = new RelFIR(v,left,rf,OP::EQU);
+                        break;
+                    case relop::OP_NE:
+                        ir = new RelFIR(v,left,rf,OP::NE);
+                        break;
+                }
+                tempVal = v;
+                cur_bb->pushIr(ir);
+            }
+        }else if (!lUseConst && !rUseConst){
+            if (left->type == TYPE::INT && right->type == TYPE::FLOAT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(v, left));
+                left = v;
+            } else if (left->type == TYPE::FLOAT && right->type == TYPE::INT) {
+                VarValue *v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+                cur_bb->pushIr(new CastInt2FloatIR(v, right));
+                right = v;
+            }
+            VarValue *v = nullptr;
+            if (left->type == TYPE::INT) {
+                v = new VarValue(cur_func->varCnt++, "", TYPE::INT);
+            } else {
+                v = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
+            }
+            Instruction *ir = nullptr;
+            switch (eqExp->op) {
+                case relop::OP_EQU:
+                    ir = new RelIR(v,left,right,OP::EQU);
+                    break;
+                case relop::OP_NE:
+                    ir = new RelIR(v,left,right,OP::NE);
+                    break;
+            }
+            tempVal = v;
+            cur_bb->pushIr(ir);
+        }
+    }
 }
-
 void IrVisitor::visit(LAndExp *lAndEXp) {
-//    if (!lAndEXp->lAndExp) {
-//        lAndEXp->eqExp->accept(*this);
-//    }else {
-//        lAndEXp->lAndExp->accept(*this);
-//        auto left = tempVal;
-//        int li = tempInt;
-//        float lf = tempFloat;
-//        TYPE lt = curValType;
-//        bool lUseConst = useConst;
-//        lAndEXp->eqExp->accept(*this);
-//        auto right = tempVal;
-//        int ri = tempInt;
-//        float rf = tempFloat;
-//        TYPE rt = curValType;
-//        bool rUseConst = useConst;
-//        if (lUseConst && rUseConst) {
-//            useConst = true;
-//            float x = 0;
-//            float y = 0;
-//            if (lt == TYPE::INT && rt == TYPE::INT) {
-//                x = li;
-//                y = ri;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
-//                x = lf;
-//                y = lf;
-//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
-//                x = li;
-//                y = rf;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
-//                x = lf;
-//                y = ri;
-//            }
-//            tempInt = (x && y);
-//            curDefType = TYPE::INT;
-//        }else {
-//            useConst = false;
-//            auto ir = new Instruction;
-//            if (lUseConst) {
-//                if (lt == TYPE::INT) {
-//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
-//                }else if (lt == TYPE::FLOAT) {
-//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (rUseConst) {
-//                if (rt == TYPE::INT) {
-//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
-//                }else if (rt == TYPE::FLOAT) {
-//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (left->type != right->type) {
-//                if (left->type == TYPE::FLOAT) {
-//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
-//                } else {
-//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//                tempVal = Instruction::CreateAndFIR(left,right,ir);
-//                cur_bb->pushIr(ir);
-//            } else {
-//                if (left->type == TYPE::INT) {
-//                    tempVal = Instruction::CreateAndIIR(left,right,ir);
-//                } else {
-//                    tempVal = Instruction::CreateAndFIR(left,right,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//            }
-//        }
-//    }
+    cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+    if (typeid(*condBB.top()) == typeid(SelectBlock)) {
+        dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
+    }else {
+        dynamic_cast<IterationBlock*>(condBB.top())->cond.push_back(cur_bb);
+    }
+    if (!lAndEXp->lAndExp) {
+        lAndEXp->eqExp->accept(*this);
+    }else {
+        lAndEXp->lAndExp->accept(*this);
+        CondBlock* bb = dynamic_cast<CondBlock*>(cur_bb);
+        bb->isAnd = true;
+        if ((curValType == TYPE::INT && tempInt != 0 )||
+            (curValType==TYPE::FLOAT && tempFloat != 0)){
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,1));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }else {
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,0));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }
+        cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+        if (typeid(*condBB.top()) == typeid(SelectBlock)) {
+            dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
+        }else {
+            dynamic_cast<IterationBlock*>(condBB.top())->cond.push_back(cur_bb);
+        }
+        lAndEXp->eqExp->accept(*this);
+        bb = dynamic_cast<CondBlock*>(cur_bb);
+        if ((curValType == TYPE::INT && tempInt != 0 )||
+            (curValType==TYPE::FLOAT && tempFloat != 0)){
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,1));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }else {
+            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+            cur_bb->pushIr(new AllocIIR(var));
+            cur_bb->pushIr(new StoreIIR(var,0));
+            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            cur_bb->pushIr(new LoadIIR(v,var));
+            bb->val = v;
+        }
+    }
 }
 
 void IrVisitor::visit(LOrExp *lOrExp) {
-//    if (!lOrExp->lOrExp) {
-//        lOrExp->lAndExp->accept(*this);
-//    }else {
-//        lOrExp->lOrExp->accept(*this);
-//        auto left = tempVal;
-//        int li = tempInt;
-//        float lf = tempFloat;
-//        TYPE lt = curValType;
-//        bool lUseConst = useConst;
-//        lOrExp->lAndExp->accept(*this);
-//        auto right = tempVal;
-//        int ri = tempInt;
-//        float rf = tempFloat;
-//        TYPE rt = curValType;
-//        bool rUseConst = useConst;
-//        if (lUseConst && rUseConst) {
-//            useConst = true;
-//            float x = 0;
-//            float y = 0;
-//            if (lt == TYPE::INT && rt == TYPE::INT) {
-//                x = li;
-//                y = ri;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::FLOAT) {
-//                x = lf;
-//                y = lf;
-//            }else if (lt == TYPE::INT && rt == TYPE::FLOAT) {
-//                x = li;
-//                y = rf;
-//            }else if (lt == TYPE::FLOAT && rt == TYPE::INT) {
-//                x = lf;
-//                y = ri;
-//            }
-//            tempInt = (x || y);
-//            curDefType = TYPE::INT;
-//        }else {
-//            useConst = false;
-//            auto ir = new Instruction;
-//            if (lUseConst) {
-//                if (lt == TYPE::INT) {
-//                    left = Instruction::CreateAllocIIR("",true,false,li,ir);
-//                }else if (lt == TYPE::FLOAT) {
-//                    left = Instruction::CreateAllocFIR("",true,false,lf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (rUseConst) {
-//                if (rt == TYPE::INT) {
-//                    right = Instruction::CreateAllocIIR("",true,false,ri,ir);
-//                }else if (rt == TYPE::FLOAT) {
-//                    right = Instruction::CreateAllocFIR("",true,false,rf,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//            }
-//            if (left->type != right->type) {
-//                if (left->type == TYPE::FLOAT) {
-//                    right = Instruction::CreateCastInt2FloatIR(right, ir);
-//                } else {
-//                    left = Instruction::CreateCastInt2FloatIR(left, ir);
-//                }
-//                cur_bb->pushIr(ir);
-//                ir = new Instruction;
-//                tempVal = Instruction::CreateOrFIR(left,right,ir);
-//                cur_bb->pushIr(ir);
-//            } else {
-//                if (left->type == TYPE::INT) {
-//                    tempVal = Instruction::CreateOrIIR(left,right,ir);
-//                } else {
-//                    tempVal = Instruction::CreateOrFIR(left,right,ir);
-//                }
-//                cur_bb->pushIr(ir);
-//            }
-//        }
-//    }
+    cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+    if (typeid(*condBB.top()) == typeid(SelectBlock)) {
+        dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
+    }else {
+        dynamic_cast<IterationBlock*>(condBB.top())->cond.push_back(cur_bb);
+    }
+    if (!lOrExp->lOrExp) {
+        lOrExp->lAndExp->accept(*this);
+    }else {
+        lOrExp->lOrExp->accept(*this);
+        CondBlock* bb = dynamic_cast<CondBlock*>(cur_bb);
+        bb->isAnd = false;
+        if (useConst) {
+            if ((curValType == TYPE::INT && tempInt != 0 )||
+                (curValType==TYPE::FLOAT && tempFloat != 0)){
+                VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var,1));
+                VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+                cur_bb->pushIr(new LoadIIR(v,var));
+                bb->val = v;
+            }else {
+                VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var,0));
+                VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+                cur_bb->pushIr(new LoadIIR(v,var));
+                bb->val = v;
+            }
+        }else {
+            bb->val = tempVal;
+        }
+        cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+        if (typeid(*condBB.top()) == typeid(SelectBlock)) {
+            dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
+        }else {
+            dynamic_cast<IterationBlock*>(condBB.top())->cond.push_back(cur_bb);
+        }
+        lOrExp->lAndExp->accept(*this);
+        bb = dynamic_cast<CondBlock*>(cur_bb);
+        if (useConst) {
+            if ((curValType == TYPE::INT && tempInt != 0 )||
+                (curValType==TYPE::FLOAT && tempFloat != 0)){
+                VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var,1));
+                VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+                cur_bb->pushIr(new LoadIIR(v,var));
+                bb->val = v;
+            }else {
+                VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var,0));
+                VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+                cur_bb->pushIr(new LoadIIR(v,var));
+                bb->val = v;
+            }
+        }else {
+            bb->val = tempVal;
+        }
+    }
 }
 
 void IrVisitor::visit(ConstExp *constExp) {

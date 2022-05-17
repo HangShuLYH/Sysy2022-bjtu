@@ -22,8 +22,7 @@ public:
     int cnt = 0;
     BasicBlock *cur_bb = nullptr;
 
-    std::stack<SelectBlock *> ifBB;
-    std::stack<IterationBlock *> whileBB;
+    std::stack<BasicBlock *> condBB;
     bool isIF = false;
     TYPE curDefType;
     bool useConst;
@@ -83,16 +82,18 @@ public:
         return false;
     }
 
-    inline void pushBB(BasicBlock *) {
-        if (!ifBB.empty()) {
-            if (isIF) {
-                ifBB.top()->ifStmt.push_back(cur_bb);
-            } else {
-                ifBB.top()->elseStmt.push_back(cur_bb);
+    inline void pushBB() {
+        if (!condBB.empty()) {
+            if (typeid(*condBB.top()) == typeid(SelectBlock)){
+                if (isIF) {
+                    dynamic_cast<SelectBlock*>(condBB.top())->ifStmt.push_back(cur_bb);
+                }else {
+                    dynamic_cast<SelectBlock*>(condBB.top())->elseStmt.push_back(cur_bb);
+                }
+            }else{
+                dynamic_cast<IterationBlock*>(condBB.top())->whileStmt.push_back(cur_bb);
             }
-        } else if (!whileBB.empty()) {
-            whileBB.top()->whileStmt.push_back(cur_bb);
-        } else {
+        }else {
             cur_func->pushBB(cur_bb);
         }
     }
