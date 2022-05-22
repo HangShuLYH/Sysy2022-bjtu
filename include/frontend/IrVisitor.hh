@@ -34,54 +34,28 @@ public:
     Value *tempVal;
     std::vector<Value *> args; //temp args for cur_func
     int loopCnt = 0; //use for breakError and ContinueError
-    
-    std::unordered_set<std::string> globalNames; //use for testing duplicate defined val;
-    std::unordered_set<std::string> tempNames; //use for testing duplicate defined val;
-    std::stack<std::string> nameStack;
+
     IrVisitor() {
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
     }
-    void enterBlock() {
-        tempNames.clear();
-    }
-    void exitBlock() {
-        while(!nameStack.empty()) {
-            tempNames.erase(nameStack.top());
-            nameStack.pop();
-        }
-    }
+
     void addParam(Function* func,Value* v) {
         func->params.push_back(v);
-        tempNames.insert(v->name);
-        nameStack.push(v->name);
-    }
-    bool isDuplicate(std::string name){
-        if (globalNames.find(name) != globalNames.end()) {
-            return true;
-        }
-        if (tempNames.find(name) != globalNames.end()){
-            return true;
-        }
-        return false;
     }
     void pushVars(Value* var){
         if (isGlobal()) {
             pushGlobalVars(var);
         }else {
             cur_bb->pushVar(var);
-            tempNames.insert(var->name);
-            nameStack.push(var->name);
         }
     }
     void pushFunctions(Function* func){
         functions.push_back(func);
-        globalNames.insert(func->name);
     }
     void pushGlobalVars(Value *var) {
         var->isGlobal = true;
         globalVars.push_back(var);
-        globalNames.insert(var->name);
     }
     void print() {
         std::cout << "globalVars:" << std::endl;

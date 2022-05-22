@@ -50,9 +50,6 @@ void IrVisitor::visit(ConstDecl *constDecl) {
 }
 
 void IrVisitor::visit(ConstDef *constDef) {
-    if (isDuplicate(constDef->identifier)) {
-        throw DuplicateDefinitionError(constDef->identifier);
-    }
     if (constDef->constExpList.empty()) {
         constDef->constInitVal->accept(*this);
         if (!useConst) {
@@ -229,9 +226,6 @@ void IrVisitor::visit(VarDecl *varDecl) {
 void IrVisitor::visit(VarDefList *varDefList) {}
 
 void IrVisitor::visit(VarDef *varDef) {
-    if (isDuplicate(varDef->identifier)) {
-        throw DuplicateDefinitionError(varDef->identifier);
-    }
     if (varDef->constExpList.empty()) {
         VarValue *var = nullptr;
         if (curDefType == TYPE::INT) {
@@ -501,14 +495,13 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
         }
         addParam(cur_func,tempVal);
     } else {
-
+        
     }
 }
 
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 
 void IrVisitor::visit(Block *block) {
-    enterBlock();
     cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
@@ -521,7 +514,6 @@ void IrVisitor::visit(Block *block) {
         }
     }
     cur_bb = cur_bb->parent;
-    exitBlock();
 }
 
 void IrVisitor::visit(BlockItemList *blockItemList) {}
@@ -774,6 +766,9 @@ void IrVisitor::visit(LVal *lVal) {
         }
     } else {
         Value *val = findAllVal(lVal->identifier);
+        if (!val->isArray) {
+            throw InvalidIndexOperatorError();
+        }
         if (!val) {
             throw UndefinedVarError(lVal->identifier);
         }
@@ -919,9 +914,20 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
 }
 
 void IrVisitor::visit(FuncRParams *funcRParams) {
+    if (funcRParams->expList.size() != cur_func->params.size()) {
+        throw ArgsNumberNotMatchError(cur_func->name);
+    }
     for (size_t i = 0; i < funcRParams->expList.size(); ++i) {
         funcRParams->expList[i]->accept(*this);
         if (!useConst) {
+            TYPE type = cur_func->params[i]->type;
+            if ((tempVal->type == TYPE::INTPOINTER || tempVal->type == TYPE::FLOATPOINTER)
+            && tempVal->type != type ||
+                    (tempVal->type == TYPE::INT || tempVal->type == TYPE::FLOAT) &&
+                            (tempVal->type == TYPE::INTPOINTER || tempVal->type == TYPE::FLOATPOINTER))
+            {
+                throw ArgsTypeNotMatchError(cur_func->name);
+            }
             args.push_back(tempVal);
         }else {
             ConstValue* val;

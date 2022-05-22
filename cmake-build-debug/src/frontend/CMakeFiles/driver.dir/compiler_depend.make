@@ -224,6 +224,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/hashtable_policy.h \
   /usr/include/c++/9/limits \
   /usr/include/c++/9/bits/unordered_set.h \
+  /usr/include/c++/9/unordered_map \
+  /usr/include/c++/9/bits/unordered_map.h \
   ../include/errors/errors.hh
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
@@ -463,6 +465,10 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 ../src/frontend/driver.cc:
 
 ../include/errors/errors.hh:
+
+/usr/include/c++/9/bits/unordered_map.h:
+
+/usr/include/c++/9/unordered_map:
 
 /usr/include/c++/9/bits/unordered_set.h:
 

@@ -53,8 +53,16 @@ class UndefinedVarError : public SyntaxError{
 public:
     UndefinedVarError(std::string name) : SyntaxError("Undefined variable: " + name){}
 };
-class DuplicateDefinitionError : public SyntaxError {
+class InvalidIndexOperatorError : public SyntaxError{
 public:
-    DuplicateDefinitionError(std::string name) : SyntaxError("Duplicate Definition: " + name){}
+    InvalidIndexOperatorError() : SyntaxError("operator[] on non-array"){}
+};
+class ArgsNumberNotMatchError : public SyntaxError{
+public:
+    ArgsNumberNotMatchError(std::string name) : SyntaxError("Args number not Match " + name){}
+};
+class ArgsTypeNotMatchError : public SyntaxError{
+public:
+    ArgsTypeNotMatchError(std::string name) : SyntaxError("Args type not Match in function " + name){}
 };
 #endif //SYSY2022_BJTU_ERRORS_HH
