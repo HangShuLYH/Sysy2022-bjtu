@@ -556,7 +556,9 @@ void IrVisitor::visit(Stmt *stmt) {
         stmt->iterationStmt->accept(*this);
     } else if (stmt->breakStmt) {
         stmt->breakStmt->accept(*this);
-    } else if (stmt->returnStmt) {
+    } else if(stmt->continueStmt) {
+        stmt->continueStmt->accept(*this);
+    }else if (stmt->returnStmt) {
         stmt->returnStmt->accept(*this);
     }
 }
@@ -697,21 +699,16 @@ void IrVisitor::visit(Cond *cond) {
     cond->lOrExp->accept(*this);
     if (useConst) {
         CondBlock* bb = dynamic_cast<CondBlock*>(cur_bb);
+        ConstValue* val = nullptr;
         if ((curValType == TYPE::INT && tempInt != 0 )||
             (curValType==TYPE::FLOAT && tempFloat != 0)){
-            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var,1));
-            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
-            cur_bb->pushIr(new LoadIIR(v,var));
-            bb->val = v;
+            val = new ConstValue(cur_func->varCnt++,"",TYPE::INT);
+            val->setInt(1);
+            bb->val = val;
         }else {
-            VarValue* var = new VarValue(cur_func->varCnt++,"",TYPE::INTPOINTER);
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var,0));
-            VarValue* v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
-            cur_bb->pushIr(new LoadIIR(v,var));
-            bb->val = v;
+            val = new ConstValue(cur_func->varCnt++,"",TYPE::INT);
+            val->setInt(0);
+            bb->val = val;
         }
     }
 }
@@ -860,11 +857,45 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             tempVal = v;
         }
     } else {
-
+        args.clear();
+        if (unaryExp->funcRParams) {
+            unaryExp->funcRParams->accept(*this);
+        }
+        auto f = findFunc(unaryExp->identifier);
+        if (f->return_type == TYPE::VOID) {
+            cur_bb->pushIr(new CallIR(f,args));
+        }else {
+            Value* v = nullptr;
+            if (f->return_type == TYPE::INT) {
+                v = new VarValue(cur_func->varCnt++,"",TYPE::INT);
+            } else {
+                v = new VarValue(cur_func->varCnt++,"",TYPE::FLOAT);
+            }
+            useConst = false;
+            tempVal = v;
+            cur_bb->pushIr(new CallIR(f,args,v));
+        }
     }
 }
 
-void IrVisitor::visit(FuncRParams *funcRParams) {}
+void IrVisitor::visit(FuncRParams *funcRParams) {
+    for (size_t i = 0; i < funcRParams->expList.size(); ++i) {
+        funcRParams->expList[i]->accept(*this);
+        if (!useConst) {
+            args.push_back(tempVal);
+        }else {
+            ConstValue* val;
+            if (curValType == TYPE::INT) {
+                val = new ConstValue(cur_func->varCnt++, "",TYPE::INT);
+                val->setInt(tempInt);
+            }else {
+                val = new ConstValue(cur_func->varCnt++, "",TYPE::FLOAT);
+                val->setFloat(tempFloat);
+            }
+            args.push_back(val);
+        }
+    }
+}
 
 void IrVisitor::visit(MulExp *mulExp) {
     if (!mulExp->mulExp) {

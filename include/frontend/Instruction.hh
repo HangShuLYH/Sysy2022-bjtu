@@ -780,4 +780,35 @@ public:
         std::cout << "\n";
     }
 };
+#include "Function.hh"
+class CallIR:public Instruction{
+public:
+    Function* func;
+    std::vector<Value*> args;
+    Value* returnVal = nullptr;
+    CallIR(Function* func,std::vector<Value*> args) {
+        this->func = func;
+        this->args = args;
+    }
+    CallIR(Function* func,std::vector<Value*> args, Value* v){
+        this->func = func;
+        this->args = args;
+        this->returnVal = v;
+    }
+    void print() override final{
+        if (returnVal) {
+            returnVal->print();
+            std::cout << " = ";
+        }
+        std::cout << "call " << func->name << "(";
+        for (size_t i = 0; i < args.size(); ++i) {
+            args[i]->print();
+            if (i < args.size() - 1) {
+                std::cout << " , ";
+            }else {
+                std::cout << ")\n";
+            }
+        }
+    }
+};
 #endif //SYSY2022_BJTU_INSTRUCTION_HH

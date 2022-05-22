@@ -55,18 +55,18 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g  "
+					"fragment" : "-g"
 				}
 			],
 			"includes" : 
 			[
 				{
 					"backtrace" : 3,
-					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include"
+					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include"
 				},
 				{
 					"backtrace" : 4,
-					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include/frontend"
+					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/frontend"
 				}
 			],
 			"language" : "CXX",
@@ -153,7 +153,8 @@
 				3,
 				4,
 				5,
-				6
+				6,
+				7
 			]
 		}
 	],
@@ -193,6 +194,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "include/frontend/IrVisitor.hh",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/errors/errors.hh",
 			"sourceGroupIndex" : 1
 		}
 	],

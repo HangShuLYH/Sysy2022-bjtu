@@ -46,8 +46,6 @@ public:
     BasicBlock* falseBB = nullptr;
     Value* val = nullptr;
     bool isAnd = false;
-    bool alwaysTrue = false;
-    bool alwaysFalse = false;
     CondBlock(BasicBlock* parent,int cnt): BasicBlock(parent,cnt){}
     void print() override final{
 
@@ -65,12 +63,14 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty()) {
+            if ((*iter)->ir.empty() &&
+                !dynamic_cast<CondBlock*>(*iter)->val) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;
             }
         }
+
         iter = ifStmt.begin();
         while (iter != ifStmt.end()){
             if (typeid(**iter) == typeid(NormalBlock)){
@@ -111,7 +111,8 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty()) {
+            if ((*iter)->ir.empty() &&
+            !dynamic_cast<CondBlock*>(*iter)->val) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;

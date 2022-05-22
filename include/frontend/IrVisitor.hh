@@ -21,7 +21,6 @@ public:
     BasicBlock *entry = nullptr;
     int cnt = 0;
     BasicBlock *cur_bb = nullptr;
-
     std::stack<BasicBlock *> condBB;
     bool isIF = false;
     TYPE curDefType;
@@ -31,7 +30,8 @@ public:
     float tempFloat;
     int tempDims;
     Value *tempVal;
-
+    std::vector<Value *> args;
+    
     IrVisitor() {
         entry = new NormalBlock(nullptr,0);
         cur_bb = entry;
@@ -154,11 +154,11 @@ public:
         return nullptr;
     }
 
-    inline bool findFunc(std::string name) {
+    inline Function* findFunc(std::string name) {
         for (size_t i = 0; i < functions.size(); ++i) {
-            if (functions[i]->name == name) return true;
+            if (functions[i]->name == name) return functions[i];
         }
-        return false;
+        return nullptr;
     }
 
     inline void pushBB() {

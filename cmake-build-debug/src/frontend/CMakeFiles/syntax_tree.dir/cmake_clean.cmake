@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/syntax_tree.dir/syntax_tree.cc.o"
+  "CMakeFiles/syntax_tree.dir/syntax_tree.cc.o.d"
   "libsyntax_tree.a"
   "libsyntax_tree.pdb"
 )
