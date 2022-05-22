@@ -26,9 +26,6 @@ void f2(int m,float xx){
                 int x = 2;
                 break;
                 int y = 2;
-                if(){
-
-                }
             }
         }
 

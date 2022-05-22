@@ -33,7 +33,7 @@ public:
     std::vector<Value *> args;
 
     IrVisitor() {
-        entry = new NormalBlock(nullptr,0);
+        entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
     }
     void print() {

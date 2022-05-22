@@ -221,8 +221,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   ../include/frontend/CompileUnit.hh \
   ../include/frontend/Instruction.hh \
   ../include/frontend/Value.hh \
-  ../include/frontend/Function.hh \
   ../include/frontend/BasicBlock.hh \
+  ../include/frontend/Function.hh \
   /usr/include/c++/9/stack \
   /usr/include/c++/9/deque \
   /usr/include/c++/9/bits/stl_deque.h \
@@ -234,9 +234,9 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 
 /usr/include/c++/9/bits/stl_deque.h:
 
-../include/frontend/BasicBlock.hh:
-
 ../include/frontend/Function.hh:
+
+../include/frontend/BasicBlock.hh:
 
 ../include/frontend/Value.hh:
 

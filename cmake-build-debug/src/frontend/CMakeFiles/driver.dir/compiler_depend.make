@@ -202,8 +202,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/istream \
   /usr/include/c++/9/bits/istream.tcc \
   ../include/frontend/Value.hh \
-  ../include/frontend/Function.hh \
   ../include/frontend/BasicBlock.hh \
+  ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   ../include/frontend/syntax_tree.hh \
   /usr/include/c++/9/cassert \
@@ -469,9 +469,9 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/parser.hh:
 
-../include/frontend/BasicBlock.hh:
-
 ../include/frontend/Function.hh:
+
+../include/frontend/BasicBlock.hh:
 
 ../include/frontend/Value.hh:
 

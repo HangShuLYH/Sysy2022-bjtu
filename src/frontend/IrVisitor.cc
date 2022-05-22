@@ -158,7 +158,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                 VarValue *t = nullptr;
                 if (var->type == TYPE::INT && tempVal->type == TYPE::FLOAT) {
                     if (!isGlobal()) {
-                        t = new VarValue(cur_bb->cnt++, "", TYPE::INT);
+                        t = new VarValue(cur_func->varCnt++, "", TYPE::INT);
                     } else {
                         t = new VarValue(0, "", TYPE::INT);
                     }
@@ -166,7 +166,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                     cur_bb->pushIr(ir);
                 } else if (var->type == TYPE::FLOAT && tempVal->type == TYPE::INT) {
                     if (!isGlobal()) {
-                        t = new VarValue(cur_bb->cnt++, "", TYPE::FLOAT);
+                        t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                     } else {
                         t = new VarValue(0, "", TYPE::FLOAT);
                     }
@@ -396,7 +396,7 @@ void IrVisitor::visit(InitVal *initVal) {
                 VarValue *t = nullptr;
                 if (var->type == TYPE::INTPOINTER && tempVal->type == TYPE::FLOAT) {
                     if (!isGlobal()) {
-                        t = new VarValue(cur_bb->cnt++, "", TYPE::INT);
+                        t = new VarValue(cur_func->varCnt++, "", TYPE::INT);
                     } else {
                         t = new VarValue(0, "", TYPE::INT);
                     }
@@ -404,7 +404,7 @@ void IrVisitor::visit(InitVal *initVal) {
                     cur_bb->pushIr(ir);
                 } else if (var->type == TYPE::FLOATPOINTER && tempVal->type == TYPE::INT) {
                     if (!isGlobal()) {
-                        t = new VarValue(cur_bb->cnt++, "", TYPE::FLOAT);
+                        t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                     } else {
                         t = new VarValue(0, "", TYPE::FLOAT);
                     }
@@ -464,7 +464,7 @@ void IrVisitor::visit(FuncDef *funcDef) {
     functions.push_back(cur_func);
     if (funcDef->funcFParams) {
         funcDef->funcFParams->accept(*this);
-        cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
+        cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
         cur_func->pushBB(cur_bb);
         for (size_t i = 0; i < cur_func->params.size(); ++i) {
             if (cur_func->params[i]->type == TYPE::INT) {
@@ -511,14 +511,14 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 
 void IrVisitor::visit(Block *block) {
-    cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
+    cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
         block->blockItemList[i]->accept(*this);
         if (block->blockItemList[i]->stmt && (block->blockItemList[i]->stmt->block ||
                                               block->blockItemList[i]->stmt->selectStmt ||
                                               block->blockItemList[i]->stmt->iterationStmt)) {
-            cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
+            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
             pushBB();
         }
     }
@@ -532,7 +532,7 @@ void IrVisitor::visit(BlockItem *blockItem) {
                                                        blockItem->stmt->assignStmt || blockItem->stmt->returnStmt ||
                                                        blockItem->stmt->breakStmt)) {
         if (cur_bb == entry) {
-            cur_bb = new NormalBlock(cur_bb, cur_func->bbCnt++);
+            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
             pushBB();
         }
     }
@@ -621,7 +621,7 @@ void IrVisitor::visit(AssignStmt *assignStmt) {
 
 void IrVisitor::visit(SelectStmt *selectStmt) {
     auto tempBB = cur_bb;
-    cur_bb = new SelectBlock(cur_bb, cur_func->bbCnt++);
+    cur_bb = new SelectBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     condBB.push(cur_bb);
     auto temp = cur_bb;
@@ -639,10 +639,10 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
 
 void IrVisitor::visit(IterationStmt *iterationStmt) {
     auto tempBB = cur_bb;
-    cur_bb = new IterationBlock(cur_bb, cur_func->bbCnt++);
+    cur_bb = new IterationBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     condBB.push(cur_bb);
-    dynamic_cast<IterationBlock*>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->bbCnt++));
+    dynamic_cast<IterationBlock*>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name,cur_func->bbCnt++));
     iterationStmt->cond->accept(*this);
     iterationStmt->stmt->accept(*this);
     cur_bb = tempBB;
@@ -1909,7 +1909,7 @@ void IrVisitor::visit(EqExp* eqExp) {
     }
 }
 void IrVisitor::visit(LAndExp *lAndEXp) {
-    cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+    cur_bb = new CondBlock(cur_bb,cur_func->name,cur_func->bbCnt++);
     if (typeid(*condBB.top()) == typeid(SelectBlock)) {
         dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
     }else {
@@ -1937,7 +1937,7 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
             cur_bb->pushIr(new LoadIIR(v,var));
             bb->val = v;
         }
-        cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+        cur_bb = new CondBlock(cur_bb,cur_func->name,cur_func->bbCnt++);
         if (typeid(*condBB.top()) == typeid(SelectBlock)) {
             dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
         }else {
@@ -1965,7 +1965,7 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
 }
 
 void IrVisitor::visit(LOrExp *lOrExp) {
-    cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+    cur_bb = new CondBlock(cur_bb,cur_func->name,cur_func->bbCnt++);
     if (typeid(*condBB.top()) == typeid(SelectBlock)) {
         dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
     }else {
@@ -1997,7 +1997,7 @@ void IrVisitor::visit(LOrExp *lOrExp) {
         }else {
             bb->val = tempVal;
         }
-        cur_bb = new CondBlock(cur_bb,cur_func->bbCnt++);
+        cur_bb = new CondBlock(cur_bb,cur_func->name,cur_func->bbCnt++);
         if (typeid(*condBB.top()) == typeid(SelectBlock)) {
             dynamic_cast<SelectBlock*>(condBB.top())->cond.push_back(cur_bb);
         }else {

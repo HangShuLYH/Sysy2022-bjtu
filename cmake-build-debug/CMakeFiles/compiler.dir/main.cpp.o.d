@@ -175,8 +175,8 @@ CMakeFiles/compiler.dir/main.cpp.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/CompileUnit.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
  /usr/include/c++/9/bits/stl_stack.h
