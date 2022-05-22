@@ -324,7 +324,8 @@ Stmt: AssignStmt{
         $$->assignStmt = std::shared_ptr<AssignStmt>($1);
     }
     |Exp SEMICOLON{
-
+        $$=new Stmt();
+        $$->exp = std::shared_ptr<Exp>($1);
     }
     |SEMICOLON{
 

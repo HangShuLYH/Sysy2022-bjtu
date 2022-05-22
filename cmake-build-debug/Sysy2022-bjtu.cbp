@@ -278,6 +278,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/errors/errors.hh">
+			<Option target="compiler"/>
+		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh">
 			<Option target="compiler"/>
 		</Unit>

@@ -227,8 +227,27 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/9/deque \
   /usr/include/c++/9/bits/stl_deque.h \
   /usr/include/c++/9/bits/deque.tcc \
-  /usr/include/c++/9/bits/stl_stack.h
+  /usr/include/c++/9/bits/stl_stack.h \
+  /usr/include/c++/9/set \
+  /usr/include/c++/9/bits/stl_set.h \
+  /usr/include/c++/9/bits/stl_multiset.h \
+  /usr/include/c++/9/unordered_set \
+  /usr/include/c++/9/bits/hashtable.h \
+  /usr/include/c++/9/bits/hashtable_policy.h \
+  /usr/include/c++/9/limits \
+  /usr/include/c++/9/bits/unordered_set.h \
+  ../include/errors/errors.hh
 
+
+../include/errors/errors.hh:
+
+/usr/include/c++/9/bits/unordered_set.h:
+
+/usr/include/c++/9/limits:
+
+/usr/include/c++/9/bits/hashtable_policy.h:
+
+/usr/include/c++/9/bits/hashtable.h:
 
 /usr/include/c++/9/bits/stl_stack.h:
 
@@ -370,6 +389,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
 
+/usr/include/c++/9/bits/stl_set.h:
+
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
 /usr/include/c++/9/bits/nested_exception.h:
@@ -413,6 +434,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 /usr/include/x86_64-linux-gnu/c++/9/bits/atomic_word.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+
+/usr/include/c++/9/bits/stl_multiset.h:
 
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
@@ -463,6 +486,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
+/usr/include/c++/9/unordered_set:
 
 /usr/include/c++/9/bits/exception.h:
 
@@ -565,6 +590,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
 /usr/include/c++/9/type_traits:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/c++/9/set:
 
 /usr/include/endian.h:
 

@@ -179,4 +179,9 @@ CMakeFiles/compiler.dir/main.cpp.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
- /usr/include/c++/9/bits/stl_stack.h
+ /usr/include/c++/9/bits/stl_stack.h /usr/include/c++/9/set \
+ /usr/include/c++/9/bits/stl_set.h /usr/include/c++/9/bits/stl_multiset.h \
+ /usr/include/c++/9/unordered_set /usr/include/c++/9/bits/hashtable.h \
+ /usr/include/c++/9/bits/hashtable_policy.h /usr/include/c++/9/limits \
+ /usr/include/c++/9/bits/unordered_set.h \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/errors/errors.hh

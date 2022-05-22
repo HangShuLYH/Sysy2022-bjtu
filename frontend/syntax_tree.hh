@@ -285,6 +285,7 @@ class Stmt:TreeNode{
 public:
     void visit(int depth) final;
     void accept(Visitor &visitor) override final;
+    std::shared_ptr<Exp> exp = nullptr;
     std::shared_ptr<AssignStmt> assignStmt = nullptr;
     std::shared_ptr<Block> block = nullptr;
     std::shared_ptr<SelectStmt> selectStmt = nullptr;

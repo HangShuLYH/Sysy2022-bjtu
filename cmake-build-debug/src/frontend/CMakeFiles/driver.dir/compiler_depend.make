@@ -213,7 +213,18 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/deque \
   /usr/include/c++/9/bits/stl_deque.h \
   /usr/include/c++/9/bits/deque.tcc \
-  /usr/include/c++/9/bits/stl_stack.h
+  /usr/include/c++/9/bits/stl_stack.h \
+  /usr/include/c++/9/set \
+  /usr/include/c++/9/bits/stl_tree.h \
+  /usr/include/c++/9/bits/stl_set.h \
+  /usr/include/c++/9/bits/stl_multiset.h \
+  /usr/include/c++/9/bits/erase_if.h \
+  /usr/include/c++/9/unordered_set \
+  /usr/include/c++/9/bits/hashtable.h \
+  /usr/include/c++/9/bits/hashtable_policy.h \
+  /usr/include/c++/9/limits \
+  /usr/include/c++/9/bits/unordered_set.h \
+  ../include/errors/errors.hh
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
   /usr/include/stdc-predef.h \
@@ -435,13 +446,9 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/FlexLexer.hh:
 
-/usr/include/c++/9/bits/erase_if.h:
-
 /usr/include/c++/9/bits/stl_multimap.h:
 
 /usr/include/c++/9/bits/stl_map.h:
-
-/usr/include/c++/9/bits/stl_tree.h:
 
 /usr/include/c++/9/map:
 
@@ -454,6 +461,20 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 ../include/frontend/driver.hh:
 
 ../src/frontend/driver.cc:
+
+../include/errors/errors.hh:
+
+/usr/include/c++/9/bits/unordered_set.h:
+
+/usr/include/c++/9/limits:
+
+/usr/include/c++/9/bits/hashtable_policy.h:
+
+/usr/include/c++/9/bits/hashtable.h:
+
+/usr/include/c++/9/bits/erase_if.h:
+
+/usr/include/c++/9/bits/stl_tree.h:
 
 /usr/include/c++/9/bits/stl_stack.h:
 
@@ -482,6 +503,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
+
+/usr/include/c++/9/bits/stl_multiset.h:
 
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
@@ -653,6 +676,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/time.h:
 
+/usr/include/c++/9/unordered_set:
+
 /usr/include/c++/9/bits/exception.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
@@ -704,6 +729,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/ext/atomicity.h:
 
 /usr/include/c++/9/bits/postypes.h:
+
+/usr/include/c++/9/bits/stl_set.h:
 
 /usr/include/x86_64-linux-gnu/bits/endian.h:
 
@@ -804,6 +831,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/type_traits:
 
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+/usr/include/c++/9/set:
 
 /usr/include/endian.h:
 

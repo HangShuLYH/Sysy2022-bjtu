@@ -2,6 +2,7 @@
 #include "driver.hh"
 #include "syntax_tree.hh"
 #include "IrVisitor.hh"
+#include "errors/errors.hh"
 driver ddriver;
 CompUnit *root;
 
@@ -15,7 +16,12 @@ int main (int argc, char *argv[])
     root = ddriver.parse("../test/test.sy");
     //root->visit(0);
     IrVisitor irVisitor;
-    irVisitor.visit(root);
+    try {
+        irVisitor.visit(root);
+    }catch (SyntaxError &e) {
+        std::cerr << "error: " << e.what() << "\n";
+        return EXIT_FAILURE;
+    }
     irVisitor.print();
     irVisitor.getRelated();
     std::cout << "end..." <<std::endl;

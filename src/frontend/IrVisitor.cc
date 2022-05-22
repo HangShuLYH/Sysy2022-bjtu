@@ -3,15 +3,27 @@
 //
 #include "IrVisitor.hh"
 #include <iostream>
-
+#include "errors/errors.hh"
 void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < compUnit->declDefList.size(); ++i) {
         compUnit->declDefList[i]->accept(*this);
     }
+    bool foundMain = false;
     for (size_t i = 0; i < functions.size(); ++i) {
         functions[i]->clear();
+        if (functions[i]->name == "main") {
+            foundMain = true;
+            if (functions[i]->return_type != TYPE::INT) {
+                throw MainReturnError();
+            }
+            if (functions[i]->params.size() > 0){
+                throw MainWithArgsError();
+            }
+        }
     }
-
+    if (!foundMain) {
+        throw MainNotFoundError();
+    }
 }
 
 void IrVisitor::visit(DeclDef *declDef) {
@@ -21,8 +33,6 @@ void IrVisitor::visit(DeclDef *declDef) {
         declDef->funcDef->accept(*this);
     } else if (declDef->constDecl) {
         declDef->constDecl->accept(*this);
-    } else {
-        std::cerr << "This should never be seen in IrVisitor(DeclDef)!" << std::endl;
     }
 }
 
@@ -32,7 +42,7 @@ void IrVisitor::visit(ConstDecl *constDecl) {
     } else if (constDecl->defType->type == type_specifier::TYPE_FLOAT) {
         curDefType = TYPE::FLOAT;
     } else {
-        std::cerr << "Void should not be type of Value!" << std::endl;
+        throw ValueTypeError();
     }
     for (size_t i = 0; i < constDecl->constDefList.size(); ++i) {
         constDecl->constDefList[i]->accept(*this);
@@ -40,10 +50,13 @@ void IrVisitor::visit(ConstDecl *constDecl) {
 }
 
 void IrVisitor::visit(ConstDef *constDef) {
+    if (isDuplicate(constDef->identifier)) {
+        throw DuplicateDefinitionError(constDef->identifier);
+    }
     if (constDef->constExpList.empty()) {
         constDef->constInitVal->accept(*this);
         if (!useConst) {
-            std::cerr << "Const Value should be defined when compiling!" << std::endl;
+            throw ConstNotInitError();
         }
         ConstValue *var = nullptr;
         if (curDefType == TYPE::INT) {
@@ -63,11 +76,7 @@ void IrVisitor::visit(ConstDef *constDef) {
                 var->setFloat(tempFloat);
             }
         }
-        if (isGlobal()) {
-            globalVars.push_back(var);
-        } else {
-            cur_bb->pushVar(var);
-        }
+        pushVars(var);
     } else {
         ConstValue *var(nullptr);
         std::vector<int> arrayDims;
@@ -98,12 +107,7 @@ void IrVisitor::visit(ConstDef *constDef) {
         var->isArray = true;
         var->arrayDims = arrayDims;
 
-        if (isGlobal()) {
-            var->isGlobal = true;
-            globalVars.push_back(var);
-        } else {
-            cur_bb->pushVar(var);
-        }
+        pushVars(var);
 
         if (constDef->constInitVal) {
             tempDims = constDef->constExpList.size();
@@ -215,7 +219,7 @@ void IrVisitor::visit(VarDecl *varDecl) {
     } else if (varDecl->defType->type == type_specifier::TYPE_FLOAT) {
         curDefType = TYPE::FLOAT;
     } else {
-        std::cerr << "Void should not be type of Value!" << std::endl;
+        throw ValueTypeError();
     }
     for (size_t i = 0; i < varDecl->varDefList.size(); ++i) {
         varDecl->varDefList[i]->accept(*this);
@@ -225,6 +229,9 @@ void IrVisitor::visit(VarDecl *varDecl) {
 void IrVisitor::visit(VarDefList *varDefList) {}
 
 void IrVisitor::visit(VarDef *varDef) {
+    if (isDuplicate(varDef->identifier)) {
+        throw DuplicateDefinitionError(varDef->identifier);
+    }
     if (varDef->constExpList.empty()) {
         VarValue *var = nullptr;
         if (curDefType == TYPE::INT) {
@@ -244,12 +251,7 @@ void IrVisitor::visit(VarDef *varDef) {
                 var = new VarValue(0, varDef->identifier, TYPE::FLOATPOINTER);
             }
         }
-        if (isGlobal()) {
-            var->isGlobal = true;
-            globalVars.push_back(var);
-        } else {
-            cur_bb->pushVar(var);
-        }
+        pushVars(var);
         if (varDef->initVal) {
             varDef->initVal->accept(*this);
             if (useConst) {
@@ -333,12 +335,7 @@ void IrVisitor::visit(VarDef *varDef) {
         var->isArray = true;
         var->arrayDims = arrayDims;
 
-        if (isGlobal()) {
-            var->isGlobal = true;
-            globalVars.push_back(var);
-        } else {
-            cur_bb->pushVar(var);
-        }
+        pushVars(var);
         if (varDef->initVal) {
             tempDims = varDef->constExpList.size();
             tempVal = var;
@@ -461,7 +458,7 @@ void IrVisitor::visit(FuncDef *funcDef) {
         function = new Function(funcDef->identifier, TYPE::VOID);
     }
     cur_func = function;
-    functions.push_back(cur_func);
+    pushFunctions(cur_func);
     if (funcDef->funcFParams) {
         funcDef->funcFParams->accept(*this);
         cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
@@ -502,7 +499,7 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
         } else if (funcFParam->defType->type == type_specifier::TYPE_INT) {
             tempVal = new VarValue(cur_func->varCnt++, funcFParam->identifier, TYPE::INT);
         }
-        cur_func->params.push_back(tempVal);
+        addParam(cur_func,tempVal);
     } else {
 
     }
@@ -511,6 +508,7 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 
 void IrVisitor::visit(Block *block) {
+    enterBlock();
     cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
@@ -523,11 +521,13 @@ void IrVisitor::visit(Block *block) {
         }
     }
     cur_bb = cur_bb->parent;
+    exitBlock();
 }
 
 void IrVisitor::visit(BlockItemList *blockItemList) {}
 
 void IrVisitor::visit(BlockItem *blockItem) {
+    if (!blockItem->stmt && !blockItem->constDecl && !blockItem->varDecl) return;
     if (blockItem->varDecl || blockItem->constDecl || (blockItem->stmt &&
                                                        blockItem->stmt->assignStmt || blockItem->stmt->returnStmt ||
                                                        blockItem->stmt->breakStmt)) {
@@ -546,11 +546,14 @@ void IrVisitor::visit(BlockItem *blockItem) {
 }
 
 void IrVisitor::visit(Stmt *stmt) {
+    if (!stmt) return;
     if (stmt->assignStmt) {
         stmt->assignStmt->accept(*this);
-    } else if (stmt->block) {
+    }else if (stmt->exp) {
+        stmt->exp->accept(*this);
+    }else if (stmt->block) {
         stmt->block->accept(*this);
-    } else if (stmt->selectStmt) {
+    }else if (stmt->selectStmt) {
         stmt->selectStmt->accept(*this);
     } else if (stmt->iterationStmt) {
         stmt->iterationStmt->accept(*this);
@@ -566,22 +569,46 @@ void IrVisitor::visit(Stmt *stmt) {
 void IrVisitor::visit(AssignStmt *assignStmt) {
     assignStmt->lVal->accept(*this);
     auto left = tempVal;
+    if (useConst) {
+        throw LValIsConstError();
+    }
+    int index = tempInt;
     assignStmt->exp->accept(*this);
     if (useConst) {
         if (left->type == TYPE::INTPOINTER) {
             if (curValType == TYPE::INT) {
-                StoreIIR *ir = new StoreIIR(left, tempInt);
+                StoreIIR* ir;
+                if (!left->isArray) {
+                    ir = new StoreIIR(left, tempInt);
+                }else {
+                    ir = new StoreIIR(left,tempInt,index);
+                }
                 cur_bb->pushIr(ir);
             } else {
-                StoreIIR *ir = new StoreIIR(left, tempFloat);
+                StoreIIR* ir;
+                if (!left->isArray) {
+                    ir = new StoreIIR(left, tempFloat);
+                }else {
+                    ir = new StoreIIR(left,tempFloat,index);
+                }
                 cur_bb->pushIr(ir);
             }
         } else {
             if (curValType == TYPE::INT) {
-                StoreFIR *ir = new StoreFIR(left, tempInt);
+                StoreFIR* ir;
+                if (!left->isArray) {
+                    ir = new StoreFIR(left, tempInt);
+                }else {
+                    ir = new StoreFIR(left,tempInt,index);
+                }
                 cur_bb->pushIr(ir);
             } else {
-                StoreFIR *ir = new StoreFIR(left, tempFloat);
+                StoreFIR* ir;
+                if (!left->isArray) {
+                    ir = new StoreFIR(left, tempFloat);
+                }else {
+                    ir = new StoreFIR(left,tempFloat,index);
+                }
                 cur_bb->pushIr(ir);
             }
         }
@@ -638,6 +665,7 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
 }
 
 void IrVisitor::visit(IterationStmt *iterationStmt) {
+    loopCnt++;
     auto tempBB = cur_bb;
     cur_bb = new IterationBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
@@ -647,18 +675,28 @@ void IrVisitor::visit(IterationStmt *iterationStmt) {
     iterationStmt->stmt->accept(*this);
     cur_bb = tempBB;
     condBB.pop();
+    loopCnt--;
 }
 
 void IrVisitor::visit(BreakStmt *breakStmt) {
+    if (!loopCnt) {
+        throw BreakError();
+    }
     cur_bb->pushIr(new BreakIR);
 }
 
 void IrVisitor::visit(ContinueStmt *continueStmt) {
+    if (!loopCnt) {
+        throw ContinueError();
+    }
     cur_bb->pushIr(new ContinueIR);
 }
 
 void IrVisitor::visit(ReturnStmt *returnStmt) {
     if (returnStmt->exp) {
+        if (cur_func->return_type == TYPE::VOID) {
+            throw VoidFuncReturnValueUsedError();
+        }
         returnStmt->exp->accept(*this);
         if (useConst) {
             if (curDefType == TYPE::INT) {
@@ -687,6 +725,9 @@ void IrVisitor::visit(ReturnStmt *returnStmt) {
             cur_bb->pushIr(new ReturnIR(tempVal));
         }
     } else {
+        if (cur_func->return_type != TYPE::VOID){
+            throw ReturnValueNotFoundError();
+        }
         cur_bb->pushIr(new ReturnIR(nullptr));
     }
 }
@@ -717,7 +758,7 @@ void IrVisitor::visit(LVal *lVal) {
     if (lVal->expList.empty()) {
         tempVal = findAllVal(lVal->identifier);
         if (!tempVal) {
-            std::cerr << "Undefined Identifier of " << lVal->identifier << std::endl;
+            throw UndefinedVarError(lVal->identifier);
         }
         if (typeid(*tempVal) == typeid(ConstValue)) {
             useConst = true;
@@ -734,9 +775,8 @@ void IrVisitor::visit(LVal *lVal) {
     } else {
         Value *val = findAllVal(lVal->identifier);
         if (!val) {
-            std::cerr << "Undefined Identifier of " << lVal->identifier << std::endl;
+            throw UndefinedVarError(lVal->identifier);
         }
-
         int arrayIndex(0), arrayDimLen(1);
         for (int i(lVal->expList.size() - 1); i >= 0; i--) {
             lVal->expList[i]->accept(*this);
@@ -766,7 +806,7 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
         primaryExp->exp->accept(*this);
     } else if (primaryExp->lVal) {
         primaryExp->lVal->accept(*this);
-        if (useConst) {
+        if (tempVal->isArray) {
             return;
         }
         if (tempVal->type == TYPE::INTPOINTER) {
