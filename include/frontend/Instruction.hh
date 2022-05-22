@@ -780,6 +780,34 @@ public:
         std::cout << "\n";
     }
 };
+#include "BasicBlock.hh"
+class JumpIR:public Instruction{
+public:
+    BasicBlock* target;
+    JumpIR(BasicBlock* target) : target(target){}
+    void print() override final{
+        std::cout << "goto ";
+        target->print();
+        std::cout << "\n";
+    }
+};
+class BranchIR:public Instruction{
+public:
+    BasicBlock* trueTarget;
+    BasicBlock* falseTarget;
+    Value* cond;
+    BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) :
+    trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {}
+    void print() override final{
+        std::cout << "goto ";
+        cond->print();
+        std::cout << " ？ ";
+        trueTarget->print();
+        std::cout << " : ";
+        falseTarget->print();
+        std::cout << "\n";
+    }
+};
 #include "Function.hh"
 class CallIR:public Instruction{
 public:

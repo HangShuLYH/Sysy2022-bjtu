@@ -12,10 +12,10 @@ public:
     std::vector<Instruction*> ir;
     BasicBlock* parent;
     std::vector<Value*> vars;
-    int cnt;
-    BasicBlock(BasicBlock* parent,int cnt) {
+    std::string name;
+    BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
-        this->cnt = cnt;
+        name = func_name + "::BB" +  std::to_string(cnt);
     }
     void pushIr(Instruction* instruction) {
         ir.push_back(instruction);
@@ -30,9 +30,9 @@ public:
 class NormalBlock:public BasicBlock{
 public:
     BasicBlock* nextBB = nullptr;
-    NormalBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
+    NormalBlock(BasicBlock* parent,std::string func_name, int cnt) : BasicBlock(parent,func_name,cnt){}
     void print() override final{
-        std::cout << "<label>" << cnt << std::endl;
+        std::cout << name << std::endl;
         for (size_t i = 0; i < ir.size(); ++i) {
             std::cout << "\t";
             ir[i]->print();
@@ -46,7 +46,7 @@ public:
     BasicBlock* falseBB = nullptr;
     Value* val = nullptr;
     bool isAnd = false;
-    CondBlock(BasicBlock* parent,int cnt): BasicBlock(parent,cnt){}
+    CondBlock(BasicBlock* parent,std::string func_name,int cnt): BasicBlock(parent,func_name,cnt){}
     void print() override final{
 
     }
@@ -58,7 +58,7 @@ public:
     std::vector<BasicBlock*> ifStmt;
     std::vector<BasicBlock*> elseStmt;
 
-    SelectBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
+    SelectBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
     void print() override final{};
     void clear() override final{
         auto iter = cond.begin();
@@ -104,7 +104,7 @@ public:
     std::vector<BasicBlock*> cond;
     std::vector<BasicBlock*> whileStmt;
 
-    IterationBlock(BasicBlock* parent,int cnt) : BasicBlock(parent,cnt){}
+    IterationBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
     void print() override final{
 
     }

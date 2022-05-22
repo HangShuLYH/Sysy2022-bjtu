@@ -31,7 +31,7 @@ public:
     int tempDims;
     Value *tempVal;
     std::vector<Value *> args;
-    
+
     IrVisitor() {
         entry = new NormalBlock(nullptr,0);
         cur_bb = entry;

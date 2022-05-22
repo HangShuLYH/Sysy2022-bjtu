@@ -21,11 +21,16 @@ void f2(int m,float xx){
     int i = 0;
     int j = 10;
     while(1.0)
-        if(j > 15)
+        if(j > 15){
             while(1) {
+                int x = 2;
                 break;
-            }
+                int y = 2;
+                if(){
 
+                }
+            }
+        }
 
 
     return 1;
