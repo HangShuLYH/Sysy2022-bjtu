@@ -55,18 +55,18 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
+					"fragment" : "-g  "
 				}
 			],
 			"includes" : 
 			[
 				{
 					"backtrace" : 3,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include"
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include"
 				},
 				{
 					"backtrace" : 4,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/frontend"
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include/frontend"
 				}
 			],
 			"language" : "CXX",

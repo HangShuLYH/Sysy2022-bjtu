@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.17)
 project(Sysy2022-bjtu)
 include_directories(include)
 include_directories(include/frontend)

@@ -1,6 +1,5 @@
 file(REMOVE_RECURSE
   "CMakeFiles/parser.dir/parser.cc.o"
-  "CMakeFiles/parser.dir/parser.cc.o.d"
   "libparser.a"
   "libparser.pdb"
 )
