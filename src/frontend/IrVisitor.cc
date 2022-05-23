@@ -495,7 +495,26 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
         }
         addParam(cur_func,tempVal);
     } else {
-        
+        if(funcFParam->defType->type == type_specifier::TYPE_INT)
+        {
+            tempVal = new VarValue(cur_func->varCnt++, funcFParam->identifier, TYPE::INTPOINTER);
+            tempVal->arrayDims.push_back(0);
+            for(auto width : funcFParam->expList)
+            {
+                width->accept(*this);
+                tempVal->arrayDims.push_back(tempInt);
+            }
+        }
+        else if(funcFParam->defType->type == type_specifier::TYPE_FLOAT)
+        {
+            tempVal = new VarValue(cur_func->varCnt++, funcFParam->identifier, TYPE::FLOATPOINTER);
+            tempVal->arrayDims.push_back(0);
+            for(auto width : funcFParam->expList)
+            {
+                width->accept(*this);
+                tempVal->arrayDims.push_back(tempInt);
+            }
+        }
     }
 }
 
