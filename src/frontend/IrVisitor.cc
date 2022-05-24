@@ -3,6 +3,7 @@
 //
 #include "IrVisitor.hh"
 #include <iostream>
+#include <cmath>
 #include "errors/errors.hh"
 void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < compUnit->declDefList.size(); ++i) {
@@ -126,27 +127,56 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
         dims++;
         static ConstValue *var = nullptr;
         static bool flag = true;
-        if (flag && dims == tempDims) {
+        if (flag) {
             var = dynamic_cast<ConstValue *>(tempVal);
             var->isArray = true;
             flag = false;
         }
+        size_t init_len(0); // 该维度已有长度
+        size_t num_cnt(0);
+
+        size_t dim_len(1);
+        for(int i(dims); i < var->arrayDims.size(); i++)
+        {
+            dim_len *= var->arrayDims[i];
+        }
+
         for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
+            if(!constInitVal->constInitValList[i]->constInitValList.empty())
+            {
+                size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
+                for(; left_len > 0; left_len--)
+                {
+                    if (var->type == TYPE::INTPOINTER) {
+                        var->push(0);
+                        StoreIIR *ir = new StoreIIR(var, 0, index++);
+                        cur_bb->pushIr(ir);
+                    } else {
+                        var->push((float)0.0);
+                        StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                        cur_bb->pushIr(ir);
+                    }
+                }
+                init_len += ceil((double)num_cnt / (double)dim_len) + 1;
+                num_cnt = 0;
+            }
+            
             constInitVal->constInitValList[i]->accept(*this);
-            if (useConst && dims == tempDims) {
+            if (useConst && constInitVal->constInitValList[i]->constInitValList.empty()) {
+                num_cnt++;
                 if (var->type == TYPE::INT) {
                     if (curValType == TYPE::INT) {
                         var->push(tempInt);
                         StoreIIR *ir = new StoreIIR(var, tempInt, index++);
                         cur_bb->pushIr(ir);
                     } else {
-                        var->push(tempFloat);
+                        var->push((int)tempFloat);
                         StoreIIR *ir = new StoreIIR(var, tempFloat, index++);
                         cur_bb->pushIr(ir);
                     }
                 } else {
                     if (curValType == TYPE::INT) {
-                        var->push(tempInt);
+                        var->push((float)tempInt);
                         StoreFIR *ir = new StoreFIR(var, tempInt, index++);
                         cur_bb->pushIr(ir);
                     } else {
@@ -155,7 +185,8 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                         cur_bb->pushIr(ir);
                     }
                 }
-            } else if (!useConst && dims == tempDims) {
+            } else if (!useConst && constInitVal->constInitValList[i]->constInitValList.empty()) {
+                num_cnt++;
                 VarValue *t = nullptr;
                 if (var->type == TYPE::INT && tempVal->type == TYPE::FLOAT) {
                     if (!isGlobal()) {
@@ -163,38 +194,79 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                     } else {
                         t = new VarValue(0, "", TYPE::INT);
                     }
-                    CastFloat2IntIR *ir = new CastFloat2IntIR(t, tempVal);
+                    CastFloat2IntIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastFloat2IntIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastFloat2IntIR(t, tempVal);
                     cur_bb->pushIr(ir);
+                    tempVal = t;
                 } else if (var->type == TYPE::FLOAT && tempVal->type == TYPE::INT) {
                     if (!isGlobal()) {
                         t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                     } else {
                         t = new VarValue(0, "", TYPE::FLOAT);
                     }
-                    CastInt2FloatIR *ir = new CastInt2FloatIR(t, tempVal);
+                    CastInt2FloatIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastInt2FloatIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastInt2FloatIR(t, tempVal);
                     cur_bb->pushIr(ir);
+                    tempVal = t;
                 }
+                else t = dynamic_cast<VarValue *>(tempVal);
                 if (var->type == TYPE::INT) {
                     var->push(0);
-                    StoreIIR *ir = new StoreIIR(var, t, index++);
+                    StoreIIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreIIR(var, tempVal, index++, tempInt);
+                    else ir = new StoreIIR(var, tempVal, index++);
                     cur_bb->pushIr(ir);
                 } else {
-                    var->push(0);
-                    StoreFIR *ir = new StoreFIR(var, t, index++);
+                    var->push((float)0.0);
+                    StoreFIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreFIR(var, tempVal, index++, tempInt);
+                    else ir = new StoreFIR(var, tempVal, index++);
                     cur_bb->pushIr(ir);
                 }
             }
         }
 
-        if(!flag && var->arrayDims[dims - 1] - constInitVal->constInitValList.size())
+        if(!flag && var->arrayDims[dims - 1] - init_len)
         {
-            int cnt(var->arrayDims[dims - 1] - constInitVal->constInitValList.size());
-            for(int i(dims); i < tempDims; i++)
+            size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
+            for(; left_len > 0; left_len--)
             {
-                cnt *= var->arrayDims[i];
+                if (var->type == TYPE::INT) {
+                    var->push(0);
+                    StoreIIR *ir = new StoreIIR(var, 0, index++);
+                    cur_bb->pushIr(ir);
+                } else {
+                    var->push((float)0.0);
+                    StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                    cur_bb->pushIr(ir);
+                }
             }
+
+            init_len += ceil((double)num_cnt / (double)dim_len);
+            num_cnt = 0;
             
-            index += cnt;
+            for(size_t left_len(dim_len * (var->arrayDims[dims - 1] - init_len)); left_len > 0; left_len--)
+            {
+                if (var->type == TYPE::INT) {
+                    var->push(0);
+                    StoreIIR *ir = new StoreIIR(var, 0, index++);
+                    cur_bb->pushIr(ir);
+                } else {
+                    var->push(0);
+                    StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                    cur_bb->pushIr(ir);
+                }
+            }
         }
 
         dims--;
@@ -267,32 +339,48 @@ void IrVisitor::visit(VarDef *varDef) {
                     }
                 }
             } else {
-                if (var->type == TYPE::INTPOINTER && tempVal->type == TYPE::FLOAT) {
+                if (var->type == TYPE::INTPOINTER && (tempVal->type == TYPE::FLOAT || tempVal->type == TYPE::FLOATPOINTER)) {
                     VarValue *t = nullptr;
                     if (!isGlobal()) {
                         t = new VarValue(cur_func->varCnt++, "", TYPE::INT);
                     } else {
                         t = new VarValue(0, "", TYPE::INT);
                     }
-                    CastFloat2IntIR *ir = new CastFloat2IntIR(t, var);
+                    CastFloat2IntIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastFloat2IntIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastFloat2IntIR(t, tempVal);
                     cur_bb->pushIr(ir);
-                    var = t;
-                } else if (var->type == TYPE::FLOATPOINTER && tempVal->type == TYPE::INT) {
+                    tempVal = t;
+                } else if (var->type == TYPE::FLOATPOINTER && (tempVal->type == TYPE::INT || tempVal->type == TYPE::INTPOINTER)) {
                     VarValue *t = nullptr;
                     if (!isGlobal()) {
                         t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                     } else {
                         t = new VarValue(0, "", TYPE::FLOAT);
                     }
-                    CastInt2FloatIR *ir = new CastInt2FloatIR(t, tempVal);
+                    CastInt2FloatIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastInt2FloatIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastInt2FloatIR(t, tempVal);
                     cur_bb->pushIr(ir);
                     tempVal = t;
                 }
-                if (var->type == TYPE::INT) {
-                    StoreIIR *ir = new StoreIIR(var, tempVal);
+                if (var->type == TYPE::INTPOINTER) {
+                    StoreIIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreIIR(var, tempVal, -1, tempInt);
+                    else ir = new StoreIIR(var, tempVal);
                     cur_bb->pushIr(ir);
                 } else {
-                    StoreFIR *ir = new StoreFIR(var, tempVal);
+                    StoreFIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreFIR(var, tempVal, -1, tempInt);
+                    ir = new StoreFIR(var, tempVal);
                     cur_bb->pushIr(ir);
                 }
             }
@@ -312,19 +400,19 @@ void IrVisitor::visit(VarDef *varDef) {
         if (curDefType == TYPE::INT) {
             if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::INTPOINTER);
-                AllocIIR *ir = new AllocIIR(var, arrayLen);
-                cur_bb->pushIr(ir);
             } else {
                 var = new VarValue(0, varDef->identifier, TYPE::INTPOINTER);
             }
+            AllocIIR *ir = new AllocIIR(var, arrayLen);
+            cur_bb->pushIr(ir);
         } else {
             if (!isGlobal()) {
                 var = new VarValue(cur_func->varCnt++, varDef->identifier, TYPE::FLOATPOINTER);
-                AllocFIR *ir = new AllocFIR(var, arrayLen);
-                cur_bb->pushIr(ir);
             } else {
                 var = new VarValue(0, varDef->identifier, TYPE::FLOATPOINTER);
             }
+            AllocFIR *ir = new AllocFIR(var, arrayLen);
+            cur_bb->pushIr(ir);
         }
         var->isArray = true;
         var->arrayDims = arrayDims;
@@ -354,14 +442,42 @@ void IrVisitor::visit(InitVal *initVal) {
         dims++;
         static VarValue *var = nullptr;
         static bool flag = true;
-        if (flag && dims == tempDims) {
+        if (flag) {
             var = dynamic_cast<VarValue *>(tempVal);
             var->isArray = true;
             flag = false;
         }
+        size_t init_len(0); // 该维度已有长度
+        size_t num_cnt(0);
+
+        size_t dim_len(1);
+        for(int i(dims); i < var->arrayDims.size(); i++)
+        {
+            dim_len *= var->arrayDims[i];
+        }
+
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
+            if(!initVal->initValList[i]->initValList.empty())
+            {
+                size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
+                for(; left_len > 0; left_len--)
+                {
+                    if (var->type == TYPE::INTPOINTER) {
+                        var->push();
+                        StoreIIR *ir = new StoreIIR(var, 0, index++);
+                        cur_bb->pushIr(ir);
+                    } else {
+                        var->push();
+                        StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                        cur_bb->pushIr(ir);
+                    }
+                }
+                init_len += ceil((double)num_cnt / (double)dim_len) + 1;
+                num_cnt = 0;
+            }
             initVal->initValList[i]->accept(*this);
-            if (useConst && dims == tempDims) {
+            if (useConst && initVal->initValList[i]->initValList.empty()) {
+                num_cnt++;
                 if (var->type == TYPE::INTPOINTER) {
                     if (curValType == TYPE::INT) {
                         var->push();
@@ -383,46 +499,87 @@ void IrVisitor::visit(InitVal *initVal) {
                         cur_bb->pushIr(ir);
                     }
                 }
-            } else if (!useConst && dims == tempDims) {
+            } else if (!useConst && initVal->initValList[i]->initValList.empty()) {
+                num_cnt++;
                 VarValue *t = nullptr;
-                if (var->type == TYPE::INTPOINTER && tempVal->type == TYPE::FLOAT) {
+                if (var->type == TYPE::INTPOINTER && (tempVal->type == TYPE::FLOAT || tempVal->type == TYPE::FLOATPOINTER)) {
                     if (!isGlobal()) {
                         t = new VarValue(cur_func->varCnt++, "", TYPE::INT);
                     } else {
                         t = new VarValue(0, "", TYPE::INT);
                     }
-                    CastFloat2IntIR *ir = new CastFloat2IntIR(t, tempVal);
+                    CastFloat2IntIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastFloat2IntIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastFloat2IntIR(t, tempVal);
                     cur_bb->pushIr(ir);
-                } else if (var->type == TYPE::FLOATPOINTER && tempVal->type == TYPE::INT) {
+                    tempVal = t;
+                } else if (var->type == TYPE::FLOATPOINTER && (tempVal->type == TYPE::INT || tempVal->type == TYPE::INTPOINTER)) {
                     if (!isGlobal()) {
                         t = new VarValue(cur_func->varCnt++, "", TYPE::FLOAT);
                     } else {
                         t = new VarValue(0, "", TYPE::FLOAT);
                     }
-                    CastInt2FloatIR *ir = new CastInt2FloatIR(t, tempVal);
+                    CastInt2FloatIR *ir = nullptr;
+                    if(tempVal->isArray)
+                    {
+                        ir = new CastInt2FloatIR(t, tempVal, tempInt);
+                    }
+                    else ir = new CastInt2FloatIR(t, tempVal);
                     cur_bb->pushIr(ir);
+                    tempVal = t;
                 }
                 if (var->type == TYPE::INTPOINTER) {
                     var->push();
-                    StoreIIR *ir = new StoreIIR(var, t, index++);
+                    StoreIIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreIIR(var, tempVal, index++, tempInt);
+                    else ir = new StoreIIR(var, tempVal, index++);
                     cur_bb->pushIr(ir);
                 } else {
                     var->push();
-                    StoreFIR *ir = new StoreFIR(var, t, index++);
+                    StoreFIR *ir = nullptr;
+                    if(tempVal->isArray)
+                        ir = new StoreFIR(var, tempVal, index++, tempInt);
+                    else ir = new StoreFIR(var, tempVal, index++);
                     cur_bb->pushIr(ir);
                 }
             }
         }
 
-        if(!flag && var->arrayDims[dims - 1] - initVal->initValList.size())
+        if(!flag && var->arrayDims[dims - 1] - init_len)
         {
-            int cnt(var->arrayDims[dims - 1] - initVal->initValList.size());
-            for(int i(dims); i < tempDims; i++)
+            size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
+            for(; left_len > 0; left_len--)
             {
-                cnt *= var->arrayDims[i];
+                if (var->type == TYPE::INTPOINTER) {
+                    var->push();
+                    StoreIIR *ir = new StoreIIR(var, 0, index++);
+                    cur_bb->pushIr(ir);
+                } else {
+                    var->push();
+                    StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                    cur_bb->pushIr(ir);
+                }
             }
+
+            init_len += ceil((double)num_cnt / (double)dim_len);
+            num_cnt = 0;
             
-            index += cnt;
+            for(size_t left_len(dim_len * (var->arrayDims[dims - 1] - init_len)); left_len > 0; left_len--)
+            {
+                if (var->type == TYPE::INTPOINTER) {
+                    var->push();
+                    StoreIIR *ir = new StoreIIR(var, 0, index++);
+                    cur_bb->pushIr(ir);
+                } else {
+                    var->push();
+                    StoreFIR *ir = new StoreFIR(var, 0.0, index++);
+                    cur_bb->pushIr(ir);
+                }
+            }
         }
 
         dims--;

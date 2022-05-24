@@ -67,63 +67,92 @@ public:
 };
 class LoadIIR:public Instruction{
 public:
-    bool isArray = false;
-    int arrayIndex;
     Value* v1;
     Value* v2;
+    bool v1_array = false;
+    bool v2_array = false;
+    int v1_index;
+    int v2_index;
     LoadIIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
     }
-    LoadIIR(Value* v1,Value* v2, int arrayIndex){
-        this->isArray = true;
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    LoadIIR(Value* v1,Value* v2, int v1_index){
+        this->v1_array = true;
+        this->v1_index = v1_index;
+        this->v1 = v1;
+        this->v2 = v2;
+    }
+    LoadIIR(Value* v1,Value* v2, int v1_index, int v2_index){
+        if(v1_index >= 0)
+        {
+            this->v1_array = true;
+            this->v1_index = v1_index;
+        }
+        this->v2_array = true;
+        this->v2_index = v2_index;
         this->v1 = v1;
         this->v2 = v2;
     }
     void print() override final{
         v1->print();
+        if(v1_array)
+            std::cout << "[" << v1_index << "]";
         std::cout << " = LoadI ";
         v2->print();
-        if(isArray)
-            std::cout << "[" << arrayIndex << "]";
+        if(v2_array)
+            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
 class LoadFIR:public Instruction{
 public:
-    bool isArray = false;
-    int arrayIndex;
     Value* v1;
     Value* v2;
+    bool v1_array = false;
+    bool v2_array = false;
+    int v1_index;
+    int v2_index;
     LoadFIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
     }
-    LoadFIR(Value* v1,Value* v2, int arrayIndex){
-        this->isArray = true;
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    LoadFIR(Value* v1,Value* v2, int v1_index){
+        this->v1_array = true;
+        this->v1_index = v1_index;
+        this->v1 = v1;
+        this->v2 = v2;
+    }
+    LoadFIR(Value* v1,Value* v2, int v1_index, int v2_index){
+        if(v1_index >= 0)
+        {
+            this->v1_array = true;
+            this->v1_index = v1_index;
+        }
+        this->v2_array = true;
+        this->v2_index = v2_index;
         this->v1 = v1;
         this->v2 = v2;
     }
     void print() override final{
         v1->print();
-        std::cout << " = LoadF ";
+        if(v1_array)
+            std::cout << "[" << v1_index << "]";
+        std::cout << " = LoadI ";
         v2->print();
-        if(isArray)
-            std::cout << "[" << arrayIndex << "]";
+        if(v2_array)
+            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
 class StoreIIR:public Instruction{
 public:
-    bool isArray = false;
-    int arrayIndex;
-
     Value* v1;
     Value* v2;
+    bool v1_array = false;
+    bool v2_array = false;
+    int v1_index;
+    int v2_index;
     bool useConst;
     int val;
     StoreIIR(Value* v1,Value* v2){
@@ -136,19 +165,31 @@ public:
         this->val = val;
         useConst = true;
     }
-    StoreIIR(Value* v1,Value* v2, int arrayIndex){
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    StoreIIR(Value* v1,Value* v2, int v1_index){
+        this->v1_index = v1_index;
+        this->v1_array = true;
         this->v1 = v1;
         this->v2 = v2;
         useConst = false;
     }
-    StoreIIR(Value* v1,int val, int arrayIndex){
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    StoreIIR(Value* v1,int val, int v1_index){
+        this->v1_index = v1_index;
+        this->v1_array = true;
         this->v1 = v1;
         this->val = val;
         useConst = true;
+    }
+    StoreIIR(Value* v1,Value* v2, int v1_index, int v2_index){
+        if(v1_index >= 0)
+        {
+            this->v1_index = v1_index;
+            this->v1_array = true;
+        }
+        this->v2_index = v2_index;
+        this->v2_array = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        useConst = false;
     }
     void print() override final{
         std::cout << "StoreI ";
@@ -156,21 +197,24 @@ public:
             std::cout << "int " << val << " ";
         }else {
             v2->print();
+            if(v2_array)
+                std::cout << "[" << v2_index << "]";
             std::cout << " ";
         }
         v1->print();
-        if(isArray)
-            std::cout << "[" << arrayIndex << "]";
+        if(v1_array)
+            std::cout << "[" << v1_index << "]";
         std::cout << std::endl;
     }
 };
 class StoreFIR:public Instruction{
 public:
-    bool isArray = false;
-    int arrayIndex;
-
     Value* v1;
     Value* v2;
+    bool v1_array = false;
+    bool v2_array = false;
+    int v1_index;
+    int v2_index;
     bool useConst;
     float val;
     StoreFIR(Value* v1,Value* v2){
@@ -183,19 +227,31 @@ public:
         this->val = val;
         useConst = true;
     }
-    StoreFIR(Value* v1,Value* v2, int arrayIndex){
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    StoreFIR(Value* v1,Value* v2, int v1_index){
+        this->v1_index = v1_index;
+        this->v1_array = true;
         this->v1 = v1;
         this->v2 = v2;
         useConst = false;
     }
-    StoreFIR(Value* v1,int val, int arrayIndex){
-        this->arrayIndex = arrayIndex;
-        this->isArray = true;
+    StoreFIR(Value* v1,int val, int v1_index){
+        this->v1_index = v1_index;
+        this->v1_array = true;
         this->v1 = v1;
         this->val = val;
         useConst = true;
+    }
+    StoreFIR(Value* v1,Value* v2, int v1_index, int v2_index){
+        if(v1_index >= 0)
+        {
+            this->v1_index = v1_index;
+            this->v1_array = true;
+        }
+        this->v2_index = v2_index;
+        this->v2_array = true;
+        this->v1 = v1;
+        this->v2 = v2;
+        useConst = false;
     }
     void print() override final{
         std::cout << "StoreF ";
@@ -203,11 +259,13 @@ public:
             std::cout << "float " << val << " ";
         }else {
             v2->print();
+            if(v2_array)
+                std::cout << "[" << v2_index << "]";
             std::cout << " ";
         }
         v1->print();
-        if(isArray)
-            std::cout << "[" << arrayIndex << "]";
+        if(v1_array)
+            std::cout << "[" << v1_index << "]";
         std::cout << std::endl;
     }
 };
@@ -215,14 +273,24 @@ class CastInt2FloatIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
+    bool v2_array = false;
+    int v2_index;
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+    }
+    CastInt2FloatIR(Value* v1,Value* v2, int v2_index){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->v2_index = v2_index;
+        this->v2_array = true;
     }
     void print() override final{
         v1->print();
         std::cout << " = CastInt2Float ";
         v2->print();
+        if(v2_array)
+            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
@@ -230,14 +298,24 @@ class CastFloat2IntIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
+    bool v2_array = false;
+    int v2_index;
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+    }
+    CastFloat2IntIR(Value* v1,Value* v2, int v2_index){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->v2_index = v2_index;
+        this->v2_array = true;
     }
     void print() override final{
         v1->print();
         std::cout << " = CastFloat2Int ";
         v2->print();
+        if(v2_array)
+            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
