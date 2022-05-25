@@ -7,34 +7,63 @@
 #include <string>
 #include <iostream>
 #include <vector>
-
-enum class TYPE{
+enum TypeID {
     INT,
     FLOAT,
     VOID,
-    INTPOINTER,
-    FLOATPOINTER
+    POINTER,
 };
-inline std::ostream& operator << (std::ostream& out,TYPE tp) {
-    switch (tp) {
-        case TYPE::INT:
-            out << "int";break;
-        case TYPE::FLOAT:
-            out << "float";break;
-        case TYPE::VOID:
-            out << "void";break;
-        case TYPE::INTPOINTER:
-            out << "int*";break;
-        case TYPE::FLOATPOINTER:
-            out << "float*";break;
+class Type{
+public:
+    Type(TypeID tid) : tid(tid) {}
+    Type(TypeID tid,Type* contained) : tid(tid),contained(contained){}
+    bool isInt() {
+        return tid == INT;
     }
-    return out;
-}
+    bool isFloat() {
+        return tid == FLOAT;
+    }
+    bool isVoid(){
+        return tid == VOID;
+    }
+    bool isPointer(){
+        return tid == POINTER;
+    }
+    bool isIntPointer(){
+        return tid == POINTER && contained->isInt();
+    }
+    bool isFloatPointer(){
+        return tid == POINTER && contained->isFloat();
+    }
+    Type* getContained() {
+        return contained;
+    }
+    void print() {
+        switch (tid) {
+            case INT:
+                std::cout << "int";
+                break;
+            case FLOAT:
+                std::cout << "float";
+                break;
+            case VOID:
+                std::cout << "void";
+                break;
+            case POINTER:
+                contained->print();
+                std::cout << "*";
+        }
+    }
+private:
+    TypeID tid;
+    Type* contained;
+};
+
 class Value{
 public:
     int num;
     std::string name;
-    TYPE type;
+    Type* type;
     bool isGlobal = false;
     bool isArray = false;
     std::vector<int> arrayDims;
@@ -45,16 +74,18 @@ public:
 };
 class VarValue:public Value{
 public:
-    VarValue(int num,std::string name,TYPE type) {
+    VarValue(int num,std::string name,Type* type) {
         this->num = num;
         this->name = name;
         this->type = type;
     }
     void print() override final {
         if (isGlobal){
-            std::cout << type << " @" << name;
+            type->print();
+            std::cout << " @" << name;
         }else {
-            std::cout << type << " @" << num;
+            type->print();
+            std::cout << " @" << num;
         }
     }
     void push() {
@@ -69,7 +100,7 @@ public:
     std::vector<float> floatValList;
     void setInt(int val) {intVal = val;}
     void setFloat(float val) {floatVal = val;}
-    ConstValue(int num,std::string name,TYPE type){
+    ConstValue(int num,std::string name,Type* type){
         this->num = num;
         this->name = name;
         this->type = type;
@@ -77,8 +108,10 @@ public:
     void print() override final {
         if(!isArray)
         {
-            std::cout <<"const "<< type << " @" << name;
-            if (type == TYPE::INT) {
+            std::cout << "const ";
+            type->print();
+            std::cout << " @" <<name;
+            if (type->isInt()) {
                 std::cout << " = " <<intVal;
             }else{
                 std::cout << " = " << floatVal;
@@ -87,9 +120,13 @@ public:
         else
         {
             if (isGlobal){
-                std::cout <<"const "<< type << " @" << name;
+                std::cout << "const ";
+                type->print();
+                std::cout << " @" << name;
             }else {
-                std::cout <<"const "<< type << " @" << num;
+                std::cout << "const ";
+                type->print();
+                std::cout << " " << num;
             }
         }
 

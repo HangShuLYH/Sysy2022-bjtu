@@ -15,15 +15,21 @@ public:
     int bbCnt = 0;
     int varCnt = 0;
     std::string name;
-    TYPE return_type;
+    Type* return_type;
     std::vector<BasicBlock*> basicBlocks;
     std::vector<Value*> params;
-    Function(std::string name,TYPE type){
+    Function(std::string name,Type* type){
         this->name = name;
         return_type = type;
     }
     void pushBB(BasicBlock* basicBlock) {
         basicBlocks.push_back(basicBlock);
+    }
+    bool isArgs(std::string name) {
+        for (size_t i = 0; i < params.size(); ++i) {
+            if (params[i]->name == name) return true;
+        }
+        return false;
     }
     inline void clear() {
         auto iter = basicBlocks.begin();
@@ -42,7 +48,7 @@ public:
     }
     inline void print() {
         std::cout << "define ";
-        std::cout << return_type;
+        return_type->print();
         std::cout << "@" << name << "(";
         for (size_t i = 0; i < params.size(); ++i) {
             params[i]->print();

@@ -886,6 +886,23 @@ public:
         std::cout << "\n";
     }
 };
+class GEPIR:public Instruction{
+public:
+    Value* v1;
+    Value* v2;
+    int arrayLen;
+    GEPIR(Value* v1,Value* v2,int arrayLen){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->arrayLen = arrayLen;
+    }
+    void print() override final{
+        v1->print();
+        std::cout << " = GEP ";
+        v2->print();
+        std::cout << " " << arrayLen << std::endl;
+    };
+};
 #include "Function.hh"
 class CallIR:public Instruction{
 public:
@@ -917,4 +934,5 @@ public:
         }
     }
 };
+
 #endif //SYSY2022_BJTU_INSTRUCTION_HH

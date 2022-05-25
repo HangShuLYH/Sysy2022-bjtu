@@ -25,16 +25,20 @@ public:
     BasicBlock *cur_bb = nullptr;
     std::stack<BasicBlock *> condBB;
     bool isIF = false;
-    TYPE curDefType;
+    Type* curDefType;
     bool useConst;
-    TYPE curValType;
+    Type* curValType;
     int tempInt;
     float tempFloat;
     int tempDims;
     Value *tempVal;
     std::vector<Value *> args; //temp args for cur_func
     int loopCnt = 0; //use for breakError and ContinueError
-
+    Type* typeInt = new Type(TypeID::INT);
+    Type* typeFloat = new Type(TypeID::FLOAT);
+    Type* typeVoid = new Type(TypeID::VOID);
+    Function* call_func;
+    bool useArgs = false;
     IrVisitor() {
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;

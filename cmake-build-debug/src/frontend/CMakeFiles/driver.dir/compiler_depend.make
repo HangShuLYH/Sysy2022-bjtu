@@ -226,6 +226,17 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/unordered_set.h \
   /usr/include/c++/9/unordered_map \
   /usr/include/c++/9/bits/unordered_map.h \
+  /usr/include/c++/9/cmath \
+  /usr/include/math.h \
+  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
+  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
+  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-logb.h \
+  /usr/include/x86_64-linux-gnu/bits/fp-fast.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
+  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
   ../include/errors/errors.hh
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
@@ -466,6 +477,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/errors/errors.hh:
 
+/usr/include/math.h:
+
 /usr/include/c++/9/bits/unordered_map.h:
 
 /usr/include/c++/9/unordered_map:
@@ -473,6 +486,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/unordered_set.h:
 
 /usr/include/c++/9/limits:
+
+/usr/include/x86_64-linux-gnu/bits/flt-eval-method.h:
 
 /usr/include/c++/9/bits/hashtable_policy.h:
 
@@ -505,6 +520,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/istream.tcc:
 
 /usr/include/c++/9/istream:
+
+/usr/include/x86_64-linux-gnu/bits/fp-logb.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
 
@@ -566,6 +583,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/initializer_list:
 
+/usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
+
 /usr/include/c++/9/iosfwd:
 
 /usr/include/c++/9/bits/stl_tempbuf.h:
@@ -608,6 +627,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/bits/exception_defines.h:
 
+/usr/include/x86_64-linux-gnu/bits/fp-fast.h:
+
 /usr/include/c++/9/bits/cpp_type_traits.h:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/cpu_defines.h:
@@ -639,6 +660,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/streambuf:
 
 /usr/include/sched.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h:
 
 /usr/include/c++/9/bits/stl_construct.h:
 
@@ -677,6 +700,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
 /usr/include/c++/9/bits/shared_ptr_base.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
 
 /usr/include/c++/9/ios:
 
@@ -798,6 +823,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/array:
 
+/usr/include/x86_64-linux-gnu/bits/iscanonical.h:
+
 /usr/include/ctype.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
@@ -817,6 +844,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/stl_pair.h:
 
 /usr/include/c++/9/bits/allocated_ptr.h:
+
+/usr/include/c++/9/cmath:
 
 /usr/include/c++/9/bits/ostream_insert.h:
 
@@ -844,11 +873,15 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/x86_64-linux-gnu/bits/select.h:
 
+/usr/include/x86_64-linux-gnu/bits/math-vector.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/c++/9/bits/std_abs.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 

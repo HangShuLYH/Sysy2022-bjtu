@@ -302,9 +302,6 @@
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/main.cpp">
 			<Option target="compiler"/>
 		</Unit>
-		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/src/errors/errors.hh">
-			<Option target="compiler"/>
-		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/src/frontend/IrVisitor.cc">
 			<Option target="driver"/>
 		</Unit>

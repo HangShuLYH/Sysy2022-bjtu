@@ -104,7 +104,7 @@ public:
     std::vector<BasicBlock*> cond;
     std::vector<BasicBlock*> whileStmt;
 
-    IterationBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,name,cnt){}
+    IterationBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
     void print() override final{
 
     }
