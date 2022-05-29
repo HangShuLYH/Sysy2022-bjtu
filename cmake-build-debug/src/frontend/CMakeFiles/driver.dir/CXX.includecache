@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+../include/errors/errors.hh
+utility
+-
+stdexcept
+-
+
 ../include/frontend/BasicBlock.hh
 string
 -
@@ -43,6 +49,10 @@ iostream
 -
 Value.hh
 ../include/frontend/Value.hh
+BasicBlock.hh
+../include/frontend/BasicBlock.hh
+Function.hh
+../include/frontend/Function.hh
 
 ../include/frontend/IrVisitor.hh
 vector
@@ -57,8 +67,18 @@ parser.hh
 ../include/frontend/parser.hh
 syntax_tree.hh
 ../include/frontend/syntax_tree.hh
+Lin.hh
+../include/frontend/Lin.hh
 stack
 -
+set
+-
+unordered_set
+-
+unordered_map
+-
+
+../include/frontend/Lin.hh
 
 ../include/frontend/Value.hh
 string
@@ -111,4 +131,8 @@ IrVisitor.hh
 /home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/IrVisitor.hh
 iostream
 -
+cmath
+-
+errors/errors.hh
+/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/errors/errors.hh
 

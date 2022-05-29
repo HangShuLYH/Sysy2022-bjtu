@@ -900,8 +900,10 @@ void IrVisitor::visit(Exp *exp) {
 
 void IrVisitor::visit(Cond *cond) {
     cond->lOrExp->accept(*this);
+    CondBlock *bb = dynamic_cast<CondBlock *>(cur_bb);
+    bb->val = tempVal;
     if (useConst) {
-        CondBlock *bb = dynamic_cast<CondBlock *>(cur_bb);
+
         ConstValue *val = nullptr;
         if ((curValType->isInt() && tempInt != 0) ||
             (curValType->isFloat() && tempFloat != 0)) {

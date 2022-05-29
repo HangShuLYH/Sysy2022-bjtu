@@ -48,7 +48,11 @@ public:
     bool isAnd = false;
     CondBlock(BasicBlock* parent,std::string func_name,int cnt): BasicBlock(parent,func_name,cnt){}
     void print() override final{
-
+        std::cout << name << std::endl;
+        for (size_t i = 0; i < ir.size(); ++i) {
+            std::cout << "\t";
+            ir[i]->print();
+        }
     }
     void clear() override final{}
 };
@@ -59,7 +63,17 @@ public:
     std::vector<BasicBlock*> elseStmt;
 
     SelectBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
-    void print() override final{};
+    void print() override final{
+        for (size_t i = 0; i < cond.size(); ++i) {
+            cond[i]->print();
+        }
+        for (size_t i = 0; i < ifStmt.size(); ++i) {
+            ifStmt[i]->print();
+        }
+        for (size_t i = 0; i < elseStmt.size(); ++i) {
+            elseStmt[i]->print();
+        }
+    };
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
@@ -106,7 +120,12 @@ public:
 
     IterationBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
     void print() override final{
-
+        for (size_t i = 0; i < cond.size(); ++i) {
+            cond[i]->print();
+        }
+        for (size_t i = 0; i < whileStmt.size(); ++i) {
+            whileStmt[i]->print();
+        }
     }
     void clear() override final{
         auto iter = cond.begin();

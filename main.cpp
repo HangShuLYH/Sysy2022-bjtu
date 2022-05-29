@@ -22,8 +22,8 @@ int main (int argc, char *argv[])
         std::cerr << "error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
-    irVisitor.print();
     irVisitor.getRelated();
+    irVisitor.print();
     std::cout << "end..." <<std::endl;
     return 0;
 }

@@ -10,7 +10,6 @@
 					[
 						1
 					],
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.17"
@@ -24,7 +23,6 @@
 				},
 				{
 					"build" : "src/frontend",
-					"jsonFile" : "directory-src.frontend-Debug-a09916e5537ef4e359ea.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.17"
@@ -66,35 +64,35 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "compiler::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-compiler-Debug-e0557c8222d286a5edca.json",
+					"jsonFile" : "target-compiler-Debug-f157eca9664bc8fc10e8.json",
 					"name" : "compiler",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "driver::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-driver-Debug-4c498d7b601b426b0b6e.json",
+					"jsonFile" : "target-driver-Debug-d0cdcd48a9b595ccf10c.json",
 					"name" : "driver",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "lexer::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-lexer-Debug-880181b3b1172a4ce8e0.json",
+					"jsonFile" : "target-lexer-Debug-95ad7ca0fd79f95755d3.json",
 					"name" : "lexer",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "parser::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-parser-Debug-a7247009e3cab1ff18ab.json",
+					"jsonFile" : "target-parser-Debug-3de633e0524c9d7a7943.json",
 					"name" : "parser",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "syntax_tree::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-syntax_tree-Debug-4f84942da4d66f8f7fc8.json",
+					"jsonFile" : "target-syntax_tree-Debug-4cdcdd5287dcd1f7a3df.json",
 					"name" : "syntax_tree",
 					"projectIndex" : 0
 				}
@@ -104,12 +102,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/cmake-build-debug",
-		"source" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu"
+		"build" : "/home/lin/下载/workspace/Sysy2022-bjtu/cmake-build-debug",
+		"source" : "/home/lin/下载/workspace/Sysy2022-bjtu"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 3
+		"minor" : 0
 	}
 }

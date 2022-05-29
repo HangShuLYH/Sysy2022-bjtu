@@ -11,10 +11,12 @@
 #include "Function.hh"
 #include "parser.hh"
 #include "syntax_tree.hh"
+#include "Lin.hh"
 #include <stack>
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
+
 class IrVisitor : public Visitor {
 public:
     std::vector<Function*> functions;
@@ -126,8 +128,19 @@ public:
                 }
 
                 dynamic_cast<IterationBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<IterationBlock*>(bbs[i])->cond, firstBB, nextBB);
+
+                dynamic_cast<IterationBlock*>(bbs[i])->whileStmt =
+                        relatedContinueBreak(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt,
+                                             dynamic_cast<IterationBlock*>(bbs[i])->cond.front(), nextBB);
             } else{     //NormalBlock
                 dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextBB;
+                dynamic_cast<NormalBlock*>(bbs[i])->ir.push_back(new JumpIR(nextBB));
+                ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
+                if(ro->type == 3){
+                    dynamic_cast<NormalBlock*>(bbs[i])->
+                        ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index+1,
+                                 std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir));
+                }
             }
         }
         return bbs;
@@ -137,20 +150,71 @@ public:
         BasicBlock* lastOrBB = nextAB;
         dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->trueBB = firstBB;
         dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->falseBB = nextAB;
+        dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
+            ir.push_back(new BranchIR(firstBB, nextAB, dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->val));
 
         for(int i = bbs.size() - 2; i >= 0; --i){
             if(dynamic_cast<CondBlock*>(bbs[i])->isAnd){
                 dynamic_cast<CondBlock*>(bbs[i])->trueBB = bbs[i+1];
                 dynamic_cast<CondBlock*>(bbs[i])->falseBB = lastOrBB;
+                dynamic_cast<CondBlock*>(bbs[i])->
+                        ir.push_back(new BranchIR(bbs[i+1], lastOrBB, dynamic_cast<CondBlock*>(bbs[i])->val));
             } else{
                 dynamic_cast<CondBlock*>(bbs[i])->trueBB = firstBB;
                 dynamic_cast<CondBlock*>(bbs[i])->falseBB = bbs[i+1];
+                dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
+                        ir.push_back(new BranchIR(firstBB, bbs[i+1], dynamic_cast<CondBlock*>(bbs[i])->val));
                 if(i+1<bbs.size()){
                     lastOrBB = bbs[i+1];
                 }
             }
         }
         return bbs;
+    }
+
+    inline std::vector<BasicBlock*> relatedContinueBreak(std::vector<BasicBlock*> bbs, BasicBlock* firstCond, BasicBlock* nextAB) {
+        if(!bbs.empty()){
+            for(size_t i = 0; i < bbs.size(); i++){
+                if(typeid(*bbs[i]) == typeid(IterationBlock)){
+                    continue;
+                } else if(typeid(*bbs[i]) == typeid(SelectBlock)){
+                    dynamic_cast<SelectBlock*>(bbs[i])->ifStmt =
+                            relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt, firstCond, nextAB);
+                    dynamic_cast<SelectBlock*>(bbs[i])->elseStmt =
+                            relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt, firstCond, nextAB);
+                }else if(typeid(*bbs[i]) == typeid(NormalBlock)){
+                    ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
+                    switch (ro->type) {
+                        case 1:
+                            dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextAB;
+                            dynamic_cast<NormalBlock*>(bbs[i])->
+                                    ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
+                                             std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                            break;
+                        case 2:
+                            dynamic_cast<NormalBlock*>(bbs[i])->nextBB = firstCond;
+                            dynamic_cast<NormalBlock*>(bbs[i])->
+                                    ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
+                                             std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                            break;
+                    }
+                }
+            }
+        }
+        return bbs;
+    }
+
+    inline ReturnOfRelated* relatedIR(std::vector<Instruction*> ir){
+       for(size_t i = 0; i < ir.size(); i++){
+            if(typeid(*ir[i]) == typeid(BreakIR)){
+                return new ReturnOfRelated(1, i); //on behalf of break
+            } else if(typeid(*ir[i]) == typeid(ContinueIR)){
+                return new ReturnOfRelated(2, i); //on behalf of continue
+            } else if(typeid(*ir[i]) == typeid(ReturnIR)){
+                return new ReturnOfRelated(3, i);
+            }
+        }
+        return new ReturnOfRelated(0, 0); //nothing
     }
     //end by lin
     inline bool isGlobal() {

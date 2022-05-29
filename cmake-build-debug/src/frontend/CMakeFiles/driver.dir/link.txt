@@ -1,2 +1,2 @@
-/usr/bin/ar qc libdriver.a CMakeFiles/driver.dir/driver.cc.o CMakeFiles/driver.dir/IrVisitor.cc.o
+/usr/bin/ar qc libdriver.a  CMakeFiles/driver.dir/driver.cc.o CMakeFiles/driver.dir/IrVisitor.cc.o
 /usr/bin/ranlib libdriver.a
