@@ -167,6 +167,7 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /usr/include/c++/9/cassert /usr/include/assert.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Lin.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
  /usr/include/c++/9/bits/stl_stack.h /usr/include/c++/9/set \

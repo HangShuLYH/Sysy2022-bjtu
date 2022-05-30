@@ -967,7 +967,7 @@ void IrVisitor::visit(LVal *lVal) {
             for (int i(lVal->expList.size() - 1); i >= 0; i--) {
                 lVal->expList[i]->accept(*this);
                 arrayIndex += arrayDimLen * tempInt;
-                arrayDimLen *= tempVal->arrayDims[i];
+                arrayDimLen *= val->arrayDims[i];
             }
         } else {
             arrayDimLen = tempVal->arrayDims[tempVal->arrayDims.size() - 1];
@@ -2181,21 +2181,25 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
         lAndEXp->lAndExp->accept(*this);
         CondBlock *bb = dynamic_cast<CondBlock *>(cur_bb);
         bb->isAnd = true;
-        if ((curValType->isInt() && tempInt != 0) ||
-            (curValType == typeFloat && tempFloat != 0)) {
-            VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var, 1));
-            VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
-            cur_bb->pushIr(new LoadIIR(v, var));
-            bb->val = v;
+        if (useConst) {
+            if ((curValType->isInt() && tempInt != 0) ||
+                (curValType == typeFloat && tempFloat != 0)) {
+                VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var, 1));
+                VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
+                cur_bb->pushIr(new LoadIIR(v, var));
+                bb->val = v;
+            } else {
+                VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var, 0));
+                VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
+                cur_bb->pushIr(new LoadIIR(v, var));
+                bb->val = v;
+            }
         } else {
-            VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var, 0));
-            VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
-            cur_bb->pushIr(new LoadIIR(v, var));
-            bb->val = v;
+            bb->val = tempVal;
         }
         cur_bb = new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
         if (typeid(*condBB.top()) == typeid(SelectBlock)) {
@@ -2205,21 +2209,25 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
         }
         lAndEXp->eqExp->accept(*this);
         bb = dynamic_cast<CondBlock *>(cur_bb);
-        if ((curValType->isInt() && tempInt != 0) ||
-            (curValType == typeFloat && tempFloat != 0)) {
-            VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var, 1));
-            VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
-            cur_bb->pushIr(new LoadIIR(v, var));
-            bb->val = v;
+        if (useConst) {
+            if ((curValType->isInt() && tempInt != 0) ||
+                (curValType == typeFloat && tempFloat != 0)) {
+                VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var, 1));
+                VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
+                cur_bb->pushIr(new LoadIIR(v, var));
+                bb->val = v;
+            } else {
+                VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
+                cur_bb->pushIr(new AllocIIR(var));
+                cur_bb->pushIr(new StoreIIR(var, 0));
+                VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
+                cur_bb->pushIr(new LoadIIR(v, var));
+                bb->val = v;
+            }
         } else {
-            VarValue *var = new VarValue(cur_func->varCnt++, "", new Type(TypeID::POINTER, typeInt));
-            cur_bb->pushIr(new AllocIIR(var));
-            cur_bb->pushIr(new StoreIIR(var, 0));
-            VarValue *v = new VarValue(cur_func->varCnt++, "", typeInt);
-            cur_bb->pushIr(new LoadIIR(v, var));
-            bb->val = v;
+            bb->val = tempVal;
         }
     }
 }

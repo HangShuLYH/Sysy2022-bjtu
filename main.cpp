@@ -13,7 +13,7 @@ int main (int argc, char *argv[])
     //     std::cout << "please enter a file: ./main test.sy" <<std::endl;
     //     exit(0);
     // }
-    root = ddriver.parse("../test/test.sy");
+    root = ddriver.parse("../test/quickSort.sy");
     //root->visit(0);
     IrVisitor irVisitor;
     try {

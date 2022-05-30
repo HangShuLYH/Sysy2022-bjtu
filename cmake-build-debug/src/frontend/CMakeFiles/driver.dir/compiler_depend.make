@@ -209,6 +209,7 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/cassert \
   /usr/include/assert.h \
   ../include/frontend/location.hh \
+  ../include/frontend/Lin.hh \
   /usr/include/c++/9/stack \
   /usr/include/c++/9/deque \
   /usr/include/c++/9/bits/stl_deque.h \
@@ -500,6 +501,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/stl_stack.h:
 
 /usr/include/c++/9/bits/stl_deque.h:
+
+../include/frontend/Lin.hh:
 
 ../include/frontend/location.hh:
 
