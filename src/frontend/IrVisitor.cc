@@ -26,6 +26,7 @@ void IrVisitor::visit(CompUnit *compUnit) {
     if (!foundMain) {
         throw MainNotFoundError();
     }
+    getRelated();
 }
 
 void IrVisitor::visit(DeclDef *declDef) {

@@ -80,6 +80,13 @@ public:
     void getRelated(){
         std::cout << "begin relative:" << std::endl;
         for (size_t i = 0; i < functions.size(); ++i) {
+            if(functions[i]->return_type->isVoid()){
+                if(typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)){    // solve problem of void
+                    functions[i]->basicBlocks.
+                        push_back(new NormalBlock(nullptr, functions[i]->name, functions[i]->bbCnt++));
+                }
+                functions[i]->basicBlocks.back()->ir.push_back(new ReturnIR(nullptr));
+            }
             functions[i]->basicBlocks = relative(functions[i]->basicBlocks, NULL);
         }
         std::cout << "end relative." << std::endl;
@@ -92,13 +99,7 @@ public:
         for(size_t i = 0; i < bbs.size(); i++){
             BasicBlock* nextBB;
             if(i+1<bbs.size()){
-                if(typeid(*bbs[i+1]) == typeid(SelectBlock)){
-                    nextBB = dynamic_cast<SelectBlock*>(bbs[i+1])->cond.front();
-                }else if(typeid(*bbs[i+1]) == typeid(IterationBlock)){
-                    nextBB = dynamic_cast<IterationBlock*>(bbs[i+1])->cond.front();
-                } else if(typeid(*bbs[i+1]) == typeid(NormalBlock)){
-                    nextBB = bbs[i+1];
-                }
+                nextBB = frontOfNextBB(bbs[i + 1]);
             }else{
                 nextBB = nextAB;
             }
@@ -124,7 +125,7 @@ public:
                 if(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.empty()){
                     firstBB = dynamic_cast<IterationBlock*>(bbs[i])->cond.front();
                 } else{
-                    firstBB = dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.front();
+                    firstBB = frontOfNextBB(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.front());
                 }
 
                 dynamic_cast<IterationBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<IterationBlock*>(bbs[i])->cond, firstBB, nextBB);
@@ -216,6 +217,18 @@ public:
         }
         return new ReturnOfRelated(0, 0); //nothing
     }
+
+    inline BasicBlock* frontOfNextBB(BasicBlock* bb){
+        if(typeid(*bb) == typeid(SelectBlock)){
+            return dynamic_cast<SelectBlock*>(bb)->cond.front();
+        }else if(typeid(*bb) == typeid(IterationBlock)){
+            return dynamic_cast<IterationBlock*>(bb)->cond.front();
+        } else if(typeid(*bb) == typeid(NormalBlock)){
+            return bb;
+        }
+        return bb;
+    }
+
     //end by lin
     inline bool isGlobal() {
         if (cur_bb == entry) {
