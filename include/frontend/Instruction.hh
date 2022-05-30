@@ -865,7 +865,7 @@ public:
     JumpIR(BasicBlock* target) : target(target){}
     void print() override final{
         std::cout << "goto ";
-        std::cout<<target->name;
+        std::cout << target->name;
         std::cout << "\n";
     }
 };
@@ -880,9 +880,13 @@ public:
         std::cout << "goto ";
         cond->print();
         std::cout << " ？ ";
-        std::cout<<trueTarget->name;
+        if(trueTarget) {
+            std::cout << trueTarget->name;
+        }
         std::cout << " : ";
-        std::cout<<falseTarget->name;
+        if(falseTarget) {
+            std::cout << falseTarget->name;
+        }
         std::cout << "\n";
     }
 };

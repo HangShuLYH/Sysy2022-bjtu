@@ -1025,21 +1025,27 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
                 v = new VarValue(cnt++, "", typeFloat);
             }
         }
-        VarValue *v2 = nullptr;
-        if (!isGlobal()) {
-            v2 = new VarValue(cur_func->varCnt++, "",
-                              new Type(TypeID::POINTER, tempVal->type->getContained()));
-        } else {
-            v2 = new VarValue(cnt++, "",
-                              new Type(TypeID::POINTER, tempVal->type->getContained()));
-        }
         if (tempInt != 0) {
+            VarValue *v2 = nullptr;
+            if (!isGlobal()) {
+                v2 = new VarValue(cur_func->varCnt++, "",
+                                  new Type(TypeID::POINTER, tempVal->type->getContained()));
+            } else {
+                v2 = new VarValue(cnt++, "",
+                                  new Type(TypeID::POINTER, tempVal->type->getContained()));
+            }
             cur_bb->pushIr(new GEPIR(v2, tempVal, tempInt));
-        }
-        if (v->type->isInt()) {
-            cur_bb->pushIr(new LoadIIR(v, v2));
-        } else {
-            cur_bb->pushIr(new LoadFIR(v, v2));
+            if (v->type->isInt()) {
+                cur_bb->pushIr(new LoadIIR(v, v2));
+            } else {
+                cur_bb->pushIr(new LoadFIR(v, v2));
+            }
+        }else {
+            if (v->type->isInt()) {
+                cur_bb->pushIr(new LoadIIR(v, tempVal));
+            } else {
+                cur_bb->pushIr(new LoadFIR(v, tempVal));
+            }
         }
         tempVal = v;
     } else if (primaryExp->number) {
