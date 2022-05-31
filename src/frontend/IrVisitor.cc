@@ -978,6 +978,7 @@ void IrVisitor::visit(LVal *lVal) {
         bool useVal = false;
         int arrayIndex(0), arrayDimLen(1);
         Value *val = tempVal;
+        Value *index = nullptr;
         for (int i = 1; i <= tempVal->arrayDims.size() - lVal->expList.size(); ++i) {
             arrayDimLen *= val->arrayDims[tempVal->arrayDims.size() - i];
         }
@@ -988,23 +989,43 @@ void IrVisitor::visit(LVal *lVal) {
                 arrayDimLen *= val->arrayDims[i];
             } else {
                 if (!useVal) {
-                    tempIndex = tempVal;
+                    index = tempVal;
                     useVal = true;
                 }else {
-                    Value* v = nullptr;
-                    if (!isGlobal()) {
-                        v = new VarValue(cur_func->varCnt++,"",typeInt);
+                    if (!useConst) {
+                        Value *v1 = nullptr;
+                        if (!isGlobal()) {
+                            v1 = new VarValue(cur_func->varCnt++, "", typeInt);
+                        } else {
+                            v1 = new VarValue(cnt++, "", typeInt);
+                        }
+                        Value *v2 = nullptr;
+                        if (!isGlobal()) {
+                            v2 = new VarValue(cur_func->varCnt++, "", typeInt);
+                        } else {
+                            v2 = new VarValue(cnt++, "", typeInt);
+                        }
+                        cur_bb->pushIr(new MulIIR(v1, tempVal, arrayDimLen));
+                        cur_bb->pushIr(new AddIR(v2, index, v1));
+                        index = v2;
                     }else {
-                        v = new VarValue(cnt++,"",typeInt);
+                        Value *v1 = nullptr;
+                        if (!isGlobal()) {
+                            v1 = new VarValue(cur_func->varCnt++, "", typeInt);
+                        } else {
+                            v1 = new VarValue(cnt++, "", typeInt);
+                        }
+                        int t = tempInt * arrayDimLen;
+                        cur_bb->pushIr(new AddIIR(v1,index,t));
+                        index = v1;
                     }
-                    cur_bb->pushIr(new MulIIR(v, tempVal, arrayDimLen));
-                    cur_bb->pushIr(new AddIR(tempIndex,tempIndex,v));
                 }
                 arrayDimLen *= val->arrayDims[i];
             }
         }
         tempVal = val;
         tempInt = arrayIndex;
+        tempIndex = index;
         if (tempVal->arrayDims.size() == lVal->expList.size()) {
             tempVal->isArray = false;
             Value* v = nullptr;
