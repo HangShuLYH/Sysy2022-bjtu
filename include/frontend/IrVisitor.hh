@@ -41,6 +41,7 @@ public:
     Type* typeVoid = new Type(TypeID::VOID);
     Function* call_func;
     bool useArgs = false;
+    Value* tempIndex = nullptr;
     IrVisitor() {
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;

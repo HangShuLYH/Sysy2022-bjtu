@@ -19,7 +19,7 @@ void quickSort(int number[], int first, int last) {
         temp = number[pivot];
         number[pivot] = number[j];
         number[j] = temp;
-        quickSort(number, first, j - 1);
+        quickSort(number[i], first, j - 1);
         quickSort(number, j + 1, last);
     }
 }

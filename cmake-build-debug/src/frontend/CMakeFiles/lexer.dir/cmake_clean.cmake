@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/lexer.dir/lexer.cc.o"
+  "CMakeFiles/lexer.dir/lexer.cc.o.d"
   "liblexer.a"
   "liblexer.pdb"
 )

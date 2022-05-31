@@ -894,7 +894,13 @@ class GEPIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
+    Value* v3 = nullptr;
     int arrayLen;
+    GEPIR(Value* v1,Value* v2, Value* v3){
+        this->v1 = v1;
+        this->v2 = v2;
+        this->v3 = v3;
+    }
     GEPIR(Value* v1,Value* v2,int arrayLen){
         this->v1 = v1;
         this->v2 = v2;
@@ -904,7 +910,13 @@ public:
         v1->print();
         std::cout << " = GEP ";
         v2->print();
-        std::cout << " " << arrayLen << std::endl;
+        if(v3) {
+            std::cout << " ";
+            v3->print();
+            std::cout << std::endl;
+        }else {
+            std::cout << " " << arrayLen << std::endl;
+        }
     };
 };
 #include "Function.hh"

@@ -724,7 +724,7 @@ void IrVisitor::visit(Stmt *stmt) {
 void IrVisitor::visit(AssignStmt *assignStmt) {
     assignStmt->lVal->accept(*this);
     Value *left = tempVal;
-    if (tempInt != 0) {
+    if (tempInt != 0 || tempIndex) {
         if (!isGlobal()) {
             left = new VarValue(cur_func->varCnt++, "",
                                 new Type(TypeID::POINTER, tempVal->type->getContained()));
@@ -732,7 +732,12 @@ void IrVisitor::visit(AssignStmt *assignStmt) {
             left = new VarValue(cnt++, "",
                                 new Type(TypeID::POINTER, tempVal->type->getContained()));
         }
-        cur_bb->pushIr(new GEPIR(left, tempVal, tempInt));
+        if (tempIndex){
+            cur_bb->pushIr(new GEPIR(left,tempVal,tempIndex));
+        }else {
+            cur_bb->pushIr(new GEPIR(left, tempVal, tempInt));
+        }
+        tempIndex = nullptr;
     }
     if (useConst) {
         throw LValIsConstError();
@@ -835,6 +840,15 @@ void IrVisitor::visit(IterationStmt *iterationStmt) {
     condBB.push(cur_bb);
     dynamic_cast<IterationBlock *>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++));
     iterationStmt->cond->accept(*this);
+    if (iterationStmt->stmt &&
+    iterationStmt->stmt->returnStmt ||
+    iterationStmt->stmt->breakStmt ||
+    iterationStmt->stmt->assignStmt ||
+    iterationStmt->stmt->continueStmt||
+    iterationStmt->stmt->assignStmt){
+        cur_bb = new NormalBlock(cur_bb,cur_func->name,cur_func->bbCnt++);
+        pushBB();
+    }
     iterationStmt->stmt->accept(*this);
     cur_bb = tempBB;
     condBB.pop();
@@ -904,7 +918,6 @@ void IrVisitor::visit(Cond *cond) {
     CondBlock *bb = dynamic_cast<CondBlock *>(cur_bb);
     bb->val = tempVal;
     if (useConst) {
-
         ConstValue *val = nullptr;
         if ((curValType->isInt() && tempInt != 0) ||
             (curValType->isFloat() && tempFloat != 0)) {
@@ -962,24 +975,55 @@ void IrVisitor::visit(LVal *lVal) {
         if (!tempVal->type->isPointer()) {
             throw InvalidIndexOperatorError();
         }
+        bool useVal = false;
         int arrayIndex(0), arrayDimLen(1);
         Value *val = tempVal;
-        if (!useArgs) {
-            for (int i(lVal->expList.size() - 1); i >= 0; i--) {
-                lVal->expList[i]->accept(*this);
+        for (int i = 1; i <= tempVal->arrayDims.size() - lVal->expList.size(); ++i) {
+            arrayDimLen *= val->arrayDims[tempVal->arrayDims.size() - i];
+        }
+        for (int i(lVal->expList.size() - 1); i >= 0; i--) {
+            lVal->expList[i]->accept(*this);
+            if (useConst && !useVal) {
                 arrayIndex += arrayDimLen * tempInt;
                 arrayDimLen *= val->arrayDims[i];
-            }
-        } else {
-            arrayDimLen = tempVal->arrayDims[tempVal->arrayDims.size() - 1];
-            for (int i(lVal->expList.size() - 1); i >= 0; i--) {
-                lVal->expList[i]->accept(*this);
-                arrayIndex += arrayDimLen * tempInt;
+            } else {
+                if (!useVal) {
+                    tempIndex = tempVal;
+                    useVal = true;
+                }else {
+                    Value* v = nullptr;
+                    if (!isGlobal()) {
+                        v = new VarValue(cur_func->varCnt++,"",typeInt);
+                    }else {
+                        v = new VarValue(cnt++,"",typeInt);
+                    }
+                    cur_bb->pushIr(new MulIIR(v, tempVal, arrayDimLen));
+                    cur_bb->pushIr(new AddIR(tempIndex,tempIndex,v));
+                }
                 arrayDimLen *= val->arrayDims[i];
             }
         }
         tempVal = val;
         tempInt = arrayIndex;
+        if (tempVal->arrayDims.size() == lVal->expList.size()) {
+            tempVal->isArray = false;
+            Value* v = nullptr;
+            if (!isGlobal()) {
+                v = new VarValue(cur_func->varCnt++,"",
+                                 new Type(TypeID::POINTER,val->type->getContained()));
+            }else {
+                v = new VarValue(cnt++,"",
+                                 new Type(TypeID::POINTER,val->type->getContained()));
+            }
+            if (arrayIndex != 0) {
+                cur_bb->pushIr(new GEPIR(v,tempVal,arrayIndex));
+            }else if (tempIndex) {
+                cur_bb->pushIr(new GEPIR(v,tempVal,tempIndex));
+                tempIndex = nullptr;
+            }
+            v->isArray = false;
+            tempVal = v;
+        }
         if (typeid(*val) == typeid(ConstValue)) {
             useConst = true;
             if (tempVal->type->isInt()) {
@@ -1005,11 +1049,31 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
         }
 
         if (useArgs) {
+            if (tempVal->isArray){
             VarValue *v = new VarValue(cur_func->varCnt++, "",
-                                       new Type(TypeID::POINTER, tempVal->type->getContained()));
-            cur_bb->pushIr(new GEPIR(v, tempVal, tempInt));
-            tempVal = v;
-            return;
+                                       new Type(TypeID::POINTER,
+                                                tempVal->type->getContained()));
+                if (tempIndex) {
+                    cur_bb->pushIr(new GEPIR(v, tempVal, tempIndex));
+                } else if (tempInt != 0) {
+                    cur_bb->pushIr(new GEPIR(v, tempVal, tempInt));
+                } else {
+                    return;
+                }
+                tempVal = v;
+                return;
+            }else {
+                Value* v = nullptr;
+                if (tempVal->type->isIntPointer()) {
+                    v = new VarValue(cur_func->varCnt++,"",typeInt);
+                    cur_bb->pushIr(new LoadIIR(v,tempVal));
+                }else {
+                    v = new VarValue(cur_func->varCnt++,"",typeFloat);
+                    cur_bb->pushIr(new LoadFIR(v,tempVal));
+                }
+                tempVal = v;
+                return;
+            }
         }
 
         VarValue *v = nullptr;
@@ -1026,7 +1090,7 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
                 v = new VarValue(cnt++, "", typeFloat);
             }
         }
-        if (tempInt != 0) {
+        if (tempInt != 0 || tempIndex) {
             VarValue *v2 = nullptr;
             if (!isGlobal()) {
                 v2 = new VarValue(cur_func->varCnt++, "",
@@ -1035,7 +1099,11 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
                 v2 = new VarValue(cnt++, "",
                                   new Type(TypeID::POINTER, tempVal->type->getContained()));
             }
-            cur_bb->pushIr(new GEPIR(v2, tempVal, tempInt));
+            if (tempIndex) {
+                cur_bb->pushIr(new GEPIR(v2,tempVal,tempIndex));
+            }else {
+                cur_bb->pushIr(new GEPIR(v2, tempVal, tempInt));
+            }
             if (v->type->isInt()) {
                 cur_bb->pushIr(new LoadIIR(v, v2));
             } else {
@@ -1049,6 +1117,7 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
             }
         }
         tempVal = v;
+        tempIndex = nullptr;
     } else if (primaryExp->number) {
         primaryExp->number->accept(*this);
     }
@@ -1115,7 +1184,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
         if (unaryExp->funcRParams) {
             unaryExp->funcRParams->accept(*this);
         }
-        if (call_func->return_type == typeVoid) {
+        if (call_func->return_type->isVoid()) {
             cur_bb->pushIr(new CallIR(call_func, args));
         } else {
             Value *v = nullptr;
@@ -1140,14 +1209,6 @@ void IrVisitor::visit(FuncRParams *funcRParams) {
         funcRParams->expList[i]->accept(*this);
         useArgs = false;
         if (!useConst) {
-//            Type* type = call_func->params[i]->type;
-//            if ((tempVal->type->isIntPointer() || tempVal->type->isFloatPointer())
-//            && tempVal->type != type ||
-//                    (tempVal->type->isInt() || tempVal->type->isFloat()) &&
-//                            (tempVal->type->isIntPointer() || tempVal->type->isFloatPointer()))
-//            {
-//                throw ArgsTypeNotMatchError(call_func->name);
-//            }
             args.push_back(tempVal);
         } else {
             ConstValue *val;
