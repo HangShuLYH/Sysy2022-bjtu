@@ -161,10 +161,10 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/ostream.tcc /usr/include/c++/9/istream \
  /usr/include/c++/9/bits/istream.tcc \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /usr/include/c++/9/cassert /usr/include/assert.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Lin.hh \
@@ -187,4 +187,5 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
  /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
- /home/hangshu/桌面/Sysy2022-bjtu/include/errors/errors.hh
+ /home/hangshu/桌面/Sysy2022-bjtu/include/errors/errors.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/IRManager.hh

@@ -1,6 +1,17 @@
+const float a = 10.5;
+const int x = 0;
+const int qq[5] = {1,2,3,4,5};
 void quickSort(int number[], int first, int last) {
+    int m;
+    m = qq[first];
+    const int yy = 10;
+    int qqq[5] = {1,2,3,4,5};
+    float abc = qq[2];
+    int bbb = 3.5;
+    int xxxx = -abc + bbb / a + !x;
     int i, j, pivot;
     int temp;
+    number[i] = j;
     if (first<last) {
         pivot = first;
         i = first;

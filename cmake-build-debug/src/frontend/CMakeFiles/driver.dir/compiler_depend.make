@@ -202,10 +202,10 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/istream \
   /usr/include/c++/9/bits/istream.tcc \
   ../include/frontend/Value.hh \
+  ../include/frontend/syntax_tree.hh \
   ../include/frontend/BasicBlock.hh \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
-  ../include/frontend/syntax_tree.hh \
   /usr/include/c++/9/cassert \
   /usr/include/assert.h \
   ../include/frontend/location.hh \
@@ -238,7 +238,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
   /usr/include/x86_64-linux-gnu/bits/mathcalls-narrow.h \
   /usr/include/x86_64-linux-gnu/bits/iscanonical.h \
-  ../include/errors/errors.hh
+  ../include/errors/errors.hh \
+  ../include/frontend/IRManager.hh
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
   /usr/include/stdc-predef.h \
@@ -510,13 +511,13 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/9/cassert:
 
-../include/frontend/syntax_tree.hh:
-
 ../include/frontend/parser.hh:
 
 ../include/frontend/Function.hh:
 
 ../include/frontend/BasicBlock.hh:
+
+../include/frontend/syntax_tree.hh:
 
 ../include/frontend/Value.hh:
 
@@ -707,6 +708,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/mathcalls.h:
 
 /usr/include/c++/9/ios:
+
+../include/frontend/IRManager.hh:
 
 /usr/include/time.h:
 

@@ -8,18 +8,12 @@
 #include <iostream>
 #include "Value.hh"
 enum class OP{
-    POS,
     NEG,
     NOT,
-    LT,
-    GT,
-    LE,
-    GE,
-    EQU,
-    NE
 };
 class Instruction{
 public:
+    Instruction() {}
     virtual void print() = 0;
     virtual ~Instruction(){}
 };
@@ -65,43 +59,19 @@ public:
         std::cout << std::endl;
     }
 };
+
 class LoadIIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
-    bool v1_array = false;
-    bool v2_array = false;
-    int v1_index;
-    int v2_index;
     LoadIIR(Value* v1,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-    }
-    LoadIIR(Value* v1,Value* v2, int v1_index){
-        this->v1_array = true;
-        this->v1_index = v1_index;
-        this->v1 = v1;
-        this->v2 = v2;
-    }
-    LoadIIR(Value* v1,Value* v2, int v1_index, int v2_index){
-        if(v1_index >= 0)
-        {
-            this->v1_array = true;
-            this->v1_index = v1_index;
-        }
-        this->v2_array = true;
-        this->v2_index = v2_index;
         this->v1 = v1;
         this->v2 = v2;
     }
     void print() override final{
         v1->print();
-        if(v1_array)
-            std::cout << "[" << v1_index << "]";
         std::cout << " = LoadI ";
         v2->print();
-        if(v2_array)
-            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
@@ -109,163 +79,42 @@ class LoadFIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
-    bool v1_array = false;
-    bool v2_array = false;
-    int v1_index;
-    int v2_index;
     LoadFIR(Value* v1,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-    }
-    LoadFIR(Value* v1,Value* v2, int v1_index){
-        this->v1_array = true;
-        this->v1_index = v1_index;
-        this->v1 = v1;
-        this->v2 = v2;
-    }
-    LoadFIR(Value* v1,Value* v2, int v1_index, int v2_index){
-        if(v1_index >= 0)
-        {
-            this->v1_array = true;
-            this->v1_index = v1_index;
-        }
-        this->v2_array = true;
-        this->v2_index = v2_index;
         this->v1 = v1;
         this->v2 = v2;
     }
     void print() override final{
         v1->print();
-        if(v1_array)
-            std::cout << "[" << v1_index << "]";
         std::cout << " = LoadI ";
         v2->print();
-        if(v2_array)
-            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
 class StoreIIR:public Instruction{
 public:
-    Value* v1;
-    Value* v2;
-    bool v1_array = false;
-    bool v2_array = false;
-    int v1_index;
-    int v2_index;
-    bool useConst;
-    int val;
-    StoreIIR(Value* v1,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
-    StoreIIR(Value* v1,int val){
-        this->v1 = v1;
-        this->val = val;
-        useConst = true;
-    }
-    StoreIIR(Value* v1,Value* v2, int v1_index){
-        this->v1_index = v1_index;
-        this->v1_array = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
-    StoreIIR(Value* v1,int val, int v1_index){
-        this->v1_index = v1_index;
-        this->v1_array = true;
-        this->v1 = v1;
-        this->val = val;
-        useConst = true;
-    }
-    StoreIIR(Value* v1,Value* v2, int v1_index, int v2_index){
-        if(v1_index >= 0)
-        {
-            this->v1_index = v1_index;
-            this->v1_array = true;
-        }
-        this->v2_index = v2_index;
-        this->v2_array = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
+    //storeI v2 v1
+    Value* dst;
+    TempVal src;
+    StoreIIR(Value* dst,TempVal src):dst(dst),src(src){}
     void print() override final{
         std::cout << "StoreI ";
-        if (useConst) {
-            std::cout << "int " << val << " ";
-        }else {
-            v2->print();
-            if(v2_array)
-                std::cout << "[" << v2_index << "]";
-            std::cout << " ";
-        }
-        v1->print();
-        if(v1_array)
-            std::cout << "[" << v1_index << "]";
+        src.print();
+        std::cout << " ";
+        dst->print();
         std::cout << std::endl;
     }
 };
 class StoreFIR:public Instruction{
 public:
-    Value* v1;
-    Value* v2;
-    bool v1_array = false;
-    bool v2_array = false;
-    int v1_index;
-    int v2_index;
-    bool useConst;
-    float val;
-    StoreFIR(Value* v1,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
-    StoreFIR(Value* v1,float val){
-        this->v1 = v1;
-        this->val = val;
-        useConst = true;
-    }
-    StoreFIR(Value* v1,Value* v2, int v1_index){
-        this->v1_index = v1_index;
-        this->v1_array = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
-    StoreFIR(Value* v1,int val, int v1_index){
-        this->v1_index = v1_index;
-        this->v1_array = true;
-        this->v1 = v1;
-        this->val = val;
-        useConst = true;
-    }
-    StoreFIR(Value* v1,Value* v2, int v1_index, int v2_index){
-        if(v1_index >= 0)
-        {
-            this->v1_index = v1_index;
-            this->v1_array = true;
-        }
-        this->v2_index = v2_index;
-        this->v2_array = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        useConst = false;
-    }
+    //storeI v2 v1
+    Value* dst;
+    TempVal src;
+    StoreFIR(Value* dst,TempVal src):dst(dst),src(src){}
     void print() override final{
         std::cout << "StoreF ";
-        if (useConst) {
-            std::cout << "float " << val << " ";
-        }else {
-            v2->print();
-            if(v2_array)
-                std::cout << "[" << v2_index << "]";
-            std::cout << " ";
-        }
-        v1->print();
-        if(v1_array)
-            std::cout << "[" << v1_index << "]";
+        src.print();
+        std::cout << " ";
+        dst->print();
         std::cout << std::endl;
     }
 };
@@ -273,24 +122,14 @@ class CastInt2FloatIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
-    bool v2_array = false;
-    int v2_index;
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
-    }
-    CastInt2FloatIR(Value* v1,Value* v2, int v2_index){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v2_index = v2_index;
-        this->v2_array = true;
     }
     void print() override final{
         v1->print();
         std::cout << " = CastInt2Float ";
         v2->print();
-        if(v2_array)
-            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
@@ -298,519 +137,295 @@ class CastFloat2IntIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
-    bool v2_array = false;
-    int v2_index;
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
-    }
-    CastFloat2IntIR(Value* v1,Value* v2, int v2_index){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v2_index = v2_index;
-        this->v2_array = true;
     }
     void print() override final{
         v1->print();
         std::cout << " = CastFloat2Int ";
         v2->print();
-        if(v2_array)
-            std::cout << "[" << v2_index << "]";
         std::cout << std::endl;
     }
 };
-class AddIR:public Instruction{
+class ArithmeticIR:public Instruction{
 public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    AddIR(Value* v1,Value* v2,Value* v3){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = Add ";
-        v2->print();
-        std::cout << " ";
-        v3->print();
-        std::cout << std::endl;
-    }
+    TempVal res;
+    TempVal left;
+    TempVal right;
+    ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right){}
+    virtual void print() = 0;
+    virtual ~ArithmeticIR(){}
 };
-class AddIIR:public Instruction{
+class AddIIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    int val;
-    AddIIR(Value* v1,Value* v2,int val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    AddIIR(Value* v1,int val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    AddIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = AddI ";
-        v2->print();
-        std::cout << " int " << val;
+        left.print();
+        std::cout << " ";
+        right.print();
         std::cout << std::endl;
     }
 };
-class AddFIR:public Instruction{
+class AddFIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    float val;
-    AddFIR(Value* v1,Value* v2,float val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    AddFIR(Value* v1,float val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    AddFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = AddF ";
-        v2->print();
-        std::cout << " float " << val;
-        std::cout << std::endl;
-    }
-};
-class SubIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    SubIR(Value* v1,Value* v2,Value* v3){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = Sub ";
-        v2->print();
+        left.print();
         std::cout << " ";
-        v3->print();
+        right.print();
         std::cout << std::endl;
     }
 };
-class SubIIR:public Instruction{
+
+class SubIIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    int val;
-    bool constFirst = false;
-    SubIIR(Value* v1,Value* v2,int val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    SubIIR(Value* v1,int val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        constFirst = true;
-    }
+    SubIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = SubI ";
-        if (!constFirst) {
-            v2->print();
-            std::cout << " int " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " int "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
     }
 };
-class SubFIR:public Instruction{
+class SubFIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    float val;
-    bool constFirst = false;
-    SubFIR(Value* v1,Value* v2,float val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    SubFIR(Value* v1,float val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        constFirst = true;
-    }
+    SubFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = SubF ";
-        if (!constFirst) {
-            v2->print();
-            std::cout << " float " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " float "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
-    }
-};
-class MulIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    MulIR(Value* v1,Value* v2,Value* v3){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = Mul ";
-        v2->print();
+        left.print();
         std::cout << " ";
-        v3->print();
+        right.print();
         std::cout << std::endl;
     }
 };
-class MulIIR:public Instruction{
+class MulIIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    int val;
-    MulIIR(Value* v1,Value* v2,int val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    MulIIR(Value* v1,int val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    MulIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = MulI ";
-        v2->print();
-        std::cout << " int " << val;
+        left.print();
+        std::cout << " ";
+        right.print();
         std::cout << std::endl;
     }
 };
-class MulFIR:public Instruction{
+class MulFIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    float val;
-    MulFIR(Value* v1,Value* v2,float val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    MulFIR(Value* v1,float val,Value* v2){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    MulFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = MulF ";
-        v2->print();
-        std::cout << " float " << val;
-        std::cout << std::endl;
-    }
-};
-class DivIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    DivIR(Value* v1,Value* v2,Value* v3){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = Div ";
-        v2->print();
+        left.print();
         std::cout << " ";
-        v3->print();
+        right.print();
         std::cout << std::endl;
     }
 };
-class DivIIR:public Instruction{
+class DivIIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    int val;
-    bool constFirst = false;
-    DivIIR(Value* v1,Value* v2,int val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    DivIIR(Value* v1,int val,Value* v2){
-        constFirst = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    DivIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = DivI ";
-        if (!constFirst) {
-            v2->print();
-            std::cout << " int " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " int "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
-    }
-};
-class DivFIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    float val;
-    bool constFirst = false;
-    DivFIR(Value* v1,Value* v2,float val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    DivFIR(Value* v1,float val,Value* v2){
-        constFirst = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = DivF ";
-        if (!constFirst) {
-            v2->print();
-            std::cout << " float " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " float "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
-    }
-};
-class ModIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    ModIR(Value* v1,Value* v2,Value* v3){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-    }
-    void print() override final{
-        v1->print();
-        std::cout << " = Mod ";
-        v2->print();
+        left.print();
         std::cout << " ";
-        v3->print();
+        right.print();
         std::cout << std::endl;
     }
 };
-class ModIIR:public Instruction{
+class DivFIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    int val;
-    bool constFirst = false;
-    ModIIR(Value* v1,Value* v2,int val){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
-    ModIIR(Value* v1,int val,Value* v2){
-        constFirst = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-    }
+    DivFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
-        std::cout << " = ModI ";
-        if (!constFirst) {
-            v2->print();
-            std::cout << " int " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " int "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
+        res.print();
+        std::cout << " = DivF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class ModIR:public ArithmeticIR{
+public:
+    ModIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = Mod ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
     }
 };
 class UnaryIR:public Instruction{
 public:
-    Value* v1;
-    Value* v2;
+    TempVal res;
+    TempVal v;
     OP op;
-    UnaryIR(Value* v1,Value* v2,OP op){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->op = op;
-    }
+    UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){}
     void print() override final{
-        v1->print();
+        res.print();
         std::cout << " = ";
         switch (op) {
-            case OP::POS:
-                std::cout << "POS ";break;
             case OP::NEG:
                 std::cout << "NEG ";break;
             case OP::NOT:
                 std::cout << "NOT ";break;
         }
-        v2->print();
+        v.print();
         std::cout << std::endl;
     }
 };
-class RelIIR:public Instruction{
+class LTIIR:public ArithmeticIR{
 public:
-    Value* v1;
-    Value* v2;
-    OP op;
-    int val;
-    bool constFirst = false;
-    RelIIR(Value* v1,Value* v2,int val,OP op){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        this->op = op;
-    }
-    RelIIR(Value* v1,int val,Value* v2,OP op){
-        constFirst = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        this->op = op;
-    }
+    LTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print() override final{
-        v1->print();
-        switch (op) {
-            case OP::LT:
-                std::cout << " = LT ";
-                break;
-            case OP::GT:
-                std::cout << " = GT ";
-                break;
-            case OP::LE:
-                std::cout << " = LE ";
-                break;
-            case OP::GE:
-                std::cout << " = GE ";
-                break;
-        }
-        if (!constFirst) {
-            v2->print();
-            std::cout << " int " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " int "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
-    }
-};
-class RelFIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    OP op;
-    float val;
-    bool constFirst = false;
-    RelFIR(Value* v1,Value* v2,float val,OP op){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        this->op = op;
-    }
-    RelFIR(Value* v1,float val,Value* v2,OP op){
-        constFirst = true;
-        this->v1 = v1;
-        this->v2 = v2;
-        this->val = val;
-        this->op = op;
-    }
-    void print() override final{
-        v1->print();
-        switch (op) {
-            case OP::LT:
-                std::cout << " = LT ";
-                break;
-            case OP::GT:
-                std::cout << " = GT ";
-                break;
-            case OP::LE:
-                std::cout << " = LE ";
-                break;
-            case OP::GE:
-                std::cout << " = GE ";
-                break;
-        }
-        if (!constFirst) {
-            v2->print();
-            std::cout << " float " << val;
-            std::cout << std::endl;
-        }else {
-            std::cout << " float "<<val;
-            v2->print();
-            std::cout << std::endl;
-        }
-    }
-};
-class RelIR:public Instruction{
-public:
-    Value* v1;
-    Value* v2;
-    Value* v3;
-    OP op;
-    RelIR(Value* v1,Value* v2,Value* v3,OP op){
-        this->v1 = v1;
-        this->v2 = v2;
-        this->v3 = v3;
-        this->op = op;
-    }
-    void print() override final{
-        v1->print();
-        switch (op) {
-            case OP::LT:
-                std::cout << " = LT ";
-                break;
-            case OP::GT:
-                std::cout << " = GT ";
-                break;
-            case OP::LE:
-                std::cout << " = LE ";
-                break;
-            case OP::GE:
-                std::cout << " = GE ";
-                break;
-        }
-        v2->print();
+        res.print();
+        std::cout << " = LTI ";
+        left.print();
         std::cout << " ";
-        v3->print();
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class LTFIR:public ArithmeticIR{
+public:
+    LTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = LTF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class LEIIR:public ArithmeticIR{
+public:
+    LEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = LEI ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class LEFIR:public ArithmeticIR{
+public:
+    LEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = LEF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class GTIIR:public ArithmeticIR{
+public:
+    GTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = GTI ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class GTFIR:public ArithmeticIR{
+public:
+    GTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = GTF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class GEIIR:public ArithmeticIR{
+public:
+    GEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = GEI ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class GEFIR:public ArithmeticIR{
+public:
+    GEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = GEF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class EQUIIR:public ArithmeticIR{
+public:
+    EQUIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = EQUI ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class EQUFIR:public ArithmeticIR{
+public:
+    EQUFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = EQUF ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class NEIIR:public ArithmeticIR{
+public:
+    NEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = NEI ";
+        left.print();
+        std::cout << " ";
+        right.print();
+        std::cout << std::endl;
+    }
+};
+class NEFIR:public ArithmeticIR{
+public:
+    NEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    void print() override final{
+        res.print();
+        std::cout << " = NEF ";
+        left.print();
+        std::cout << " ";
+        right.print();
         std::cout << std::endl;
     }
 };
@@ -923,13 +538,13 @@ public:
 class CallIR:public Instruction{
 public:
     Function* func;
-    std::vector<Value*> args;
+    std::vector<TempVal> args;
     Value* returnVal = nullptr;
-    CallIR(Function* func,std::vector<Value*> args) {
+    CallIR(Function* func,std::vector<TempVal> args) {
         this->func = func;
         this->args = args;
     }
-    CallIR(Function* func,std::vector<Value*> args, Value* v){
+    CallIR(Function* func,std::vector<TempVal> args, Value* v){
         this->func = func;
         this->args = args;
         this->returnVal = v;
@@ -941,7 +556,15 @@ public:
         }
         std::cout << "call " << func->name << "(";
         for (size_t i = 0; i < args.size(); ++i) {
-            args[i]->print();
+            if(args[i].getVal()) {
+                args[i].getVal()->print();
+            }else {
+                if(args[i].isInt()) {
+                    std::cout << args[i].getInt();
+                }else {
+                    std::cout << args[i].getFloat();
+                }
+            }
             if (i < args.size() - 1) {
                 std::cout << " , ";
             }else {

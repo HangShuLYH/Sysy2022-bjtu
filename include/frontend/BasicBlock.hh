@@ -6,7 +6,6 @@
 #define SYSY2022_BJTU_BASICBLOCK_HH
 #include <string>
 #include "Instruction.hh"
-class Instruction;
 class BasicBlock{
 public:
     std::vector<Instruction*> ir;

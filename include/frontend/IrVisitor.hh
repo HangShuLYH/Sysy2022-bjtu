@@ -16,9 +16,10 @@
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
-
+#include "Value.hh"
 class IrVisitor : public Visitor {
 public:
+    TempVal tempVal;
     std::vector<Function*> functions;
     std::vector<Value*> globalVars;
     Function *cur_func = nullptr;
@@ -28,20 +29,13 @@ public:
     std::stack<BasicBlock *> condBB;
     bool isIF = false;
     Type* curDefType;
-    bool useConst;
-    Type* curValType;
-    int tempInt;
-    float tempFloat;
-    int tempDims;
-    Value *tempVal;
-    std::vector<Value *> args; //temp args for cur_func
+    std::vector<TempVal> args; //temp args for cur_func
     int loopCnt = 0; //use for breakError and ContinueError
     Type* typeInt = new Type(TypeID::INT);
     Type* typeFloat = new Type(TypeID::FLOAT);
     Type* typeVoid = new Type(TypeID::VOID);
     Function* call_func;
     bool useArgs = false;
-    Value* tempIndex = nullptr;
     IrVisitor() {
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
@@ -61,7 +55,7 @@ public:
         functions.push_back(func);
     }
     void pushGlobalVars(Value *var) {
-        var->isGlobal = true;
+        var->setGlobal(true);
         globalVars.push_back(var);
     }
     void print() {
@@ -231,7 +225,7 @@ public:
     }
 
     //end by lin
-    inline bool isGlobal() {
+    bool isGlobal() {
         if (cur_bb == entry) {
             return true;
         }
@@ -243,14 +237,14 @@ public:
         BasicBlock *bb = cur_bb;
         while (bb) {
             for (size_t i = 0; i < bb->vars.size(); ++i) {
-                if (bb->vars[i]->name == name) {
+                if (bb->vars[i]->getName() == name) {
                     return bb->vars[i];
                 }
             }
             bb = bb->parent;
         }
         for (size_t i = 0; i < globalVars.size(); ++i) {
-            if (globalVars[i]->name == name) {
+            if (globalVars[i]->getName() == name) {
                 return globalVars[i];
             }
         }

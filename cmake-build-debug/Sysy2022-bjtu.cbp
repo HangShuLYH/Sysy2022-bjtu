@@ -290,6 +290,9 @@
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh">
 			<Option target="compiler"/>
 		</Unit>
+		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/frontend/IRManager.hh">
+			<Option target="compiler"/>
+		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh">
 			<Option target="compiler"/>
 		</Unit>

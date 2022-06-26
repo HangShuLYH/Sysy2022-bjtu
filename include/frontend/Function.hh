@@ -27,7 +27,7 @@ public:
     }
     bool isArgs(std::string name) {
         for (size_t i = 0; i < params.size(); ++i) {
-            if (params[i]->name == name) return true;
+            if (params[i]->getName() == name) return true;
         }
         return false;
     }
