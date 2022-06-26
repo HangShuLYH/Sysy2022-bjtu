@@ -22,7 +22,7 @@ int main (int argc, char *argv[])
         std::cerr << "error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
-    irVisitor.print();
+    irVisitor.print(std::cout);
     std::cout << "end..." <<std::endl;
     return 0;
 }

@@ -46,19 +46,19 @@ public:
             }
         }
     }
-    inline void print() {
-        std::cout << "define ";
-        return_type->print();
-        std::cout << "@" << name << "(";
+    inline void print(std::ostream& out) {
+        out << "define ";
+        return_type->print(out);
+        out << "@" << name << "(";
         for (size_t i = 0; i < params.size(); ++i) {
-            params[i]->print();
+            params[i]->print(out);
             if (i != params.size() - 1){
-                std::cout << ",";
+                out << ",";
             }
         }
-        std::cout << ")" <<std::endl;
+        out << ")" <<std::endl;
         for (size_t i = 0; i < basicBlocks.size(); ++i) {
-            basicBlocks[i]->print();
+            basicBlocks[i]->print(out);
         }
     }
 };

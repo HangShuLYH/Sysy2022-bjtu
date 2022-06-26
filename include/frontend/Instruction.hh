@@ -14,7 +14,7 @@ enum class OP{
 class Instruction{
 public:
     Instruction() {}
-    virtual void print() = 0;
+    virtual void print(std::ostream& out) = 0;
     virtual ~Instruction(){}
 };
 class AllocIIR:public Instruction{
@@ -30,12 +30,12 @@ public:
         this->arrayLen = arrayLen;
         this->v = v;
     }
-    void print() override final{
-        v->print();
-        std::cout << " = AllocaI";
+    void print(std::ostream& out) override final{
+        v->print(out);
+        out << " = AllocaI";
         if(isArray)
-            std::cout << "(" << arrayLen << ")";
-        std::cout << std::endl;
+            out << "(" << arrayLen << ")";
+        out << std::endl;
     }
 };
 class AllocFIR:public Instruction{
@@ -51,12 +51,12 @@ public:
         this->arrayLen = arrayLen;
         this->v = v;
     }
-    void print() override final{
-        v->print();
-        std::cout << " = AllocaF";
+    void print(std::ostream& out) override final{
+        v->print(out);
+        out << " = AllocaF";
         if(isArray)
-            std::cout << "(" << arrayLen << ")";
-        std::cout << std::endl;
+            out << "(" << arrayLen << ")";
+        out << std::endl;
     }
 };
 
@@ -68,11 +68,11 @@ public:
         this->v1 = v1;
         this->v2 = v2;
     }
-    void print() override final{
-        v1->print();
-        std::cout << " = LoadI ";
-        v2->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        v1->print(out);
+        out << " = LoadI ";
+        v2->print(out);
+        out << std::endl;
     }
 };
 class LoadFIR:public Instruction{
@@ -83,11 +83,11 @@ public:
         this->v1 = v1;
         this->v2 = v2;
     }
-    void print() override final{
-        v1->print();
-        std::cout << " = LoadI ";
-        v2->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        v1->print(out);
+        out << " = LoadI ";
+        v2->print(out);
+        out << std::endl;
     }
 };
 class StoreIIR:public Instruction{
@@ -96,12 +96,12 @@ public:
     Value* dst;
     TempVal src;
     StoreIIR(Value* dst,TempVal src):dst(dst),src(src){}
-    void print() override final{
-        std::cout << "StoreI ";
-        src.print();
-        std::cout << " ";
-        dst->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        out << "StoreI ";
+        src.print(out);
+        out << " ";
+        dst->print(out);
+        out << std::endl;
     }
 };
 class StoreFIR:public Instruction{
@@ -110,12 +110,12 @@ public:
     Value* dst;
     TempVal src;
     StoreFIR(Value* dst,TempVal src):dst(dst),src(src){}
-    void print() override final{
-        std::cout << "StoreF ";
-        src.print();
-        std::cout << " ";
-        dst->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        out << "StoreF ";
+        src.print(out);
+        out << " ";
+        dst->print(out);
+        out << std::endl;
     }
 };
 class CastInt2FloatIR:public Instruction{
@@ -126,11 +126,11 @@ public:
         this->v1 = v1;
         this->v2 = v2;
     }
-    void print() override final{
-        v1->print();
-        std::cout << " = CastInt2Float ";
-        v2->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        v1->print(out);
+        out << " = CastInt2Float ";
+        v2->print(out);
+        out << std::endl;
     }
 };
 class CastFloat2IntIR:public Instruction{
@@ -141,11 +141,11 @@ public:
         this->v1 = v1;
         this->v2 = v2;
     }
-    void print() override final{
-        v1->print();
-        std::cout << " = CastFloat2Int ";
-        v2->print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        v1->print(out);
+        out << " = CastFloat2Int ";
+        v2->print(out);
+        out << std::endl;
     }
 };
 class ArithmeticIR:public Instruction{
@@ -154,116 +154,116 @@ public:
     TempVal left;
     TempVal right;
     ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right){}
-    virtual void print() = 0;
+    virtual void print(std::ostream& out) = 0;
     virtual ~ArithmeticIR(){}
 };
 class AddIIR:public ArithmeticIR{
 public:
     AddIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = AddI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = AddI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class AddFIR:public ArithmeticIR{
 public:
     AddFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = AddF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = AddF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 
 class SubIIR:public ArithmeticIR{
 public:
     SubIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = SubI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = SubI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class SubFIR:public ArithmeticIR{
 public:
     SubFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = SubF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = SubF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class MulIIR:public ArithmeticIR{
 public:
     MulIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = MulI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = MulI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class MulFIR:public ArithmeticIR{
 public:
     MulFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = MulF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = MulF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class DivIIR:public ArithmeticIR{
 public:
     DivIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = DivI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = DivI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class DivFIR:public ArithmeticIR{
 public:
     DivFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = DivF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = DivF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class ModIR:public ArithmeticIR{
 public:
     ModIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = Mod ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = Mod ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class UnaryIR:public Instruction{
@@ -272,175 +272,175 @@ public:
     TempVal v;
     OP op;
     UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){}
-    void print() override final{
-        res.print();
-        std::cout << " = ";
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = ";
         switch (op) {
             case OP::NEG:
-                std::cout << "NEG ";break;
+                out << "NEG ";break;
             case OP::NOT:
-                std::cout << "NOT ";break;
+                out << "NOT ";break;
         }
-        v.print();
-        std::cout << std::endl;
+        v.print(out);
+        out << std::endl;
     }
 };
 class LTIIR:public ArithmeticIR{
 public:
     LTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = LTI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = LTI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class LTFIR:public ArithmeticIR{
 public:
     LTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = LTF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = LTF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class LEIIR:public ArithmeticIR{
 public:
     LEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = LEI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = LEI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class LEFIR:public ArithmeticIR{
 public:
     LEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = LEF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = LEF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class GTIIR:public ArithmeticIR{
 public:
     GTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = GTI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = GTI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class GTFIR:public ArithmeticIR{
 public:
     GTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = GTF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = GTF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class GEIIR:public ArithmeticIR{
 public:
     GEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = GEI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = GEI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class GEFIR:public ArithmeticIR{
 public:
     GEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = GEF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = GEF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class EQUIIR:public ArithmeticIR{
 public:
     EQUIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = EQUI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = EQUI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class EQUFIR:public ArithmeticIR{
 public:
     EQUFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = EQUF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = EQUF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class NEIIR:public ArithmeticIR{
 public:
     NEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = NEI ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = NEI ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class NEFIR:public ArithmeticIR{
 public:
     NEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
-    void print() override final{
-        res.print();
-        std::cout << " = NEF ";
-        left.print();
-        std::cout << " ";
-        right.print();
-        std::cout << std::endl;
+    void print(std::ostream& out) override final{
+        res.print(out);
+        out << " = NEF ";
+        left.print(out);
+        out << " ";
+        right.print(out);
+        out << std::endl;
     }
 };
 class BreakIR:public Instruction{
 public:
     BreakIR(){};
-    void print() override final{
-        std::cout << "break" << std::endl;
+    void print(std::ostream& out) override final{
+        out << "break" << std::endl;
     }
 };
 class ContinueIR:public Instruction{
 public:
     ContinueIR(){};
-    void print() override final{
-        std::cout << "continue" << std::endl;
+    void print(std::ostream& out) override final{
+        out << "continue" << std::endl;
     }
 };
 class ReturnIR:public Instruction{
@@ -461,16 +461,16 @@ public:
         retFloat = val;
         useFloat = true;
     }
-    void print() override final{
-        std::cout << "ret ";
+    void print(std::ostream& out) override final{
+        out << "ret ";
         if (v) {
-            v->print();
+            v->print(out);
         }else if (useInt) {
-            std::cout << "int " << retInt;
+            out << "int " << retInt;
         }else if (useFloat){
-            std::cout << "float " << retFloat;
+            out << "float " << retFloat;
         }
-        std::cout << "\n";
+        out << "\n";
     }
 };
 #include "BasicBlock.hh"
@@ -478,10 +478,10 @@ class JumpIR:public Instruction{
 public:
     BasicBlock* target;
     JumpIR(BasicBlock* target) : target(target){}
-    void print() override final{
-        std::cout << "goto ";
-        std::cout << target->name;
-        std::cout << "\n";
+    void print(std::ostream& out) override final{
+        out << "goto ";
+        out << target->name;
+        out << "\n";
     }
 };
 class BranchIR:public Instruction{
@@ -491,18 +491,18 @@ public:
     Value* cond;
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) :
     trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {}
-    void print() override final{
-        std::cout << "goto ";
-        cond->print();
-        std::cout << " ？ ";
+    void print(std::ostream& out) override final{
+        out << "goto ";
+        cond->print(out);
+        out << " ？ ";
         if(trueTarget) {
-            std::cout << trueTarget->name;
+            out << trueTarget->name;
         }
-        std::cout << " : ";
+        out << " : ";
         if(falseTarget) {
-            std::cout << falseTarget->name;
+            out << falseTarget->name;
         }
-        std::cout << "\n";
+        out << "\n";
     }
 };
 class GEPIR:public Instruction{
@@ -521,16 +521,16 @@ public:
         this->v2 = v2;
         this->arrayLen = arrayLen;
     }
-    void print() override final{
-        v1->print();
-        std::cout << " = GEP ";
-        v2->print();
+    void print(std::ostream& out) override final{
+        v1->print(out);
+        out << " = GEP ";
+        v2->print(out);
         if(v3) {
-            std::cout << " ";
-            v3->print();
-            std::cout << std::endl;
+            out << " ";
+            v3->print(out);
+            out << std::endl;
         }else {
-            std::cout << " " << arrayLen << std::endl;
+            out << " " << arrayLen << std::endl;
         }
     };
 };
@@ -549,26 +549,26 @@ public:
         this->args = args;
         this->returnVal = v;
     }
-    void print() override final{
+    void print(std::ostream& out) override final{
         if (returnVal) {
-            returnVal->print();
-            std::cout << " = ";
+            returnVal->print(out);
+            out << " = ";
         }
-        std::cout << "call " << func->name << "(";
+        out << "call " << func->name << "(";
         for (size_t i = 0; i < args.size(); ++i) {
             if(args[i].getVal()) {
-                args[i].getVal()->print();
+                args[i].getVal()->print(out);
             }else {
                 if(args[i].isInt()) {
-                    std::cout << args[i].getInt();
+                    out << args[i].getInt();
                 }else {
-                    std::cout << args[i].getFloat();
+                    out << args[i].getFloat();
                 }
             }
             if (i < args.size() - 1) {
-                std::cout << " , ";
+                out << " , ";
             }else {
-                std::cout << ")\n";
+                out << ")\n";
             }
         }
     }

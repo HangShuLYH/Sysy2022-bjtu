@@ -22,7 +22,7 @@ public:
     void pushVar(Value *v) {
         vars.push_back(v);
     }
-    virtual void print() = 0;
+    virtual void print(std::ostream& out) = 0;
     virtual void clear() = 0;
     virtual ~BasicBlock(){}
 };
@@ -30,11 +30,11 @@ class NormalBlock:public BasicBlock{
 public:
     BasicBlock* nextBB = nullptr;
     NormalBlock(BasicBlock* parent,std::string func_name, int cnt) : BasicBlock(parent,func_name,cnt){}
-    void print() override final{
-        std::cout << name << std::endl;
+    void print(std::ostream& out) override final{
+        out << name << std::endl;
         for (size_t i = 0; i < ir.size(); ++i) {
             std::cout << "\t";
-            ir[i]->print();
+            ir[i]->print(out);
         }
     };
     void clear() override final{}
@@ -46,11 +46,11 @@ public:
     Value* val = nullptr;
     bool isAnd = false;
     CondBlock(BasicBlock* parent,std::string func_name,int cnt): BasicBlock(parent,func_name,cnt){}
-    void print() override final{
-        std::cout << name << std::endl;
+    void print(std::ostream& out) override final{
+        out << name << std::endl;
         for (size_t i = 0; i < ir.size(); ++i) {
             std::cout << "\t";
-            ir[i]->print();
+            ir[i]->print(out);
         }
     }
     void clear() override final{}
@@ -62,15 +62,15 @@ public:
     std::vector<BasicBlock*> elseStmt;
 
     SelectBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
-    void print() override final{
+    void print(std::ostream& out) override final{
         for (size_t i = 0; i < cond.size(); ++i) {
-            cond[i]->print();
+            cond[i]->print(out);
         }
         for (size_t i = 0; i < ifStmt.size(); ++i) {
-            ifStmt[i]->print();
+            ifStmt[i]->print(out);
         }
         for (size_t i = 0; i < elseStmt.size(); ++i) {
-            elseStmt[i]->print();
+            elseStmt[i]->print(out);
         }
     };
     void clear() override final{
@@ -118,12 +118,12 @@ public:
     std::vector<BasicBlock*> whileStmt;
 
     IterationBlock(BasicBlock* parent,std::string func_name,int cnt) : BasicBlock(parent,func_name,cnt){}
-    void print() override final{
+    void print(std::ostream& out) override final{
         for (size_t i = 0; i < cond.size(); ++i) {
-            cond[i]->print();
+            cond[i]->print(out);
         }
         for (size_t i = 0; i < whileStmt.size(); ++i) {
-            whileStmt[i]->print();
+            whileStmt[i]->print(out);
         }
     }
     void clear() override final{

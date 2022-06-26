@@ -39,20 +39,20 @@ public:
     Type* getContained() {
         return contained;
     }
-    void print() {
+    void print(std::ostream& out) {
         switch (tid) {
             case INT:
-                std::cout << "int";
+                out << "int";
                 break;
             case FLOAT:
-                std::cout << "float";
+                out << "float";
                 break;
             case VOID:
-                std::cout << "void";
+                out << "void";
                 break;
             case POINTER:
-                contained->print();
-                std::cout << "*";
+                contained->print(out);
+                out << "*";
         }
     }
 private:
@@ -64,7 +64,7 @@ class Value{
 public:
     Value(){}
     virtual ~Value(){}
-    virtual void print() = 0;
+    virtual void print(std::ostream& out) = 0;
     bool is_Array() {return isArray;}
     void setArray(bool flag) {isArray = flag;}
     void setArrayDims(std::vector<int> arrDims) {arrayDims = arrDims;}
@@ -101,13 +101,13 @@ public:
         this->type = type;
         this->isGlobal = isGlobal;
     }
-    void print() override final {
+    void print(std::ostream& out = std::cout) override final {
         if (isGlobal){
-            type->print();
-            std::cout << " @" << name;
+            type->print(out);
+            out << " @" << name;
         }else {
-            type->print();
-            std::cout << " @" << num;
+            type->print(out);
+            out << " @" << num;
         }
     }
     void push() {
@@ -121,11 +121,11 @@ private:
     Value* val;
     Type* type;
 public:
-    void print() {
+    void print(std::ostream& out) {
         if (val) {
-            val->print();
+            val->print(out);
         } else {
-            std::cout << getConst();
+            out << getConst();
         }
     }
     bool isInt() {return type->isInt();}
@@ -244,28 +244,28 @@ public:
         this->type = type;
         this->isGlobal = isGlobal;
     }
-    void print() override final {
+    void print(std::ostream& out) override final {
         if(!isArray)
         {
-            std::cout << "const ";
-            type->print();
+            out << "const ";
+            type->print(out);
             std::cout << " @" <<name;
             if (type->isInt()) {
-                std::cout << " = " <<intVal;
+                out << " = " <<intVal;
             }else{
-                std::cout << " = " << floatVal;
+                out << " = " << floatVal;
             }
         }
         else
         {
             if (isGlobal){
-                std::cout << "const ";
-                type->print();
-                std::cout << " @" << name;
+                out << "const ";
+                type->print(out);
+                out << " @" << name;
             }else {
-                std::cout << "const ";
-                type->print();
-                std::cout << " @" << num;
+                out << "const ";
+                type->print(out);
+                out << " @" << num;
             }
         }
 

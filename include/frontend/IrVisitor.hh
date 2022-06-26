@@ -58,17 +58,17 @@ public:
         var->setGlobal(true);
         globalVars.push_back(var);
     }
-    void print() {
-        std::cout << "globalVars:" << std::endl;
+    void print(std::ostream& out = std::cout) {
+        out << "globalVars:" << std::endl;
         for (size_t i = 0; i < globalVars.size(); ++i) {
-            std::cout << "\t";
-            globalVars[i]->print();
-            std::cout << std::endl;
+            out << "\t";
+            globalVars[i]->print(out);
+            out << std::endl;
         }
-        std::cout << ".entryBB:" << std::endl;
+        out << ".entryBB:" << std::endl;
         entry->print();
         for (size_t i = 0; i < functions.size(); ++i) {
-            functions[i]->print();
+            functions[i]->print(out);
         }
     }
     //Created by lin 5.22
