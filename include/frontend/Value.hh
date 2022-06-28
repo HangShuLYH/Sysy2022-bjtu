@@ -121,6 +121,12 @@ private:
     Value* val;
     Type* type;
 public:
+    TempVal() {
+        this->valInt = 0;
+        this->valFloat = 0.0;
+        this->val = nullptr;
+        this->type = nullptr;
+    }
     void print(std::ostream& out) {
         if (val) {
             val->print(out);

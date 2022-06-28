@@ -66,7 +66,7 @@ public:
             out << std::endl;
         }
         out << ".entryBB:" << std::endl;
-        entry->print();
+        entry->print(out);
         for (size_t i = 0; i < functions.size(); ++i) {
             functions[i]->print(out);
         }
