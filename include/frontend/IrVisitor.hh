@@ -18,12 +18,9 @@
 #include <unordered_map>
 #include "Value.hh"
 class IrVisitor : public Visitor {
-public:
+private:
     TempVal tempVal;
-    std::vector<Function*> functions;
-    std::vector<Value*> globalVars;
     Function *cur_func = nullptr;
-    BasicBlock *entry = nullptr;
     int cnt = 0;
     BasicBlock *cur_bb = nullptr;
     std::stack<BasicBlock *> condBB;
@@ -36,6 +33,10 @@ public:
     Type* typeVoid = new Type(TypeID::VOID);
     Function* call_func;
     bool useArgs = false;
+public:
+    std::vector<Function*> functions;
+    std::vector<Value*> globalVars;
+    BasicBlock *entry = nullptr;
     IrVisitor() {
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;

@@ -81,6 +81,7 @@ void IrVisitor::visit(ConstDef *constDef) {
         pushVars(var);
         if (constDef->constInitVal) {
             tempVal.setVal(var);
+            tempVal.setType(var->getType());
             constDef->constInitVal->accept(*this);
         }
     }
@@ -111,10 +112,10 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
             dim_len *= var->getArrayDims()[i];
         }
 
-        Value* t = new VarValue("",var->getType(),isGlobal(),
-                                isGlobal()?cnt++:cur_func->varCnt++, true);
-
+        Value* t = nullptr;
         for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
+            t = new VarValue("",var->getType(),false,
+                                    isGlobal()?cnt++:cur_func->varCnt++, true);
             // TempVal src;
             // src.setType(var->getType()->getContained());
             // src.setVal(nullptr);
@@ -304,10 +305,11 @@ void IrVisitor::visit(InitVal *initVal) {
             dim_len *= var->getArrayDims()[i];
         }
 
-        Value* t = new VarValue("",var->getType(),isGlobal(),
-                        isGlobal()?cnt++:cur_func->varCnt++, true);
+        Value* t = nullptr;
 
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
+            t = new VarValue("",var->getType(),false,
+                                    isGlobal()?cnt++:cur_func->varCnt++, true);
             if (!initVal->initValList[i]->initValList.empty()) {
                 size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
                 for (; left_len > 0; left_len--) {

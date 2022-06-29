@@ -95,7 +95,12 @@ public:
     //storeI v2 v1
     Value* dst;
     TempVal src;
-    StoreIIR(Value* dst,TempVal src):dst(dst),src(src){}
+    StoreIIR(Value* dst,TempVal src):dst(dst),src(src){
+        if (!src.getVal() && src.isFloat()) {
+            this->src.setType(dst->getType()->getContained());
+            this->src.setInt(src.getFloat());
+        }
+    }
     void print(std::ostream& out) override final{
         out << "StoreI ";
         src.print(out);
@@ -109,7 +114,12 @@ public:
     //storeI v2 v1
     Value* dst;
     TempVal src;
-    StoreFIR(Value* dst,TempVal src):dst(dst),src(src){}
+    StoreFIR(Value* dst,TempVal src):dst(dst),src(src){
+        if (!src.getVal() && src.isInt()) {
+            src.setType(dst->getType()->getContained());
+            src.setFloat(src.getFloat());
+        }
+    }
     void print(std::ostream& out) override final{
         out << "StoreF ";
         src.print(out);

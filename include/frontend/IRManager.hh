@@ -40,7 +40,8 @@ public:
 class StoreIRManager {
 public:
     static Instruction *getIR(Value *dst, TempVal src) {
-        if (dst->getType()->isIntPointer()) {
+        if (dst->getType()->isIntPointer() ||
+        dst->getType()->getContained()->isIntPointer()) {
             return new StoreIIR(dst, src);
         } else {
             return new StoreFIR(dst, src);
@@ -50,7 +51,8 @@ public:
         TempVal t;
         t.setVal(src);
         t.setType(src->getType());
-        if (dst->getType()->isIntPointer()) {
+        if (dst->getType()->isIntPointer() ||
+        dst->getType()->getContained()->isIntPointer()) {
             return new StoreIIR(dst, t);
         } else {
             return new StoreFIR(dst, t);

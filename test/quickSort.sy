@@ -1,13 +1,19 @@
 const float a = 10.5;
 const float x = -1;
 const int qq[4][2] = {x - 2, 2,{3},{5},7,8};
+/*
+	float* @17 = AllocaF
+	StoreF 5 float* @17
+	int* @19 = AllocaI
+	StoreI 3.5 int* @19
+	*/
 void quickSort(int number[], int first, int last) {
     // int test[2][3] = {{x-1,2.0},{3,4,5}};
     int m;
     m = qq[first];
     const int yy = 10;
     int qqq[5] = {1,2,3,4,5};
-    float abc = qq[2];
+    float abc = qq[0][1];
     int bbb = 3.5;
     int xxxx = -abc + bbb / a + !x;
     int i, j, pivot;
