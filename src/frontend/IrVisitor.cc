@@ -697,9 +697,10 @@ void IrVisitor::visit(LVal *lVal) {
         cur_bb->pushIr(LoadIRManager::getIR(v, tempVal.getVal()));
         tempVal.setVal(v);
         tempVal.setType(v->getType());
-        if (lVal->expList.empty()) {
-            useArgs = true;
-        }
+    }
+    if (lVal->expList.size() < tempVal.getVal()->getArrayDims().size()) {
+        useArgs = true;
+        return;
     }
     if (lVal->expList.empty()) {
         if (typeid(ConstValue) == typeid(*tempVal.getVal())) {
@@ -819,11 +820,7 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
         VarValue *v = new VarValue("", tempVal.getVal()->getType()->getContained(),
                                    isGlobal(),
                                    isGlobal() ? cnt++ : cur_func->varCnt++, true);
-        if (v->getType()->isInt()) {
-            cur_bb->pushIr(new LoadIIR(v, tempVal.getVal()));
-        } else {
-            cur_bb->pushIr(new LoadFIR(v, tempVal.getVal()));
-        }
+        cur_bb->pushIr(LoadIRManager::getIR(v,tempVal.getVal()));
         tempVal.setVal(v);
         tempVal.setType(v->getType());
     } else if (primaryExp->number) {
