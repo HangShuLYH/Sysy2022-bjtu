@@ -6,6 +6,7 @@
 #define SYSY2022_BJTU_BASICBLOCK_HH
 #include <string>
 #include "Instruction.hh"
+#include <list>
 class BasicBlock{
 public:
     std::vector<Instruction*> ir;
@@ -28,6 +29,8 @@ public:
 };
 class NormalBlock:public BasicBlock{
 public:
+    std::list<BasicBlock*> preBBs;
+    std::list<BasicBlock*> succBBs;
     BasicBlock* nextBB = nullptr;
     NormalBlock(BasicBlock* parent,std::string func_name, int cnt) : BasicBlock(parent,func_name,cnt){}
     void print(std::ostream& out) override final{

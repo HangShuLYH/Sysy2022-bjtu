@@ -9,6 +9,7 @@
 
 void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < compUnit->declDefList.size(); ++i) {
+        cur_bb = entry;
         compUnit->declDefList[i]->accept(*this);
     }
     bool foundMain = false;
@@ -682,7 +683,7 @@ void IrVisitor::visit(Cond *cond) {
 void IrVisitor::visit(LVal *lVal) {
     tempVal.setVal(findAllVal(lVal->identifier));
     if (!tempVal.getVal()) {
-        return;
+        throw UndefinedVarError(lVal->identifier);
     }
     tempVal.setType(tempVal.getVal()->getType());
     if (cur_func && cur_func->isArgs(tempVal.getVal()->getName())) {
@@ -703,7 +704,6 @@ void IrVisitor::visit(LVal *lVal) {
     }
     if (lVal->expList.empty()) {
         if (typeid(ConstValue) == typeid(*tempVal.getVal())) {
-            tempVal.setType(tempVal.getType());
             if (tempVal.isInt()) {
                 tempVal.setInt(dynamic_cast<ConstValue*>(tempVal.getVal())->getIntVal());
             }else {
