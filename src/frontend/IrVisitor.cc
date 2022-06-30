@@ -682,10 +682,9 @@ void IrVisitor::visit(Cond *cond) {
 void IrVisitor::visit(LVal *lVal) {
     tempVal.setVal(findAllVal(lVal->identifier));
     if (!tempVal.getVal()) {
-        throw UndefinedVarError(lVal->identifier);
+        return;
     }
     tempVal.setType(tempVal.getVal()->getType());
-    tempVal.setInt(0);
     if (cur_func && cur_func->isArgs(tempVal.getVal()->getName())) {
         if (!tempVal.getVal()->getType()->getContained()->isPointer()) return;
         auto v = new VarValue(tempVal.getVal()->getName(),
