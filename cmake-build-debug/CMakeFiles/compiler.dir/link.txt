@@ -1,1 +1,1 @@
-/usr/bin/c++ -g CMakeFiles/compiler.dir/main.cpp.o -o compiler  src/frontend/libdriver.a src/frontend/libparser.a src/frontend/liblexer.a src/frontend/libsyntax_tree.a 
+/usr/bin/g++ -g CMakeFiles/compiler.dir/main.cpp.o CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o -o compiler  src/frontend/libdriver.a src/frontend/libparser.a src/frontend/liblexer.a src/frontend/libsyntax_tree.a 

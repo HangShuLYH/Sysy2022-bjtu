@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "src/frontend/libsyntax_tree.a"
+			"path" : "src/frontend/liblexer.a"
 		}
 	],
 	"backtrace" : 1,
@@ -27,7 +27,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 16,
+				"line" : 7,
 				"parent" : 0
 			},
 			{
@@ -60,11 +60,11 @@
 			[
 				{
 					"backtrace" : 3,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include"
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include"
 				},
 				{
 					"backtrace" : 4,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/frontend"
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include/frontend"
 				}
 			],
 			"language" : "CXX",
@@ -74,9 +74,9 @@
 			]
 		}
 	],
-	"id" : "syntax_tree::@5ac769f44fc6001c3db0",
-	"name" : "syntax_tree",
-	"nameOnDisk" : "libsyntax_tree.a",
+	"id" : "lexer::@5ac769f44fc6001c3db0",
+	"name" : "lexer",
+	"nameOnDisk" : "liblexer.a",
 	"paths" : 
 	{
 		"build" : "src/frontend",
@@ -97,7 +97,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/frontend/syntax_tree.cc",
+			"path" : "src/frontend/lexer.cc",
 			"sourceGroupIndex" : 0
 		}
 	],

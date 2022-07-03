@@ -1,0 +1,259 @@
+//
+// Created by lin on 2022/7/3.
+//
+//Created by lin 5.22
+#include "MIRBuilder.hh"
+#include "Function.hh"
+
+std::vector<BasicBlock*> MIRBuilder::relatedCond(std::vector<BasicBlock*> bbs, BasicBlock* firstBB, BasicBlock* nextAB){
+    BasicBlock* lastOrBB = nextAB;
+    dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->trueBB = firstBB;
+    dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->falseBB = nextAB;
+    dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
+            ir.push_back(new BranchIR(firstBB, nextAB, dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->val));
+
+    for(int i = bbs.size() - 2; i >= 0; --i){
+        if(dynamic_cast<CondBlock*>(bbs[i])->isAnd){
+            dynamic_cast<CondBlock*>(bbs[i])->trueBB = bbs[i+1];
+            dynamic_cast<CondBlock*>(bbs[i])->falseBB = lastOrBB;
+            dynamic_cast<CondBlock*>(bbs[i])->
+                    ir.push_back(new BranchIR(bbs[i+1], lastOrBB, dynamic_cast<CondBlock*>(bbs[i])->val));
+        } else{
+            dynamic_cast<CondBlock*>(bbs[i])->trueBB = firstBB;
+            dynamic_cast<CondBlock*>(bbs[i])->falseBB = bbs[i+1];
+            dynamic_cast<CondBlock*>(bbs[i])->
+                    ir.push_back(new BranchIR(firstBB, bbs[i+1], dynamic_cast<CondBlock*>(bbs[i])->val));
+            if(i+1<bbs.size()){
+                lastOrBB = bbs[i+1];
+            }
+        }
+    }
+    return bbs;
+}
+
+std::vector<BasicBlock*> MIRBuilder::relatedContinueBreak(std::vector<BasicBlock*> bbs, BasicBlock* firstCond, BasicBlock* nextAB) {
+    if(!bbs.empty()){
+        for(size_t i = 0; i < bbs.size(); i++){
+            if(typeid(*bbs[i]) == typeid(IterationBlock)){
+                continue;
+            } else if(typeid(*bbs[i]) == typeid(SelectBlock)){
+                dynamic_cast<SelectBlock*>(bbs[i])->ifStmt =
+                        relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt, firstCond, nextAB);
+                dynamic_cast<SelectBlock*>(bbs[i])->elseStmt =
+                        relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt, firstCond, nextAB);
+            }else if(typeid(*bbs[i]) == typeid(NormalBlock)){
+                ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
+                switch (ro->type) {
+                    case 1:
+                        dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextAB;
+                        dynamic_cast<NormalBlock*>(bbs[i])->
+                                ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
+                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                        break;
+                    case 2:
+                        dynamic_cast<NormalBlock*>(bbs[i])->nextBB = firstCond;
+                        dynamic_cast<NormalBlock*>(bbs[i])->
+                                ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
+                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                        break;
+                }
+            }
+        }
+    }
+    return bbs;
+}
+
+ReturnOfRelated* MIRBuilder::relatedIR(std::vector<Instruction*> ir){
+    for(size_t i = 0; i < ir.size(); i++){
+        if(typeid(*ir[i]) == typeid(BreakIR)){
+            return new ReturnOfRelated(1, i); //on behalf of break
+        } else if(typeid(*ir[i]) == typeid(ContinueIR)){
+            return new ReturnOfRelated(2, i); //on behalf of continue
+        } else if(typeid(*ir[i]) == typeid(ReturnIR)){
+            return new ReturnOfRelated(3, i);
+        }
+    }
+    return new ReturnOfRelated(0, 0); //nothing
+}
+
+BasicBlock* MIRBuilder::frontOfNextBB(BasicBlock* bb){
+    if(typeid(*bb) == typeid(SelectBlock)){
+        return dynamic_cast<SelectBlock*>(bb)->cond.front();
+    }else if(typeid(*bb) == typeid(IterationBlock)){
+        return dynamic_cast<IterationBlock*>(bb)->cond.front();
+    } else if(typeid(*bb) == typeid(NormalBlock)){
+        return bb;
+    }
+    return bb;
+}
+
+//end by lin
+
+//create by lin 7.2
+void MIRBuilder::getPreAndSucc(){
+    std::cout<<"begin pre and succ:"<<std::endl;
+    std::vector<Function*> functions = irVisitor.functions;
+    for (size_t i = 0; i < functions.size(); ++i) {
+        if (functions[i]->return_type->isVoid()) {
+            if (typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)) {    // solve problem of void
+                functions[i]->basicBlocks.
+                        push_back(new NormalBlock(nullptr, functions[i]->name, functions[i]->bbCnt++));
+            }
+            functions[i]->basicBlocks.back()->ir.push_back(new ReturnIR(nullptr));
+        }
+        functions[i]->basicBlocks = refresh(functions[i]->basicBlocks, NULL);
+    }
+    removeDuplicate();
+    std::cout<<"end pre and succ:"<<std::endl;
+}
+
+std::vector<BasicBlock*> MIRBuilder::refresh(std::vector<BasicBlock*> bbs, BasicBlock* nextAB){
+    std::vector<BasicBlock*> newBBs;
+    std::vector<BasicBlock*> tempBBs;
+
+    if(bbs.empty()){
+        return bbs;
+    }
+    for(size_t i = 0; i < bbs.size(); i++){
+        BasicBlock* nextBB;
+        if(i+1<bbs.size()){
+            nextBB = frontOfNextBB(bbs[i + 1]);
+        }else{
+            nextBB = nextAB;
+        }
+
+        if(typeid(*bbs[i]) == typeid(SelectBlock)){
+            BasicBlock* firstOfIfBB;
+            if(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.empty()){
+                firstOfIfBB = nextBB;
+            } else{
+                firstOfIfBB = dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.front();
+            }
+
+            BasicBlock* firstOfElseBB;
+            if(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt.empty()){
+                firstOfElseBB = nextBB;
+            } else{
+                firstOfElseBB = dynamic_cast<SelectBlock*>(bbs[i])->elseStmt.front();
+            }
+
+            dynamic_cast<SelectBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<SelectBlock*>(bbs[i])->cond, firstOfIfBB, firstOfElseBB);
+
+            tempBBs = refresh(dynamic_cast<SelectBlock*>(bbs[i])->cond, NULL);
+            newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
+            tempBBs = refresh(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt, nextBB);
+            newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
+            tempBBs = refresh(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt, nextBB);
+            newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
+        } else if(typeid(*bbs[i]) == typeid(IterationBlock)){
+
+            BasicBlock* firstBB;
+            if(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.empty()){
+                firstBB = dynamic_cast<IterationBlock*>(bbs[i])->cond.front();
+            } else{
+                firstBB = frontOfNextBB(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.front());
+            }
+
+            dynamic_cast<IterationBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<IterationBlock*>(bbs[i])->cond, firstBB, nextBB);
+
+            dynamic_cast<IterationBlock*>(bbs[i])->whileStmt =
+                    relatedContinueBreak(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt,
+                                         dynamic_cast<IterationBlock*>(bbs[i])->cond.front(), nextBB);
+
+            tempBBs = refresh(dynamic_cast<IterationBlock*>(bbs[i])->cond, NULL);
+            newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
+            tempBBs = refresh(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt,
+                              dynamic_cast<IterationBlock*>(bbs[i])->cond.front());
+            newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
+        } else if(typeid(*bbs[i]) == typeid(NormalBlock)){     //NormalBlock
+            NormalBlock* nb = toNormal(nextBB);
+            if(nb){
+                nb->pushPre(dynamic_cast<NormalBlock*>(bbs[i]));
+                dynamic_cast<NormalBlock*>(bbs[i])->pushSucc(nb);
+            }
+
+            //  solve return sentence
+            dynamic_cast<NormalBlock*>(bbs[i])->ir.push_back(new JumpIR(nextBB));
+            ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
+            if(ro->type == 3){
+                dynamic_cast<NormalBlock*>(bbs[i])->
+                        ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index+1,
+                                 std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir));
+            }
+            newBBs.push_back(dynamic_cast<NormalBlock*>(bbs[i]));
+        } else if(typeid(*bbs[i]) == typeid(CondBlock)){
+            newBBs.push_back(toNormal(bbs[i]));
+        }
+    }
+    return newBBs;
+}
+
+NormalBlock* MIRBuilder::toNormal(BasicBlock* bb){
+    if(bb == NULL){
+        return NULL;
+    }
+    std::string func_name = bb->name;
+    std::string num = func_name.substr(func_name.find("::BB")+4);
+    func_name = func_name.substr(0, func_name.find(':'));
+
+    NormalBlock* nb = new NormalBlock(nullptr, func_name, atoi(num.c_str()));
+
+    if(typeid(*bb) == typeid(NormalBlock)){
+        return dynamic_cast<NormalBlock*>(bb);
+    } else{                                         //CondBlock
+        if(getCondToNormal(dynamic_cast<CondBlock*>(bb))){
+            nb = getCondToNormal(dynamic_cast<CondBlock*>(bb));
+        }
+        nb->ir = bb->ir;
+        NormalBlock* succ = toNormal(dynamic_cast<CondBlock*>(bb)->trueBB);
+        if(succ){
+            succ->pushPre(nb);
+            nb->pushSucc(succ);
+        }
+        succ = toNormal(dynamic_cast<CondBlock*>(bb)->falseBB);
+        if(succ){
+            succ->pushPre(nb);
+            nb->pushSucc(succ);
+        }
+        putCondToNormal(dynamic_cast<CondBlock*>(bb), nb);
+//        std::cout<<nb->name<<std::endl;
+    }
+    return nb;
+}
+
+void MIRBuilder::print(std::ostream& out){
+    irVisitor.print(std::cout);
+}
+//end by lin 7.2
+//create by lin 7.3
+NormalBlock* MIRBuilder::getCondToNormal(CondBlock *cb){
+    return condToNormal[cb];
+}
+
+void MIRBuilder::putCondToNormal(CondBlock* cb, NormalBlock* nb){
+    condToNormal[cb] = nb;
+//    std::cout<<getCondToNormal(cb)->name<<std::endl;
+}
+
+void MIRBuilder::removeDuplicate(){
+    for(size_t i = 0; i < irVisitor.functions.size(); i++){
+        std::vector<BasicBlock*> bbs = irVisitor.functions[i]->basicBlocks;
+        std::cout<<bbs.size()<<std::endl;
+        for(size_t j = bbs.size() - 1; j > 0 ; j--){
+            NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
+            if(nowNB->getPre().size() == 1){
+                NormalBlock* preNB = dynamic_cast<NormalBlock*>(*nowNB->getPre().begin());
+                if(preNB->getSucc().size() == 1){
+                    preNB->setSucc(nowNB->getSucc());
+                    preNB->ir.pop_back();
+                    preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
+                    bbs.erase(bbs.begin()+j);
+                }
+            }
+        }
+        irVisitor.functions[i]->basicBlocks = bbs;
+    }
+}
+//end by lin 7.3
+
+

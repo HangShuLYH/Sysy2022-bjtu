@@ -6,6 +6,7 @@
 #include <cmath>
 #include "errors/errors.hh"
 #include "IRManager.hh"
+#include "MIRBuilder.hh"
 
 void IrVisitor::visit(CompUnit *compUnit) {
     for (size_t i = 0; i < compUnit->declDefList.size(); ++i) {
@@ -28,7 +29,6 @@ void IrVisitor::visit(CompUnit *compUnit) {
     if (!foundMain) {
         throw MainNotFoundError();
     }
-    getRelated();
 }
 
 void IrVisitor::visit(DeclDef *declDef) {

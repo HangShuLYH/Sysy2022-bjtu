@@ -6,12 +6,12 @@
 #define SYSY2022_BJTU_IRVISITOR_HH
 
 #include <vector>
+#include "string.h"
 #include <memory>
 #include "CompileUnit.hh"
 #include "Function.hh"
 #include "parser.hh"
 #include "syntax_tree.hh"
-#include "Lin.hh"
 #include <stack>
 #include <set>
 #include <unordered_set>
@@ -72,160 +72,7 @@ public:
             functions[i]->print(out);
         }
     }
-    //Created by lin 5.22
-    void getRelated(){
-        std::cout << "begin relative:" << std::endl;
-        for (size_t i = 0; i < functions.size(); ++i) {
-            if(functions[i]->return_type->isVoid()){
-                if(typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)){    // solve problem of void
-                    functions[i]->basicBlocks.
-                        push_back(new NormalBlock(nullptr, functions[i]->name, functions[i]->bbCnt++));
-                }
-                functions[i]->basicBlocks.back()->ir.push_back(new ReturnIR(nullptr));
-            }
-            functions[i]->basicBlocks = relative(functions[i]->basicBlocks, NULL);
-        }
-        std::cout << "end relative." << std::endl;
-    }
 
-    std::vector<BasicBlock*> relative(std::vector<BasicBlock*> bbs, BasicBlock* nextAB){
-        if(bbs.empty()){
-            return bbs;
-        }
-        for(size_t i = 0; i < bbs.size(); i++){
-            BasicBlock* nextBB;
-            if(i+1<bbs.size()){
-                nextBB = frontOfNextBB(bbs[i + 1]);
-            }else{
-                nextBB = nextAB;
-            }
-
-            if(typeid(*bbs[i]) == typeid(SelectBlock)){
-                dynamic_cast<SelectBlock*>(bbs[i])->ifStmt = relative(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt, nextBB);
-                dynamic_cast<SelectBlock*>(bbs[i])->elseStmt = relative(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt, nextBB);
-
-                BasicBlock* firstBB;
-                if(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.empty()){
-                    firstBB = nextBB;
-                } else{
-                    firstBB = dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.front();
-                }
-
-                dynamic_cast<SelectBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<SelectBlock*>(bbs[i])->cond, firstBB, nextBB);
-            } else if(typeid(*bbs[i]) == typeid(IterationBlock)){
-
-                dynamic_cast<IterationBlock*>(bbs[i])->whileStmt =
-                        relative(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt, dynamic_cast<IterationBlock*>(bbs[i])->cond.front());
-
-                BasicBlock* firstBB;
-                if(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.empty()){
-                    firstBB = dynamic_cast<IterationBlock*>(bbs[i])->cond.front();
-                } else{
-                    firstBB = frontOfNextBB(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt.front());
-                }
-
-                dynamic_cast<IterationBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<IterationBlock*>(bbs[i])->cond, firstBB, nextBB);
-
-                dynamic_cast<IterationBlock*>(bbs[i])->whileStmt =
-                        relatedContinueBreak(dynamic_cast<IterationBlock*>(bbs[i])->whileStmt,
-                                             dynamic_cast<IterationBlock*>(bbs[i])->cond.front(), nextBB);
-            } else{     //NormalBlock
-                dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextBB;
-                dynamic_cast<NormalBlock*>(bbs[i])->ir.push_back(new JumpIR(nextBB));
-                ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
-                if(ro->type == 3){
-                    dynamic_cast<NormalBlock*>(bbs[i])->
-                        ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index+1,
-                                 std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir));
-                }
-            }
-        }
-        return bbs;
-    }
-
-    inline std::vector<BasicBlock*> relatedCond(std::vector<BasicBlock*> bbs, BasicBlock* firstBB, BasicBlock* nextAB){
-        BasicBlock* lastOrBB = nextAB;
-        dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->trueBB = firstBB;
-        dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->falseBB = nextAB;
-        dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
-            ir.push_back(new BranchIR(firstBB, nextAB, dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->val));
-
-        for(int i = bbs.size() - 2; i >= 0; --i){
-            if(dynamic_cast<CondBlock*>(bbs[i])->isAnd){
-                dynamic_cast<CondBlock*>(bbs[i])->trueBB = bbs[i+1];
-                dynamic_cast<CondBlock*>(bbs[i])->falseBB = lastOrBB;
-                dynamic_cast<CondBlock*>(bbs[i])->
-                        ir.push_back(new BranchIR(bbs[i+1], lastOrBB, dynamic_cast<CondBlock*>(bbs[i])->val));
-            } else{
-                dynamic_cast<CondBlock*>(bbs[i])->trueBB = firstBB;
-                dynamic_cast<CondBlock*>(bbs[i])->falseBB = bbs[i+1];
-                dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
-                        ir.push_back(new BranchIR(firstBB, bbs[i+1], dynamic_cast<CondBlock*>(bbs[i])->val));
-                if(i+1<bbs.size()){
-                    lastOrBB = bbs[i+1];
-                }
-            }
-        }
-        return bbs;
-    }
-
-    inline std::vector<BasicBlock*> relatedContinueBreak(std::vector<BasicBlock*> bbs, BasicBlock* firstCond, BasicBlock* nextAB) {
-        if(!bbs.empty()){
-            for(size_t i = 0; i < bbs.size(); i++){
-                if(typeid(*bbs[i]) == typeid(IterationBlock)){
-                    continue;
-                } else if(typeid(*bbs[i]) == typeid(SelectBlock)){
-                    dynamic_cast<SelectBlock*>(bbs[i])->ifStmt =
-                            relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt, firstCond, nextAB);
-                    dynamic_cast<SelectBlock*>(bbs[i])->elseStmt =
-                            relatedContinueBreak(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt, firstCond, nextAB);
-                }else if(typeid(*bbs[i]) == typeid(NormalBlock)){
-                    ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
-                    switch (ro->type) {
-                        case 1:
-                            dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextAB;
-                            dynamic_cast<NormalBlock*>(bbs[i])->
-                                    ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
-                                             std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
-                            break;
-                        case 2:
-                            dynamic_cast<NormalBlock*>(bbs[i])->nextBB = firstCond;
-                            dynamic_cast<NormalBlock*>(bbs[i])->
-                                    ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
-                                             std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
-                            break;
-                    }
-                }
-            }
-        }
-        return bbs;
-    }
-
-    inline ReturnOfRelated* relatedIR(std::vector<Instruction*> ir){
-       for(size_t i = 0; i < ir.size(); i++){
-            if(typeid(*ir[i]) == typeid(BreakIR)){
-                return new ReturnOfRelated(1, i); //on behalf of break
-            } else if(typeid(*ir[i]) == typeid(ContinueIR)){
-                return new ReturnOfRelated(2, i); //on behalf of continue
-            } else if(typeid(*ir[i]) == typeid(ReturnIR)){
-                return new ReturnOfRelated(3, i);
-            }
-        }
-        return new ReturnOfRelated(0, 0); //nothing
-    }
-
-    inline BasicBlock* frontOfNextBB(BasicBlock* bb){
-        if(typeid(*bb) == typeid(SelectBlock)){
-            return dynamic_cast<SelectBlock*>(bb)->cond.front();
-        }else if(typeid(*bb) == typeid(IterationBlock)){
-            return dynamic_cast<IterationBlock*>(bb)->cond.front();
-        } else if(typeid(*bb) == typeid(NormalBlock)){
-            return bb;
-        }
-        return bb;
-    }
-
-    //end by lin
     bool isGlobal() {
         if (cur_bb == entry) {
             return true;

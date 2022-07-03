@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "src/frontend/libparser.a"
+			"path" : "src/frontend/libdriver.a"
 		}
 	],
 	"backtrace" : 1,
@@ -12,6 +12,7 @@
 		"commands" : 
 		[
 			"add_library",
+			"target_link_libraries",
 			"include_directories"
 		],
 		"files" : 
@@ -27,23 +28,29 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 12,
+				"line" : 2,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 20,
 				"parent" : 0
 			},
 			{
 				"file" : 1
 			},
 			{
-				"command" : 1,
+				"command" : 2,
 				"file" : 1,
 				"line" : 3,
-				"parent" : 2
+				"parent" : 3
 			},
 			{
-				"command" : 1,
+				"command" : 2,
 				"file" : 1,
 				"line" : 4,
-				"parent" : 2
+				"parent" : 3
 			}
 		]
 	},
@@ -59,24 +66,40 @@
 			"includes" : 
 			[
 				{
-					"backtrace" : 3,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include"
+					"backtrace" : 4,
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include"
 				},
 				{
-					"backtrace" : 4,
-					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/frontend"
+					"backtrace" : 5,
+					"path" : "/home/lin/下载/workspace/Sysy2022-bjtu/include/frontend"
 				}
 			],
 			"language" : "CXX",
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1
 			]
 		}
 	],
-	"id" : "parser::@5ac769f44fc6001c3db0",
-	"name" : "parser",
-	"nameOnDisk" : "libparser.a",
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "lexer::@5ac769f44fc6001c3db0"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "parser::@5ac769f44fc6001c3db0"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "syntax_tree::@5ac769f44fc6001c3db0"
+		}
+	],
+	"id" : "driver::@5ac769f44fc6001c3db0",
+	"name" : "driver",
+	"nameOnDisk" : "libdriver.a",
 	"paths" : 
 	{
 		"build" : "src/frontend",
@@ -88,7 +111,8 @@
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1
 			]
 		}
 	],
@@ -97,7 +121,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "src/frontend/parser.cc",
+			"path" : "src/frontend/driver.cc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/frontend/IrVisitor.cc",
 			"sourceGroupIndex" : 0
 		}
 	],

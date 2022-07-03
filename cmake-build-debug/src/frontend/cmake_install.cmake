@@ -1,4 +1,4 @@
-# Install script for directory: /home/hangshu/桌面/Sysy2022-bjtu/src/frontend
+# Install script for directory: /home/lin/下载/workspace/Sysy2022-bjtu/src/frontend
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

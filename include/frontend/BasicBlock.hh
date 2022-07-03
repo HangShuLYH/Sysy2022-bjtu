@@ -7,12 +7,15 @@
 #include <string>
 #include "Instruction.hh"
 #include <list>
+#include <set>
+
 class BasicBlock{
 public:
     std::vector<Instruction*> ir;
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
+
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
@@ -29,8 +32,6 @@ public:
 };
 class NormalBlock:public BasicBlock{
 public:
-    std::list<BasicBlock*> preBBs;
-    std::list<BasicBlock*> succBBs;
     BasicBlock* nextBB = nullptr;
     NormalBlock(BasicBlock* parent,std::string func_name, int cnt) : BasicBlock(parent,func_name,cnt){}
     void print(std::ostream& out) override final{
@@ -41,6 +42,16 @@ public:
         }
     };
     void clear() override final{}
+    void pushPre(NormalBlock* nb){preBBs.insert(nb);}
+    void pushSucc(NormalBlock* nb){succBBs.insert(nb);}
+    void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
+    void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
+    std::set<BasicBlock*> getPre(){return preBBs;}
+    std::set<BasicBlock*> getSucc(){return succBBs;}
+
+private:
+    std::set<BasicBlock*> preBBs;
+    std::set<BasicBlock*> succBBs;
 };
 class CondBlock:public BasicBlock{
 public:
