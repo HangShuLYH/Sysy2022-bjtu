@@ -204,6 +204,10 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o
  /usr/include/c++/7/list
  /usr/include/c++/7/bits/stl_list.h
  /usr/include/c++/7/bits/list.tcc
+ /usr/include/c++/7/set
+ /usr/include/c++/7/bits/stl_tree.h
+ /usr/include/c++/7/bits/stl_set.h
+ /usr/include/c++/7/bits/stl_multiset.h
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/Function.hh
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/parser.hh
  /usr/include/c++/7/cassert
@@ -214,10 +218,6 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o
  /usr/include/c++/7/bits/stl_deque.h
  /usr/include/c++/7/bits/deque.tcc
  /usr/include/c++/7/bits/stl_stack.h
- /usr/include/c++/7/set
- /usr/include/c++/7/bits/stl_tree.h
- /usr/include/c++/7/bits/stl_set.h
- /usr/include/c++/7/bits/stl_multiset.h
  /usr/include/c++/7/unordered_set
  /usr/include/c++/7/bits/hashtable.h
  /usr/include/c++/7/bits/hashtable_policy.h

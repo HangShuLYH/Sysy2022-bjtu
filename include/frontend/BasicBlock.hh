@@ -29,6 +29,16 @@ public:
     virtual void print(std::ostream& out) = 0;
     virtual void clear() = 0;
     virtual ~BasicBlock(){}
+    void pushPre(BasicBlock* nb){preBBs.insert(nb);}
+    void pushSucc(BasicBlock* nb){succBBs.insert(nb);}
+    void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
+    void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
+    std::set<BasicBlock*> getPre(){return preBBs;}
+    std::set<BasicBlock*> getSucc(){return succBBs;}
+
+private:
+    std::set<BasicBlock*> preBBs;
+    std::set<BasicBlock*> succBBs;
 };
 class NormalBlock:public BasicBlock{
 public:
@@ -42,16 +52,7 @@ public:
         }
     };
     void clear() override final{}
-    void pushPre(NormalBlock* nb){preBBs.insert(nb);}
-    void pushSucc(NormalBlock* nb){succBBs.insert(nb);}
-    void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
-    void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
-    std::set<BasicBlock*> getPre(){return preBBs;}
-    std::set<BasicBlock*> getSucc(){return succBBs;}
 
-private:
-    std::set<BasicBlock*> preBBs;
-    std::set<BasicBlock*> succBBs;
 };
 class CondBlock:public BasicBlock{
 public:

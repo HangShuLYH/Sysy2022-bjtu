@@ -205,17 +205,49 @@ NormalBlock* MIRBuilder::toNormal(BasicBlock* bb){
             nb = getCondToNormal(dynamic_cast<CondBlock*>(bb));
         }
         nb->ir = bb->ir;
-        NormalBlock* succ = toNormal(dynamic_cast<CondBlock*>(bb)->trueBB);
-        if(succ){
-            succ->pushPre(nb);
-            nb->pushSucc(succ);
+
+        std::vector<NormalBlock*> reversed = reversedSucc[dynamic_cast<CondBlock*>(bb)];
+        if(reversed.size() != 0){         //  check reversed station
+            for(int i = 0; i < reversed.size(); i++){
+                reversed[i]->pushSucc(nb);
+                nb->pushPre(reversed[i]);
+            }
         }
-        succ = toNormal(dynamic_cast<CondBlock*>(bb)->falseBB);
-        if(succ){
-            succ->pushPre(nb);
-            nb->pushSucc(succ);
-        }
+
         putCondToNormal(dynamic_cast<CondBlock*>(bb), nb);
+
+        BasicBlock* succ = dynamic_cast<CondBlock*>(bb)->trueBB;            //solve trueBB
+        if(succ){
+            if(typeid(*succ) == typeid(CondBlock)){
+                if(getCondToNormal(dynamic_cast<CondBlock*>(succ))){
+                    succ = getCondToNormal(dynamic_cast<CondBlock*>(succ));
+                    dynamic_cast<NormalBlock*>(succ)->pushPre(nb);
+                    nb->pushSucc(dynamic_cast<NormalBlock*>(succ));
+                } else{
+                    reversedSucc[dynamic_cast<CondBlock*>(succ)].push_back(nb);
+                }
+            } else{
+                dynamic_cast<NormalBlock*>(succ)->pushPre(nb);
+                nb->pushSucc(dynamic_cast<NormalBlock*>(succ));
+            }
+        }
+
+        succ = dynamic_cast<CondBlock*>(bb)->falseBB;                       //solve falseBB
+        if(succ){
+            if(typeid(*succ) == typeid(CondBlock)){
+                if(getCondToNormal(dynamic_cast<CondBlock*>(succ))){
+                    succ = getCondToNormal(dynamic_cast<CondBlock*>(succ));
+                    dynamic_cast<NormalBlock*>(succ)->pushPre(nb);
+                    nb->pushSucc(dynamic_cast<NormalBlock*>(succ));
+                } else{
+                    reversedSucc[dynamic_cast<CondBlock*>(succ)].push_back(nb);
+                }
+            } else{
+                dynamic_cast<NormalBlock*>(succ)->pushPre(nb);
+                nb->pushSucc(dynamic_cast<NormalBlock*>(succ));
+            }
+        }
+
 //        std::cout<<nb->name<<std::endl;
     }
     return nb;
@@ -244,9 +276,14 @@ void MIRBuilder::removeDuplicate(){
             if(nowNB->getPre().size() == 1){
                 NormalBlock* preNB = dynamic_cast<NormalBlock*>(*nowNB->getPre().begin());
                 if(preNB->getSucc().size() == 1){
+//                    std::string name1 =
+//                    if(){
+//
+//                }
                     preNB->setSucc(nowNB->getSucc());
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
+                    bbs[j] = preNB;
                     bbs.erase(bbs.begin()+j);
                 }
             }

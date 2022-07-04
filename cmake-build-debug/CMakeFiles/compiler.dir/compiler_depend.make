@@ -220,15 +220,15 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/7/list \
   /usr/include/c++/7/bits/stl_list.h \
   /usr/include/c++/7/bits/list.tcc \
+  /usr/include/c++/7/set \
+  /usr/include/c++/7/bits/stl_set.h \
+  /usr/include/c++/7/bits/stl_multiset.h \
   ../include/frontend/Function.hh \
   /usr/include/c++/7/stack \
   /usr/include/c++/7/deque \
   /usr/include/c++/7/bits/stl_deque.h \
   /usr/include/c++/7/bits/deque.tcc \
   /usr/include/c++/7/bits/stl_stack.h \
-  /usr/include/c++/7/set \
-  /usr/include/c++/7/bits/stl_set.h \
-  /usr/include/c++/7/bits/stl_multiset.h \
   /usr/include/c++/7/unordered_set \
   /usr/include/c++/7/bits/hashtable.h \
   /usr/include/c++/7/bits/hashtable_policy.h \
@@ -446,6 +446,9 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
   /usr/include/c++/7/list \
   /usr/include/c++/7/bits/stl_list.h \
   /usr/include/c++/7/bits/list.tcc \
+  /usr/include/c++/7/set \
+  /usr/include/c++/7/bits/stl_set.h \
+  /usr/include/c++/7/bits/stl_multiset.h \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   /usr/include/c++/7/cassert \
@@ -456,9 +459,6 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
   /usr/include/c++/7/bits/stl_deque.h \
   /usr/include/c++/7/bits/deque.tcc \
   /usr/include/c++/7/bits/stl_stack.h \
-  /usr/include/c++/7/set \
-  /usr/include/c++/7/bits/stl_set.h \
-  /usr/include/c++/7/bits/stl_multiset.h \
   /usr/include/c++/7/unordered_set \
   /usr/include/c++/7/bits/hashtable.h \
   /usr/include/c++/7/bits/hashtable_policy.h \
@@ -482,10 +482,6 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
 
 /usr/include/c++/7/unordered_set:
 
-/usr/include/c++/7/bits/stl_set.h:
-
-/usr/include/c++/7/set:
-
 /usr/include/c++/7/bits/deque.tcc:
 
 /usr/include/c++/7/bits/stl_deque.h:
@@ -495,6 +491,10 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
 /usr/include/c++/7/stack:
 
 ../include/frontend/Function.hh:
+
+/usr/include/c++/7/bits/stl_set.h:
+
+/usr/include/c++/7/set:
 
 /usr/include/c++/7/bits/list.tcc:
 

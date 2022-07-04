@@ -36,4 +36,5 @@ public:
 private:
     IrVisitor irVisitor;
     std::map<CondBlock*, NormalBlock*> condToNormal;
+    std::map<CondBlock*, std::vector<NormalBlock*>> reversedSucc;
 };
