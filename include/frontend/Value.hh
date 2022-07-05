@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <set>
 #include "syntax_tree.hh"
 
 class Value;
@@ -76,10 +77,6 @@ public:
     User* getUser() { return U; }
     Use(Value* Val, User* U);
     Use();
-    friend bool operator==(const Use& a, const Use& b) {
-        if(a.Val == b.Val && a.U == b.U) return true;
-        else return false; 
-    }
 };
 
 class Value{
@@ -98,10 +95,8 @@ public:
     std::string getName() {return name;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
-    void addUse(Use* U) { this->Uses.push_back(U); }
-    void killUse(Use* U) {
-        this->Uses.erase(find(this->Uses.begin(), this->Uses.end(), U));
-    }
+    void addUse(Use* U) { this->Uses.insert(U); }
+    void killUse(Use* U) { this->Uses.erase(U); }
 protected:
     int num = 0;
     std::string name = "";
@@ -110,7 +105,7 @@ protected:
     bool isArray = false;
     std::vector<int> arrayDims;
     int arrayLen = 0;
-    std::vector<Use*> Uses;
+    std::set<Use*> Uses;
 };
 
 class VarValue: public Value{
