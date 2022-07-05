@@ -1,4 +1,12 @@
 int a = 1;
+int f(int b){
+{
+    while(a == 1){
+        int b = a;
+    }
+}
+    return 0;
+}
 int main(){
 {
     while(a == 1){

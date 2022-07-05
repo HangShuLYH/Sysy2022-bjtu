@@ -14,14 +14,27 @@ enum class OP{
 class Instruction{
 public:
     Instruction() {}
+    virtual std::vector<Value*> getUseList() = 0;
+    virtual Value* getDef() = 0;
     virtual void print(std::ostream& out) = 0;
     virtual ~Instruction(){}
 };
-class AllocIIR:public Instruction{
+class AllocIR : public Instruction {
 public:
     bool isArray = false;
     int arrayLen;
     Value* v;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
+    virtual void print(std::ostream& out) = 0;
+};
+class AllocIIR:public AllocIR{
+public:
     AllocIIR(Value* v){
         this->v = v;
     }
@@ -38,11 +51,8 @@ public:
         out << std::endl;
     }
 };
-class AllocFIR:public Instruction{
+class AllocFIR:public AllocIR{
 public:
-    bool isArray = false;
-    int arrayLen;
-    Value* v;
     AllocFIR(Value* v){
         this->v = v;
     }
@@ -59,11 +69,20 @@ public:
         out << std::endl;
     }
 };
-
-class LoadIIR:public Instruction{
+class LoadIR : public Instruction {
 public:
     Value* v1;
     Value* v2;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return v1;
+    }
+};
+class LoadIIR:public LoadIR{
+public:
     LoadIIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
@@ -75,10 +94,8 @@ public:
         out << std::endl;
     }
 };
-class LoadFIR:public Instruction{
+class LoadFIR:public LoadIR{
 public:
-    Value* v1;
-    Value* v2;
     LoadFIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
@@ -90,12 +107,27 @@ public:
         out << std::endl;
     }
 };
-class StoreIIR:public Instruction{
+class StoreIR: public Instruction {
 public:
     //storeI v2 v1
     Value* dst;
     TempVal src;
-    StoreIIR(Value* dst,TempVal src):dst(dst),src(src){
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        if (src.getVal()) {
+            vec.push_back(src.getVal());
+        }
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
+};
+class StoreIIR:public StoreIR{
+public:
+    StoreIIR(Value* dst,TempVal src){
+        this->dst = dst;
+        this->src = src;
         if (!src.getVal() && src.isFloat()) {
             this->src.setType(dst->getType()->getContained());
             this->src.setInt(src.getFloat());
@@ -109,12 +141,11 @@ public:
         out << std::endl;
     }
 };
-class StoreFIR:public Instruction{
+class StoreFIR:public StoreIR{
 public:
-    //storeI v2 v1
-    Value* dst;
-    TempVal src;
-    StoreFIR(Value* dst,TempVal src):dst(dst),src(src){
+    StoreFIR(Value* dst,TempVal src){
+        this->dst = dst;
+        this->src = src;
         if (!src.getVal() && src.isInt()) {
             src.setType(dst->getType()->getContained());
             src.setFloat(src.getFloat());
@@ -128,10 +159,22 @@ public:
         out << std::endl;
     }
 };
-class CastInt2FloatIR:public Instruction{
+class CastIR: public Instruction {
 public:
     Value* v1;
     Value* v2;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        vec.push_back(v2);
+        return vec;
+    }
+    Value* getDef() {
+        return v1;
+    }
+};
+class CastInt2FloatIR:public CastIR{
+public:
+
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
@@ -143,10 +186,8 @@ public:
         out << std::endl;
     }
 };
-class CastFloat2IntIR:public Instruction{
+class CastFloat2IntIR:public CastIR{
 public:
-    Value* v1;
-    Value* v2;
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
@@ -163,6 +204,19 @@ public:
     TempVal res;
     TempVal left;
     TempVal right;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        if (left.getVal()) {
+            vec.push_back(left.getVal());
+        }
+        if (right.getVal()) {
+            vec.push_back(right.getVal());
+        }
+        return vec;
+    }
+    Value* getDef() {
+        return res.getVal();
+    }
     ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right){}
     virtual void print(std::ostream& out) = 0;
     virtual ~ArithmeticIR(){}
@@ -281,6 +335,14 @@ public:
     TempVal res;
     TempVal v;
     OP op;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        vec.push_back(v.getVal());
+        return vec;
+    }
+    Value* getDef() {
+        return res.getVal();
+    }
     UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){}
     void print(std::ostream& out) override final{
         res.print(out);
@@ -442,6 +504,13 @@ public:
 class BreakIR:public Instruction{
 public:
     BreakIR(){};
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     void print(std::ostream& out) override final{
         out << "break" << std::endl;
     }
@@ -449,6 +518,13 @@ public:
 class ContinueIR:public Instruction{
 public:
     ContinueIR(){};
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     void print(std::ostream& out) override final{
         out << "continue" << std::endl;
     }
@@ -460,6 +536,16 @@ public:
     float retFloat;
     bool useInt = false;
     bool useFloat = false;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        if (v) {
+            vec.push_back(v);
+        }
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     ReturnIR(Value* v){
         this->v = v;
     }
@@ -488,6 +574,13 @@ class JumpIR:public Instruction{
 public:
     BasicBlock* target;
     JumpIR(BasicBlock* target) : target(target){}
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     void print(std::ostream& out) override final{
         out << "goto ";
         out << target->name;
@@ -499,6 +592,13 @@ public:
     BasicBlock* trueTarget;
     BasicBlock* falseTarget;
     Value* cond;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) :
     trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {}
     void print(std::ostream& out) override final{
@@ -521,6 +621,16 @@ public:
     Value* v2;
     Value* v3 = nullptr;
     int arrayLen;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        if(v3) {
+            vec.push_back(v3);
+        }
+        return vec;
+    }
+    Value* getDef() {
+        return v1;
+    }
     GEPIR(Value* v1,Value* v2, Value* v3){
         this->v1 = v1;
         this->v2 = v2;
@@ -550,6 +660,13 @@ public:
     Function* func;
     std::vector<TempVal> args;
     Value* returnVal = nullptr;
+    std::vector<Value*> getUseList() {
+        std::vector<Value*> vec;
+        return vec;
+    }
+    Value* getDef() {
+        return nullptr;
+    }
     CallIR(Function* func,std::vector<TempVal> args) {
         this->func = func;
         this->args = args;

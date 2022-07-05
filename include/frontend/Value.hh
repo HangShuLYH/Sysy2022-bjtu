@@ -74,6 +74,7 @@ public:
     int getArrayLen() {return arrayLen;}
     bool is_Global() {return isGlobal;}
     std::string getName() {return name;}
+    int getNum() {return num;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
 protected:
