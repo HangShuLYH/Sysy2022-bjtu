@@ -11,6 +11,11 @@
 },
 {
   "directory": "/mnt/e/编译器/Temp/Sysy2022-bjtu/build",
+  "command": "/usr/bin/g++ -I/mnt/e/编译器/Temp/Sysy2022-bjtu/include -I/mnt/e/编译器/Temp/Sysy2022-bjtu/include/frontend -g -o CMakeFiles/compiler.dir/src/frontend/Value.cc.o -c /mnt/e/编译器/Temp/Sysy2022-bjtu/src/frontend/Value.cc",
+  "file": "/mnt/e/编译器/Temp/Sysy2022-bjtu/src/frontend/Value.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Temp/Sysy2022-bjtu/build",
   "command": "/usr/bin/g++ -I/mnt/e/编译器/Temp/Sysy2022-bjtu/include -I/mnt/e/编译器/Temp/Sysy2022-bjtu/include/frontend -g -o src/frontend/CMakeFiles/driver.dir/driver.cc.o -c /mnt/e/编译器/Temp/Sysy2022-bjtu/src/frontend/driver.cc",
   "file": "/mnt/e/编译器/Temp/Sysy2022-bjtu/src/frontend/driver.cc"
 },

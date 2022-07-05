@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <set>
+#include <algorithm>
 #include "syntax_tree.hh"
 
 class Value;
@@ -75,7 +75,11 @@ public:
     Value* getVal() { return Val; }
     User* getUser() { return U; }
     Use(Value* Val, User* U);
-    friend bool operator<(const Use& a, const Use& b) { return true; }
+    Use();
+    friend bool operator==(const Use& a, const Use& b) {
+        if(a.Val == b.Val && a.U == b.U) return true;
+        else return false; 
+    }
 };
 
 class Value{
@@ -94,17 +98,19 @@ public:
     std::string getName() {return name;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
-    void addUse(Use U) { this->Uses.insert(U); }
-    void killUse(Use U) { this->Uses.erase(U); }
+    void addUse(Use* U) { this->Uses.push_back(U); }
+    void killUse(Use* U) {
+        this->Uses.erase(find(this->Uses.begin(), this->Uses.end(), U));
+    }
 protected:
-    int num;
-    std::string name;
-    Type* type;
+    int num = 0;
+    std::string name = "";
+    Type* type = nullptr;
     bool isGlobal = false;
     bool isArray = false;
     std::vector<int> arrayDims;
     int arrayLen = 0;
-    std::set<Use> Uses;
+    std::vector<Use*> Uses;
 };
 
 class VarValue: public Value{
@@ -313,12 +319,8 @@ private:
 
 class User : public Value {
 protected:
-    std::vector<Use> Operands;
+    std::vector<Use*> Operands;
 public:
     User() {;}
 };
-
-Use::Use(Value* Val, User* U) : Val(Val), U(U) {
-    if(Val) Val->addUse(*this);
-}
 #endif
