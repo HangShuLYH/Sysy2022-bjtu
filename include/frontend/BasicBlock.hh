@@ -29,8 +29,8 @@ public:
     virtual void print(std::ostream& out) = 0;
     virtual void clear() = 0;
     virtual ~BasicBlock(){}
-    void pushPre(BasicBlock* nb){preBBs.insert(nb);}
-    void pushSucc(BasicBlock* nb){succBBs.insert(nb);}
+    void pushPre(BasicBlock* bb){preBBs.insert(bb);}
+    void pushSucc(BasicBlock* bb){succBBs.insert(bb);}
     void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
     void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
     std::set<BasicBlock*> getPre(){return preBBs;}

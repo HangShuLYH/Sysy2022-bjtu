@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/e/Sysy2022-bjtu/src/frontend
+# Install script for directory: /mnt/e/编译器/Temp/Sysy2022-bjtu/src/frontend
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

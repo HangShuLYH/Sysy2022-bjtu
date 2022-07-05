@@ -118,7 +118,7 @@ rule CXX_STATIC_LIBRARY_LINKER__syntax_tree_Debug
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/local/bin/cmake --regenerate-during-build -S/mnt/e/Sysy2022-bjtu -B/mnt/e/Sysy2022-bjtu/build
+  command = /usr/local/bin/cmake --regenerate-during-build -S/mnt/e/编译器/Temp/Sysy2022-bjtu -B/mnt/e/编译器/Temp/Sysy2022-bjtu/build
   description = Re-running CMake...
   generator = 1
 

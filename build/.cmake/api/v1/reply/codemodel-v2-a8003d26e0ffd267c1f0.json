@@ -66,35 +66,35 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "compiler::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-compiler-Debug-fda68aff9ab49251a896.json",
+					"jsonFile" : "target-compiler-Debug-d23ee06ffe989cc68b04.json",
 					"name" : "compiler",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "driver::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-driver-Debug-c5faba961c74e248a2b0.json",
+					"jsonFile" : "target-driver-Debug-1163c7bf87dc3b70d7a5.json",
 					"name" : "driver",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "lexer::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-lexer-Debug-af2a901d0b851cccb177.json",
+					"jsonFile" : "target-lexer-Debug-0dfffc172aed10e4e623.json",
 					"name" : "lexer",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "parser::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-parser-Debug-9c6d05b66acec23f9929.json",
+					"jsonFile" : "target-parser-Debug-b06b6d4a6b1ff7e5ad99.json",
 					"name" : "parser",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "syntax_tree::@5ac769f44fc6001c3db0",
-					"jsonFile" : "target-syntax_tree-Debug-e41f36dbd75de88d2186.json",
+					"jsonFile" : "target-syntax_tree-Debug-3bd24f77f1ef5890f97b.json",
 					"name" : "syntax_tree",
 					"projectIndex" : 0
 				}
@@ -104,8 +104,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/e/Sysy2022-bjtu/build",
-		"source" : "/mnt/e/Sysy2022-bjtu"
+		"build" : "/mnt/e/编译器/Temp/Sysy2022-bjtu/build",
+		"source" : "/mnt/e/编译器/Temp/Sysy2022-bjtu"
 	},
 	"version" : 
 	{

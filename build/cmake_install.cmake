@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/e/Sysy2022-bjtu
+# Install script for directory: /mnt/e/编译器/Temp/Sysy2022-bjtu
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/mnt/e/Sysy2022-bjtu/build/src/frontend/cmake_install.cmake")
+  include("/mnt/e/编译器/Temp/Sysy2022-bjtu/build/src/frontend/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -55,5 +55,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/e/Sysy2022-bjtu/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/e/编译器/Temp/Sysy2022-bjtu/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

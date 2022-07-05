@@ -11,12 +11,14 @@ enum class OP{
     NEG,
     NOT,
 };
-class Instruction{
+
+class Instruction : public User{
 public:
     Instruction() {}
     virtual void print(std::ostream& out) = 0;
-    virtual ~Instruction(){}
+    virtual ~Instruction() {}
 };
+
 class AllocIIR:public Instruction{
 public:
     bool isArray = false;
@@ -24,11 +26,15 @@ public:
     Value* v;
     AllocIIR(Value* v){
         this->v = v;
+        v->addUse(Use(v, this));
+        this->Operands.push_back(Use(v, this));
     }
     AllocIIR(Value* v, int arrayLen) {
         this->isArray = true;
         this->arrayLen = arrayLen;
         this->v = v;
+        v->addUse(Use(v, this));
+        this->Operands.push_back(Use(v, this));
     }
     void print(std::ostream& out) override final{
         v->print(out);
@@ -45,11 +51,15 @@ public:
     Value* v;
     AllocFIR(Value* v){
         this->v = v;
+        v->addUse(Use(v, this));
+        this->Operands.push_back(Use(v, this));
     }
     AllocFIR(Value* v, int arrayLen) {
         this->isArray = true;
         this->arrayLen = arrayLen;
         this->v = v;
+        v->addUse(Use(v, this));
+        this->Operands.push_back(Use(v, this));
     }
     void print(std::ostream& out) override final{
         v->print(out);
@@ -67,6 +77,10 @@ public:
     LoadIIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+        v1->addUse(Use(v1, this));
+        v2->addUse(Use(v2, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -82,6 +96,10 @@ public:
     LoadFIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+        v1->addUse(Use(v1, this));
+        v2->addUse(Use(v2, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -100,6 +118,10 @@ public:
             this->src.setType(dst->getType()->getContained());
             this->src.setInt(src.getFloat());
         }
+        dst->addUse(Use(dst, this));
+        src.addUse(Use(&src, this));
+        this->Operands.push_back(Use(dst, this));
+        this->Operands.push_back(Use(&src, this));
     }
     void print(std::ostream& out) override final{
         out << "StoreI ";
@@ -119,6 +141,10 @@ public:
             src.setType(dst->getType()->getContained());
             src.setFloat(src.getFloat());
         }
+        dst->addUse(Use(dst, this));
+        src.addUse(Use(&src, this));
+        this->Operands.push_back(Use(dst, this));
+        this->Operands.push_back(Use(&src, this));
     }
     void print(std::ostream& out) override final{
         out << "StoreF ";
@@ -135,6 +161,10 @@ public:
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+        v1->addUse(Use(v1, this));
+        v2->addUse(Use(v2, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -150,6 +180,10 @@ public:
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+        v1->addUse(Use(v1, this));
+        v2->addUse(Use(v2, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -163,7 +197,14 @@ public:
     TempVal res;
     TempVal left;
     TempVal right;
-    ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right){}
+    ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right) {
+        res.addUse(Use(&res, this));
+        left.addUse(Use(&left, this));
+        right.addUse(Use(&right, this));
+        this->Operands.push_back(Use(&res, this));
+        this->Operands.push_back(Use(&left, this));
+        this->Operands.push_back(Use(&right, this));
+    }
     virtual void print(std::ostream& out) = 0;
     virtual ~ArithmeticIR(){}
 };
@@ -281,7 +322,12 @@ public:
     TempVal res;
     TempVal v;
     OP op;
-    UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){}
+    UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op) {
+        res.addUse(Use(&res, this));
+        v.addUse(Use(&v, this));
+        this->Operands.push_back(Use(&res, this));
+        this->Operands.push_back(Use(&v, this));
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = ";
@@ -462,6 +508,8 @@ public:
     bool useFloat = false;
     ReturnIR(Value* v){
         this->v = v;
+        v->addUse(Use(v, this));
+        this->Operands.push_back(Use(v, this));
     }
     ReturnIR(int val) {
         retInt = val;
@@ -499,8 +547,10 @@ public:
     BasicBlock* trueTarget;
     BasicBlock* falseTarget;
     Value* cond;
-    BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) :
-    trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {}
+    BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) : trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {
+        cond->addUse(Use(cond, this));
+        this->Operands.push_back(Use(cond, this));
+    }
     void print(std::ostream& out) override final{
         out << "goto ";
         cond->print(out);
@@ -525,11 +575,21 @@ public:
         this->v1 = v1;
         this->v2 = v2;
         this->v3 = v3;
+        this->addUse(Use(v1, this));
+        this->addUse(Use(v2, this));
+        this->addUse(Use(v3, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
+        this->Operands.push_back(Use(v3, this));
     }
     GEPIR(Value* v1,Value* v2,int arrayLen){
         this->v1 = v1;
         this->v2 = v2;
         this->arrayLen = arrayLen;
+        this->addUse(Use(v1, this));
+        this->addUse(Use(v2, this));
+        this->Operands.push_back(Use(v1, this));
+        this->Operands.push_back(Use(v2, this));
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -553,11 +613,22 @@ public:
     CallIR(Function* func,std::vector<TempVal> args) {
         this->func = func;
         this->args = args;
+
+        for(auto& arg : args) {
+            this->addUse(Use(&arg, this));
+            this->Operands.push_back(Use(&arg, this));
+        }
     }
     CallIR(Function* func,std::vector<TempVal> args, Value* v){
         this->func = func;
         this->args = args;
         this->returnVal = v;
+
+        for(auto& arg : args) {
+            this->addUse(Use(&arg, this));
+            this->Operands.push_back(Use(&arg, this));
+        }
+        this->addUse(Use(v, this));
     }
     void print(std::ostream& out) override final{
         if (returnVal) {

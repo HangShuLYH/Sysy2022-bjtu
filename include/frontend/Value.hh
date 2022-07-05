@@ -7,13 +7,20 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <set>
 #include "syntax_tree.hh"
+
+class Value;
+class Use;
+class User;
+
 enum TypeID {
     INT,
     FLOAT,
     VOID,
     POINTER,
 };
+
 class Type{
 public:
     Type(TypeID tid) : tid(tid) {}
@@ -60,10 +67,21 @@ private:
     Type* contained;
 };
 
+class Use {
+private:
+    Value* Val;
+    User *U;
+public:
+    Value* getVal() { return Val; }
+    User* getUser() { return U; }
+    Use(Value* Val, User* U);
+    friend bool operator<(const Use& a, const Use& b) { return true; }
+};
+
 class Value{
 public:
-    Value(){}
-    virtual ~Value(){}
+    Value(){;}
+    virtual ~Value(){;}
     virtual void print(std::ostream& out) = 0;
     bool is_Array() {return isArray;}
     void setArray(bool flag) {isArray = flag;}
@@ -76,6 +94,8 @@ public:
     std::string getName() {return name;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
+    void addUse(Use U) { this->Uses.insert(U); }
+    void killUse(Use U) { this->Uses.erase(U); }
 protected:
     int num;
     std::string name;
@@ -84,8 +104,9 @@ protected:
     bool isArray = false;
     std::vector<int> arrayDims;
     int arrayLen = 0;
-
+    std::set<Use> Uses;
 };
+
 class VarValue: public Value{
 public:
     VarValue(std::string name,Type* type,bool isGlobal,int func_cnt) {
@@ -114,7 +135,7 @@ public:
         if(isArray) this->arrayLen++;
     }
 };
-struct TempVal {
+struct TempVal : public Value{
 private:
     int valInt;
     float valFloat;
@@ -290,4 +311,14 @@ private:
 
 };
 
+class User : public Value {
+protected:
+    std::vector<Use> Operands;
+public:
+    User() {;}
+};
+
+Use::Use(Value* Val, User* U) : Val(Val), U(U) {
+    if(Val) Val->addUse(*this);
+}
 #endif
