@@ -180,7 +180,8 @@ CMakeFiles/compiler.dir/main.cpp.o: \
  /usr/include/c++/9/list /usr/include/c++/9/bits/stl_list.h \
  /usr/include/c++/9/bits/list.tcc /usr/include/c++/9/set \
  /usr/include/c++/9/bits/stl_set.h /usr/include/c++/9/bits/stl_multiset.h \
- /usr/include/c++/9/sstream /usr/include/c++/9/bits/sstream.tcc \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/reg.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
@@ -193,5 +194,4 @@ CMakeFiles/compiler.dir/main.cpp.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/MIRBuilder.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/IrVisitor.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/codegen.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/backend/reg.hh
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh

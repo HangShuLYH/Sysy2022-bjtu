@@ -8,13 +8,14 @@
 #include "Instruction.hh"
 #include <list>
 #include <set>
-#include <sstream>
+#include "instr.hh"
 class BasicBlock{
 public:
     std::vector<Instruction*> ir;
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
+
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
@@ -34,9 +35,14 @@ public:
     void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
     std::set<BasicBlock*> getPre(){return preBBs;}
     std::set<BasicBlock*> getSucc(){return succBBs;}
+
+    //add for codegen
+    void pushInstr(Instr* instr) {instrs.push_back(instr);}
+    std::vector<Instr*> getInstrs() {return instrs;}
 private:
     std::set<BasicBlock*> preBBs;
     std::set<BasicBlock*> succBBs;
+    std::vector<Instr*> instrs;
 };
 class NormalBlock:public BasicBlock{
 public:
@@ -50,8 +56,6 @@ public:
         }
     };
     void clear() override final{}
-
-
 
 };
 class CondBlock:public BasicBlock{
@@ -145,7 +149,7 @@ public:
         auto iter = cond.begin();
         while (iter != cond.end()){
             if ((*iter)->ir.empty() &&
-            !dynamic_cast<CondBlock*>(*iter)->val) {
+                !dynamic_cast<CondBlock*>(*iter)->val) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;

@@ -9,17 +9,23 @@
 #include "Value.hh"
 #include "reg.hh"
 #include "IrVisitor.hh"
-
+#include <string>
 class Codegen {
 private:
     IrVisitor irVisitor;
     std::map<Value *, GR> gRegMapping;
     std::map<Value *, FR> fRegMapping;
-public:
-    Codegen(IrVisitor &irVisitor) : irVisitor(irVisitor) {}
-
+    std::map<Value*, int> stackMapping;
+    int stackSize = 0;
+    std::map<Value*, int> globalMapping;
+    std::string asm_code;
+    std::ostream& out;
+    void translateFunction(Function* function);
+    void generateGlobalCode();
+    std::vector<Instr*> translateInstr(Instruction* ir);
+    GR getGR(Value* src);
+    FR getFR(Value* src);
     void regAlloc();
-
     void calLiveInfo(Function *function,
                      std::map<BasicBlock *, std::set<Value *>> &liveIn,
                      std::map<BasicBlock *, std::set<Value *>> &liveOut,
@@ -33,6 +39,10 @@ public:
     void createIG(std::map<Value *, std::set<Value *>>& IG,
                   std::map<BasicBlock *, std::set<Value *>> &liveIn,
                   std::map<BasicBlock *, std::set<Value *>> &liveOut);
+    void comment(std::string s);
+public:
+    Codegen(IrVisitor &irVisitor, std::ostream& out) : irVisitor(irVisitor),out(out) {}
+    void generateProgramCode();
 };
 
 #endif //SYSY2022_BJTU_CODEGEN_HH

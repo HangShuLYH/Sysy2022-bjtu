@@ -230,8 +230,8 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/9/set \
   /usr/include/c++/9/bits/stl_set.h \
   /usr/include/c++/9/bits/stl_multiset.h \
-  /usr/include/c++/9/sstream \
-  /usr/include/c++/9/bits/sstream.tcc \
+  ../include/backend/instr.hh \
+  ../include/backend/reg.hh \
   ../include/frontend/Function.hh \
   /usr/include/c++/9/stack \
   /usr/include/c++/9/deque \
@@ -249,8 +249,7 @@ CMakeFiles/compiler.dir/main.cpp.o: ../main.cpp \
   ../include/frontend/MIRBuilder.hh \
   ../include/frontend/IrVisitor.hh \
   ../include/backend/codegen.hh \
-  ../include/frontend/Value.hh \
-  ../include/backend/reg.hh
+  ../include/frontend/Value.hh
 
 CMakeFiles/compiler.dir/src/backend/codegen.cc.o: ../src/backend/codegen.cc \
   /usr/include/stdc-predef.h \
@@ -471,8 +470,7 @@ CMakeFiles/compiler.dir/src/backend/codegen.cc.o: ../src/backend/codegen.cc \
   /usr/include/c++/9/set \
   /usr/include/c++/9/bits/stl_set.h \
   /usr/include/c++/9/bits/stl_multiset.h \
-  /usr/include/c++/9/sstream \
-  /usr/include/c++/9/bits/sstream.tcc \
+  ../include/backend/instr.hh \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   /usr/include/c++/9/cassert \
@@ -713,8 +711,8 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
   /usr/include/c++/9/set \
   /usr/include/c++/9/bits/stl_set.h \
   /usr/include/c++/9/bits/stl_multiset.h \
-  /usr/include/c++/9/sstream \
-  /usr/include/c++/9/bits/sstream.tcc \
+  ../include/backend/instr.hh \
+  ../include/backend/reg.hh \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   /usr/include/c++/9/cassert \
@@ -767,7 +765,7 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
 
 ../include/frontend/Function.hh:
 
-/usr/include/c++/9/bits/sstream.tcc:
+../include/backend/instr.hh:
 
 /usr/include/c++/9/list:
 
@@ -847,9 +845,9 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
 
 /usr/include/c++/9/bits/char_traits.h:
 
-../include/backend/reg.hh:
-
 /usr/include/c++/9/stack:
+
+../include/backend/reg.hh:
 
 /usr/include/c++/9/cstdio:
 
@@ -1208,8 +1206,6 @@ CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o: ../src/frontend/MIRBuilder
 /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h:
 
 /usr/include/c++/9/fstream:
-
-/usr/include/c++/9/sstream:
 
 /usr/include/c++/9/ext/type_traits.h:
 

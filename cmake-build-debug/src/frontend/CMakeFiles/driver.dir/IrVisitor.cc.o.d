@@ -168,8 +168,9 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/list.tcc /usr/include/c++/9/set \
  /usr/include/c++/9/bits/stl_tree.h /usr/include/c++/9/bits/stl_set.h \
  /usr/include/c++/9/bits/stl_multiset.h \
- /usr/include/c++/9/bits/erase_if.h /usr/include/c++/9/sstream \
- /usr/include/c++/9/bits/sstream.tcc \
+ /usr/include/c++/9/bits/erase_if.h \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/reg.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
  /usr/include/c++/9/cassert /usr/include/assert.h \

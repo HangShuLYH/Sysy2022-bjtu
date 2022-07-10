@@ -71,7 +71,15 @@ public:
     void setArrayLen(int arrayLen) {this->arrayLen = arrayLen;}
     void setGlobal(bool g) {isGlobal = g;}
     void pushDim(int dim) {arrayDims.push_back(dim);}
-    int getArrayLen() {return arrayLen;}
+    int getArrayLen() {
+        if (arrayLen == 0) {
+            arrayLen = 1;
+            for (int i = 0; i < arrayDims.size(); ++i) {
+                arrayLen *= arrayDims[i];
+            }
+        }
+        return arrayLen;
+    }
     bool is_Global() {return isGlobal;}
     std::string getName() {return name;}
     int getNum() {return num;}
@@ -89,6 +97,7 @@ protected:
 };
 class VarValue: public Value{
 public:
+    VarValue(){}
     VarValue(std::string name,Type* type,bool isGlobal,int func_cnt) {
         this->num = isGlobal?0:func_cnt;
         this->name = name;

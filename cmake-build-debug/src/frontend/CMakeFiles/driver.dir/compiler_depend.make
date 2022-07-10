@@ -214,8 +214,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/stl_set.h \
   /usr/include/c++/9/bits/stl_multiset.h \
   /usr/include/c++/9/bits/erase_if.h \
-  /usr/include/c++/9/sstream \
-  /usr/include/c++/9/bits/sstream.tcc \
+  ../include/backend/instr.hh \
+  ../include/backend/reg.hh \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   /usr/include/c++/9/cassert \
@@ -520,7 +520,7 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/Function.hh:
 
-/usr/include/c++/9/bits/sstream.tcc:
+../include/backend/instr.hh:
 
 /usr/include/c++/9/bits/erase_if.h:
 
@@ -561,6 +561,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/char_traits.h:
 
 /usr/include/c++/9/stack:
+
+../include/backend/reg.hh:
 
 /usr/include/c++/9/cstdio:
 
@@ -745,8 +747,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h:
-
-/usr/include/c++/9/sstream:
 
 /usr/include/c++/9/ext/type_traits.h:
 
