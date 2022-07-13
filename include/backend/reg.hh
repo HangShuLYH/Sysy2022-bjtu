@@ -16,6 +16,7 @@ const int max_gReg_id = 15;
 const int max_fReg_id = 31;
 class GR{
 public:
+    static int reg_num;
     GR() {}
     GR(int nu) {id = nu;}
     std::string getName() {
@@ -24,14 +25,19 @@ public:
         }
         return "r" + std::to_string(id);
     }
+    int getID() {return id;}
     bool isVirtual() {return id > max_gReg_id;}
     static GR allocateReg() {GR gr(reg_num++);return gr;}
+    const bool operator<(const GR& gr) const {return this->id < gr.id;}
+    const bool operator==(const GR& gr) const {return this->id == gr.id;}
+    const bool operator!=(const GR& gr) const {return this->id != gr.id;}
+    const bool operator>(const GR& gr) const {return this->id > gr.id;}
 private:
-    static int reg_num;
     int id;
 };
 class FR{
 public:
+    static int reg_num;
     FR() {}
     FR(int nu) {id = nu;}
     std::string getName() {
@@ -40,10 +46,14 @@ public:
         }
         return "s" + std::to_string(id);
     }
+    int getID() {return id;}
     bool isVirtual() {return id > max_fReg_id;}
     static FR allocateReg() {FR fr(reg_num++);return fr;}
+    const bool operator<(const FR& fr) const {return this->id < fr.id;}
+    const bool operator==(const FR& fr) const {return this->id == fr.id;}
+    const bool operator!=(const FR& fr) const {return this->id != fr.id;}
+    const bool operator>(const FR& fr) const {return this->id > fr.id;}
 private:
-    static int reg_num;
     int id;
 };
 class StackObj {

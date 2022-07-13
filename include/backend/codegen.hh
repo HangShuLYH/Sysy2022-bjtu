@@ -25,20 +25,6 @@ private:
     std::vector<Instr*> translateInstr(Instruction* ir);
     GR getGR(Value* src);
     FR getFR(Value* src);
-    void regAlloc();
-    void calLiveInfo(Function *function,
-                     std::map<BasicBlock *, std::set<Value *>> &liveIn,
-                     std::map<BasicBlock *, std::set<Value *>> &liveOut,
-                     std::map<BasicBlock *, std::set<Value *>> &def,
-                     std::map<BasicBlock *, std::set<Value *>> &use);
-
-    void printLiveInfo(Function *function,
-                       std::map<BasicBlock *, std::set<Value *>> &liveIn,
-                       std::map<BasicBlock *, std::set<Value *>> &liveOut);
-
-    void createIG(std::map<Value *, std::set<Value *>>& IG,
-                  std::map<BasicBlock *, std::set<Value *>> &liveIn,
-                  std::map<BasicBlock *, std::set<Value *>> &liveOut);
     void comment(std::string s);
 public:
     Codegen(IrVisitor &irVisitor, std::ostream& out) : irVisitor(irVisitor),out(out) {}

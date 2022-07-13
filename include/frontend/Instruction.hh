@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include "Value.hh"
+
 enum class OP{
     NEG,
     NOT,
@@ -20,7 +21,7 @@ public:
 class AllocIR: public Instruction {
 public:
     bool isArray = false;
-    int arrayLen;
+    int arrayLen = 1;
     Value* v;
     AllocIR(Value* v):v(v){}
     AllocIR(Value* v, int arrayLen):v(v),arrayLen(arrayLen) {
@@ -74,7 +75,7 @@ public:
     LoadFIR(Value* v1,Value* v2): LoadIR(v1,v2){}
     void print(std::ostream& out) override final{
         v1->print(out);
-        out << " = LoadI ";
+        out << " = LoadF ";
         v2->print(out);
         out << std::endl;
     }
@@ -153,6 +154,7 @@ public:
     TempVal res;
     TempVal left;
     TempVal right;
+    virtual ~ArithmeticIR(){}
     virtual void print(std::ostream& out) = 0;
     ArithmeticIR(TempVal res,TempVal left,TempVal right): res(res),left(left),right(right) {}
 };
@@ -274,11 +276,24 @@ public:
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = ";
-        switch (op) {
-            case OP::NEG:
-                out << "NEG ";break;
-            case OP::NOT:
-                out << "NOT ";break;
+        if (res.isInt()) {
+            switch (op) {
+                case OP::NEG:
+                    out << "NEGF ";
+                    break;
+                case OP::NOT:
+                    out << "NOTF ";
+                    break;
+            }
+        } else {
+            switch (op) {
+                case OP::NEG:
+                    out << "NEGF ";
+                    break;
+                case OP::NOT:
+                    out << "NOTF ";
+                    break;
+            }
         }
         v.print(out);
         out << std::endl;
@@ -472,14 +487,14 @@ public:
         out << "\n";
     }
 };
-#include "BasicBlock.hh"
+class BasicBlock;
 class JumpIR:public Instruction{
 public:
     BasicBlock* target;
     JumpIR(BasicBlock* target) : target(target){}
     void print(std::ostream& out) override final{
         out << "goto ";
-        out << target->name;
+        //out << target->name;
         out << "\n";
     }
 };
@@ -495,11 +510,11 @@ public:
         cond->print(out);
         out << " ？ ";
         if(trueTarget) {
-            out << trueTarget->name;
+            //out << trueTarget->name;
         }
         out << " : ";
         if(falseTarget) {
-            out << falseTarget->name;
+            //out << falseTarget->name;
         }
         out << "\n";
     }
@@ -533,7 +548,7 @@ public:
         }
     };
 };
-#include "Function.hh"
+class Function;
 class CallIR:public Instruction{
 public:
     Function* func;
@@ -553,7 +568,7 @@ public:
             returnVal->print(out);
             out << " = ";
         }
-        out << "call " << func->name << "(";
+        out << "call " /*<< func->name*/ << "(";
         for (size_t i = 0; i < args.size(); ++i) {
             if(args[i].getVal()) {
                 args[i].getVal()->print(out);

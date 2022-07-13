@@ -783,6 +783,18 @@ void IrVisitor::visit(LVal *lVal) {
         }
     }
     tempVal = val;
+    if (typeid(*tempVal.getVal()) == typeid(ConstValue)
+    && !index) {
+        if (tempVal.getType()->isIntPointer()) {
+            tempVal.setInt(dynamic_cast<ConstValue*>(tempVal.getVal())->getIntValList()[arrayIndex]);
+        }else {
+            tempVal.setFloat(dynamic_cast<ConstValue*>(tempVal.getVal())->getFloatValList()[arrayIndex]);
+        }
+        tempVal.setType(tempVal.getType()->getContained());
+        tempVal.setVal(nullptr);
+        return;
+    }
+
     Value *v = new VarValue("",
                             new Type(TypeID::POINTER, val.getVal()->getType()->getContained()),
                             isGlobal(),
@@ -843,6 +855,9 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
         unaryExp->primaryExp->accept(*this);
     } else if (unaryExp->unaryExp) {
         unaryExp->unaryExp->accept(*this);
+        if (unaryExp->unaryOp->op == unaryop::OP_POS) {
+            return;
+        }
         //cal const
         if (!tempVal.getVal()) {
             if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
@@ -854,8 +869,14 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             }
         } else {
             TempVal t = tempVal;
-            VarValue *v = new VarValue("", tempVal.getType(), isGlobal(),
-                                       isGlobal() ? cnt++ : cur_func->varCnt++, true);
+            VarValue* v = nullptr;
+            if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
+                v = new VarValue("", tempVal.getType(), isGlobal(),
+                                           isGlobal() ? cnt++ : cur_func->varCnt++, true);
+            } else if (unaryExp->unaryOp->op == unaryop::OP_NOT){
+                v = new VarValue("", typeInt, isGlobal(),
+                                 isGlobal() ? cnt++ : cur_func->varCnt++, true);
+            }
             tempVal.setVal(v);
             tempVal.setType(v->getType());
             if (unaryExp->unaryOp->op == unaryop::OP_NEG) {

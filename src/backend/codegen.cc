@@ -6,21 +6,51 @@
 #include "codegen.hh"
 #include <set>
 #include <algorithm>
+#include "allocRegs.hh"
 
 int GR::reg_num = 16;
 int FR::reg_num = 33;
+
+std::vector<Instr *> setIntValue(GR target, int value) {
+    if (0 <= value && value <= 65535) {
+        return {new MovImm(target, value)};
+    } else if (-255 <= value && value <= 0) {
+        return {new MvnImm(target, -value - 1)};
+    } else {
+        int imm_low = value & ((1 << 16) - 1);
+        int imm_high = value >> 16;
+        return {new MoveW(target, imm_low),
+                new MoveT(target, imm_high)};
+    }
+}
 
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
     generateGlobalCode();
     for (Function *function: irVisitor.functions) {
+        out << ".global " << function->name << "\n";
+    }
+    out << ".section .text\n";
+    for (Function *function: irVisitor.functions) {
         translateFunction(function);
+        ColoringAlloc coloringAlloc(function);
+        coloringAlloc.run();
+        for (BasicBlock *block: function->basicBlocks) {
+            out << block->name << ":\n";
+            for (Instr *instr: block->getInstrs()) {
+                out << "\t";
+                instr->replace(coloringAlloc.getColorGR(),coloringAlloc.getColorFR());
+                instr->print(out);
+            }
+        }
     }
 }
-
 void Codegen::translateFunction(Function *function) {
     stackMapping.clear();
+    stackSize = 0;
+    GR::reg_num = 16;
+    FR::reg_num = 32;
     for (BasicBlock *bb: function->basicBlocks) {
         for (Instruction *ir: bb->ir) {
             if (typeid(*ir) == typeid(CallIR)) {
@@ -47,20 +77,45 @@ void Codegen::translateFunction(Function *function) {
     }
     for (BasicBlock *bb: function->basicBlocks) {
         for (Instruction *ir: bb->ir) {
-            if (dynamic_cast<AllocIR*>(ir)) {
+            if (dynamic_cast<AllocIR *>(ir)) {
                 AllocIR *allocIr = dynamic_cast<AllocIR *>(ir);
                 stackMapping[allocIr->v] = stackSize;
-                stackSize += allocIr->arrayLen;
-            }else {
+                stackSize += allocIr->arrayLen * 4;
+            }
+        }
+    }
+    {
+        int gr_cnt = 0;
+        int fr_cnt = 0;
+        int cnt = 0;
+        for (int i = 0; i < function->params.size(); i++) {
+            if (!function->params[i]->getType()->isFloat()) {
+                if (gr_cnt < 4) {
+                    gRegMapping[function->params[i]] = GR(gr_cnt);
+                } else {
+                    stackMapping[function->params[i]] = stackSize + cnt * 4;
+                    cnt++;
+                }
+                gr_cnt++;
+            } else {
+                if (fr_cnt < 32) {
+                    fRegMapping[function->params[i]] = FR(fr_cnt);
+                } else {
+                    stackMapping[function->params[i]] = stackSize + cnt * 4;
+                    cnt++;
+                }
+                fr_cnt++;
+            }
+        }
+    }
+    for (BasicBlock *bb: function->basicBlocks) {
+        for (Instruction *ir: bb->ir) {
+            if (!dynamic_cast<AllocIR *>(ir)) {
                 std::vector<Instr *> vec = translateInstr(ir);
                 for (int i = 0; i < vec.size(); ++i) {
                     bb->pushInstr(vec[i]);
                 }
             }
-        }
-        out << bb->name << ":\n";
-        for (Instr *instr: bb->getInstrs()) {
-            instr->print(out);
         }
     }
 }
@@ -83,16 +138,14 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             }
         } else {
             if (!gepIr->v3) {
-                stackMapping[gepIr->v1] = gepIr->arrayLen + stackMapping[gepIr->v2];
+                stackMapping[gepIr->v1] = gepIr->arrayLen * 4 + stackMapping[gepIr->v2];
             } else {
+                //v3 * 4 + v2
                 GR dst = getGR(gepIr->v1);
-                Value *val = new VarValue();
-                GR sp = getGR(val);
-                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, sp, GR(13), 0));
                 Value *val2 = new VarValue();
                 GR mul1 = getGR(val2);
                 vec.push_back(new MovImm(mul1, 4));
-                vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), sp));
+                vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
             }
         }
         return vec;
@@ -143,7 +196,10 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             Value *val = new VarValue();
             storeIr->src.setVal(val);
             src = getGR(val);
-            vec.push_back(new MovImm(src, storeIr->src.getInt()));
+            std::vector<Instr *> v = setIntValue(src, storeIr->src.getInt());
+            for (Instr *instr: v) {
+                vec.push_back(instr);
+            }
         } else {
             src = getGR(storeIr->src.getVal());
         }
@@ -202,187 +258,241 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         }
         return vec;
     }
+    if (typeid(*ir) == typeid(UnaryIR)) {
+        std::vector<Instr *> vec;
+        UnaryIR *unaryIr = dynamic_cast<UnaryIR *>(ir);
+        if (unaryIr->res.isInt()) {
+            GR src = gRegMapping[unaryIr->v.getVal()];
+            gRegMapping[unaryIr->res.getVal()] = src;
+            if (unaryIr->op == OP::NEG) {
+                vec.push_back(new RsubImm(gRegMapping[unaryIr->res.getVal()], gRegMapping[unaryIr->res.getVal()], 0));
+            } else {
+                vec.push_back(new CmpImm(src, 0));
+                vec.push_back(new MovImm(src, 0));
+                vec.push_back(new MovImm(src, 1, EQU));
+            }
+        } else {
+            FR src = fRegMapping[unaryIr->v.getVal()];
+            if (unaryIr->op == OP::NEG) {
+                fRegMapping[unaryIr->res.getVal()] = src;
+                vec.push_back(new VNeg(src, src));
+            } else {
+                vec.push_back(new VCmpe(src, 0));
+                vec.push_back(new VMrs());
+                GR dst = getGR(unaryIr->res.getVal());
+                vec.push_back(new MovImm(dst, 0));
+                vec.push_back(new MovImm(dst, 1, EQU));
+            }
+        }
+        return vec;
+    }
     if (typeid(*ir) == typeid(CastInt2FloatIR)) {
-        CastInt2FloatIR *ir = dynamic_cast<CastInt2FloatIR *>(ir);
-        GR src = getGR(ir->v2);
-        FR dst = getFR(ir->v1);
+        CastInt2FloatIR *ir2 = dynamic_cast<CastInt2FloatIR *>(ir);
+        GR src = getGR(ir2->v2);
+        FR dst = getFR(ir2->v1);
         return {new VMovFG(dst, src), new VcvtFS(dst, dst)};
     }
     if (typeid(*ir) == typeid(CastFloat2IntIR)) {
-        CastFloat2IntIR *ir = dynamic_cast<CastFloat2IntIR *>(ir);
-        FR src = getFR(ir->v2);
-        GR dst = getGR(ir->v1);
+        CastFloat2IntIR *ir2 = dynamic_cast<CastFloat2IntIR *>(ir);
+        FR src = getFR(ir2->v2);
+        GR dst = getGR(ir2->v1);
         return {new VcvtSF(src, src), new VMovGF(dst, src)};
     }
+    if (typeid(*ir) == typeid(AddIIR) ||
+        typeid(*ir) == typeid(AddFIR) ||
+        typeid(*ir) == typeid(DivIIR) ||
+        typeid(*ir) == typeid(SubIIR) ||
+        typeid(*ir) == typeid(SubFIR) ||
+        typeid(*ir) == typeid(DivFIR) ||
+        typeid(*ir) == typeid(MulIIR) ||
+        typeid(*ir) == typeid(MulFIR) ||
+        typeid(*ir) == typeid(ModIR) ||
+        typeid(*ir) == typeid(LTIIR) ||
+        typeid(*ir) == typeid(LTFIR) ||
+        typeid(*ir) == typeid(GTIIR) ||
+        typeid(*ir) == typeid(GTFIR) ||
+        typeid(*ir) == typeid(LEIIR) ||
+        typeid(*ir) == typeid(LEFIR) ||
+        typeid(*ir) == typeid(GEIIR) ||
+        typeid(*ir) == typeid(GEFIR) ||
+        typeid(*ir) == typeid(EQUIIR) ||
+        typeid(*ir) == typeid(EQUFIR) ||
+        typeid(*ir) == typeid(NEIIR) ||
+        typeid(*ir) == typeid(NEFIR)) {
 
-    if (dynamic_cast<ArithmeticIR*>(ir)) {
-        std::cout << "ok..";
-        ArithmeticIR *ir = dynamic_cast<ArithmeticIR *>(ir);
+        ArithmeticIR *ir2 = dynamic_cast<ArithmeticIR *>(ir);
         std::vector<Instr *> vec;
-        if (!ir->left.getVal()) {
+        if (!ir2->left.getVal()) {
             Value *v = new VarValue();
-            ir->left.setVal(v);
-            if (ir->left.isInt()) {
-                GR dst = getGR(ir->left.getVal());
-                vec.push_back(new MovImm(dst, ir->left.getInt()));
+            ir2->left.setVal(v);
+            if (ir2->left.isInt()) {
+                GR dst = getGR(ir2->left.getVal());
+                std::vector<Instr *> v = setIntValue(dst, ir2->left.getInt());
+                for (Instr *instr: v) {
+                    vec.push_back(instr);
+                }
             } else {
-                FR dst = getFR(ir->left.getVal());
-                vec.push_back(new VMovImm(dst, ir->left.getFloat()));
+                FR dst = getFR(ir2->left.getVal());
+                vec.push_back(new VMovImm(dst, ir2->left.getFloat()));
             }
         }
-        if (!ir->right.getVal()) {
+        if (!ir2->right.getVal()) {
             Value *v = new VarValue();
-            ir->right.setVal(v);
-            if (ir->right.isInt()) {
-                GR dst = getGR(ir->right.getVal());
-                vec.push_back(new MovImm(dst, ir->right.getInt()));
+            ir2->right.setVal(v);
+            if (ir2->right.isInt()) {
+                GR dst = getGR(ir2->right.getVal());
+                std::vector<Instr *> v = setIntValue(dst, ir2->right.getInt());
+                for (Instr *instr: v) {
+                    vec.push_back(instr);
+                }
             } else {
-                FR dst = getFR(ir->right.getVal());
-                vec.push_back(new VMovImm(dst, ir->right.getFloat()));
+                FR dst = getFR(ir2->right.getVal());
+                vec.push_back(new VMovImm(dst, ir2->right.getFloat()));
             }
         }
-        if (ir->left.getVal() || ir->right.getVal()) {
-            if (ir->left.isInt()) {
-                if (dynamic_cast<AddIIR*>(ir)) {
+        if (ir2->left.getVal() || ir2->right.getVal()) {
+            if (ir2->left.isInt()) {
+                if (typeid(*ir) == typeid(AddIIR)) {
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Add,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(SubIIR)) {
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(MulIIR)) {
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(DivIIR)) {
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(ModIR)) {
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->right.getVal())));
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->right.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->right.getVal())));
                     vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
-                                                   getGR(ir->res.getVal()),
-                                                   getGR(ir->left.getVal()),
-                                                   getGR(ir->res.getVal())));
+                                                   getGR(ir2->res.getVal()),
+                                                   getGR(ir2->left.getVal()),
+                                                   getGR(ir2->res.getVal())));
 
                 }
                 if (typeid(*ir) == typeid(LTIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, LT));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
                 }
                 if (typeid(*ir) == typeid(LEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, LE));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
                 }
                 if (typeid(*ir) == typeid(GTIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, GT));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
                 }
                 if (typeid(*ir) == typeid(GEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, GE));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
                 }
                 if (typeid(*ir) == typeid(EQUIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, EQU));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
                 }
                 if (typeid(*ir) == typeid(NEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir->left.getVal()), getGR(ir->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, NE));
+                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
                 }
             } else {
                 if (typeid(*ir) == typeid(AddFIR)) {
                     vec.push_back(new VRegRegInstr(VRegRegInstr::VAdd,
-                                                   getFR(ir->res.getVal()),
-                                                   getFR(ir->left.getVal()),
-                                                   getFR(ir->right.getVal())));
+                                                   getFR(ir2->res.getVal()),
+                                                   getFR(ir2->left.getVal()),
+                                                   getFR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(SubFIR)) {
                     vec.push_back(new VRegRegInstr(VRegRegInstr::VSub,
-                                                   getFR(ir->res.getVal()),
-                                                   getFR(ir->left.getVal()),
-                                                   getFR(ir->right.getVal())));
+                                                   getFR(ir2->res.getVal()),
+                                                   getFR(ir2->left.getVal()),
+                                                   getFR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(MulFIR)) {
                     vec.push_back(new VRegRegInstr(VRegRegInstr::VMul,
-                                                   getFR(ir->res.getVal()),
-                                                   getFR(ir->left.getVal()),
-                                                   getFR(ir->right.getVal())));
+                                                   getFR(ir2->res.getVal()),
+                                                   getFR(ir2->left.getVal()),
+                                                   getFR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(DivFIR)) {
                     vec.push_back(new VRegRegInstr(VRegRegInstr::VDiv,
-                                                   getFR(ir->res.getVal()),
-                                                   getFR(ir->left.getVal()),
-                                                   getFR(ir->right.getVal())));
+                                                   getFR(ir2->res.getVal()),
+                                                   getFR(ir2->left.getVal()),
+                                                   getFR(ir2->right.getVal())));
                 }
                 if (typeid(*ir) == typeid(LTFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, LT));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
                 }
                 if (typeid(*ir) == typeid(GTFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, GT));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
                 }
                 if (typeid(*ir) == typeid(LEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, LE));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
                 }
                 if (typeid(*ir) == typeid(GEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, GE));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
                 }
                 if (typeid(*ir) == typeid(EQUFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, EQU));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
                 }
                 if (typeid(*ir) == typeid(NEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir->left.getVal()), getFR(ir->right.getVal())));
+                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
                     vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir->res.getVal()), 1, NE));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
                 }
             }
         }
         return vec;
     }
+
     if (typeid(*ir) == typeid(JumpIR)) {
         return {new B(dynamic_cast<JumpIR *>(ir)->target->name)};
     }
     if (typeid(*ir) == typeid(BranchIR)) {
         BranchIR *branchIr = dynamic_cast<BranchIR *>(ir);
-        return {new CmpImm(getGR(branchIr->cond), 0),
+        return {new CmpImm(getGR(branchIr->cond), 1),
                 new B(branchIr->trueTarget->name, EQU),
                 new B(branchIr->falseTarget->name, NE)};
     }
@@ -390,6 +500,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         CallIR *callIr = dynamic_cast<CallIR *>(ir);
         int gr_cnt = 0;
         int fr_cnt = 0;
+        int cnt = 0;
         std::vector<Instr *> vec;
         for (TempVal v: callIr->args) {
             if (!v.isFloat()) {
@@ -398,7 +509,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         v.setVal(new VarValue());
                         vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
                     }
-                    stackMapping[v.getVal()] = (gr_cnt - 4) * 4;
+                    stackMapping[v.getVal()] = cnt * 4;
+                    cnt++;
                     vec.push_back(new Store(getGR(v.getVal()), GR(13), stackMapping[v.getVal()]));
                 } else {
                     if (!v.getVal()) {
@@ -417,7 +529,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         v.setVal(new VarValue());
                         vec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
                     }
-                    stackMapping[v.getVal()] = (gr_cnt - 4) * 4;
+                    stackMapping[v.getVal()] = cnt * 4;
+                    cnt++;
                     vec.push_back(new VStore(getFR(v.getVal()), GR(13), stackMapping[v.getVal()]));
                 } else {
                     if (!v.getVal()) {
@@ -463,7 +576,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
 }
 
 GR Codegen::getGR(Value *src) {
-    if (gRegMapping.count(src) != 0) {
+    if (gRegMapping.count(src) == 0) {
         GR reg = GR::allocateReg();
         gRegMapping[src] = reg;
         return reg;
@@ -472,7 +585,7 @@ GR Codegen::getGR(Value *src) {
 }
 
 FR Codegen::getFR(Value *src) {
-    if (fRegMapping.count(src) != 0) {
+    if (fRegMapping.count(src) == 0) {
         FR reg = FR::allocateReg();
         fRegMapping[src] = reg;
         return reg;
@@ -531,193 +644,6 @@ void Codegen::generateGlobalCode() {
             }
             out << "\n";
         }
-    }
-}
-
-void Codegen::regAlloc() {
-    /*for (Function* function: irVisitor.functions) {
-        std::map<BasicBlock*, std::set<Value*>> liveIn_i,liveOut_i,def_i,use_i;
-        std::map<BasicBlock*, std::set<Value*>> liveIn_f,liveOut_f,def_f,use_f;
-        for (BasicBlock* bb: function->basicBlocks) {
-            //init in,out,def,use
-            std::set<Value*> in_i,out_i,in_f,out_f;
-            liveIn_i[bb] = in_i;
-            liveOut_i[bb] = out_i;
-            liveIn_f[bb] = in_f;
-            liveOut_f[bb] = out_f;
-            std::set<Value*> defSet_i, defSet_f;
-            std::set<Value*> useSet_i, useSet_f;
-            for (Instruction* ir: bb->ir) {
-                if (ir->getDef()) {
-                    if (ir->getDef()->getType()->isInt()) {
-                        defSet_i.insert(ir->getDef());
-                    }else {
-                        defSet_f.insert(ir->getDef());
-                    }
-                }
-                for (int i = 0; i < ir->getUseList().size(); ++i) {
-                    if (ir->getUseList()[i]->getType()->isInt()) {
-                        useSet_i.insert(ir->getUseList()[i]);
-                    }else {
-                        useSet_f.insert(ir->getUseList()[i]);
-                    }
-                }
-            }
-            def_i[bb] = defSet_i;
-            use_i[bb] = useSet_i;
-            def_f[bb] = defSet_f;
-            use_f[bb] = useSet_f;
-        }
-        //function arguments
-        for (int i = 0; i < function->params.size(); ++i) {
-            if (function->params[i]->getType()->isInt()) {
-                liveIn_i[function->basicBlocks[0]].insert(function->params[i]);
-            } else {
-                liveIn_f[function->basicBlocks[0]].insert(function->params[i]);
-            }
-        }
-        //cal GR livein and liveout
-        while(true) {
-            bool flag = true;
-            for (BasicBlock* bb: function->basicBlocks) {
-                std::set<Value*> temp,in_prime,out_prime;
-                std::set_difference(liveOut_i[bb].begin(),liveOut_i[bb].end(),
-                                    def_i[bb].begin(),def_i[bb].end(),
-                                    std::inserter(temp,temp.begin()));
-                std::set_union(use_i[bb].begin(),use_i[bb].end(),
-                               temp.begin(),temp.end(),
-                               std::inserter(in_prime,in_prime.begin()));
-                if (in_prime != liveIn_i[bb]) {
-                    liveIn_i[bb] = in_prime;
-                    flag = false;
-                }
-                std::set<Value*> t1,t2;
-                for (BasicBlock* succ:bb->getSucc()) {
-                    std::set_union(liveIn_i[succ].begin(),liveIn_i[succ].end(),
-                                   t1.begin(),t1.end(),
-                                   std::inserter(t2,t2.begin()));
-                    t1 = t2;
-                    out_prime = t2;
-                    t2.clear();
-                }
-                if (out_prime != liveOut_i[bb]) {
-                    liveOut_i[bb] = out_prime;
-                    flag = false;
-                }
-            }
-            if (flag) {
-                break;
-            }
-        }
-
-        //cal GR livein and liveout
-        calLiveInfo(function,liveIn_i,liveOut_i,def_i,use_i);
-        //cal FR livein and liveout
-        calLiveInfo(function,liveIn_f,liveOut_f,def_f,use_f);
-#ifdef DEBUG
-        std::cout << "GR Info:\n";
-        printLiveInfo(function,liveIn_i,liveOut_i);
-        std::cout << "FR Info:\n";
-        printLiveInfo(function,liveIn_f,liveOut_f);
-#endif
-        //create Inference graph: both GR and FR graph
-        std::map<Value*, std::set<Value*>> IG_i, IG_f;
-        createIG(IG_i,liveIn_i,liveOut_i);
-        createIG(IG_f,liveIn_f,liveOut_f);
-        std::cout << "IG create finish\n";
-    }
-}
-void Codegen::calLiveInfo(Function* function,
-                 std::map<BasicBlock*,std::set<Value*>>& liveIn,
-                 std::map<BasicBlock*,std::set<Value*>>& liveOut,
-                 std::map<BasicBlock*,std::set<Value*>>& def,
-                 std::map<BasicBlock*,std::set<Value*>>& use) {
-    while(true) {
-        bool flag = true;
-        for (BasicBlock* bb: function->basicBlocks) {
-            std::set<Value*> temp,in_prime,out_prime;
-            std::set_difference(liveOut[bb].begin(),liveOut[bb].end(),
-                                def[bb].begin(),def[bb].end(),
-                                std::inserter(temp,temp.begin()));
-            std::set_union(use[bb].begin(),use[bb].end(),
-                           temp.begin(),temp.end(),
-                           std::inserter(in_prime,in_prime.begin()));
-            if (in_prime != liveIn[bb]) {
-                liveIn[bb] = in_prime;
-                flag = false;
-            }
-            std::set<Value*> t1,t2;
-            for (BasicBlock* succ:bb->getSucc()) {
-                std::set_union(liveIn[succ].begin(),liveIn[succ].end(),
-                               t1.begin(),t1.end(),
-                               std::inserter(t2,t2.begin()));
-                t1 = t2;
-                out_prime = t2;
-                t2.clear();
-            }
-            if (out_prime != liveOut[bb]) {
-                liveOut[bb] = out_prime;
-                flag = false;
-            }
-        }
-        if (flag) {
-            break;
-        }
-    }*/
-}
-
-void Codegen::printLiveInfo(Function *function,
-                            std::map<BasicBlock *, std::set<Value *>> &liveIn,
-                            std::map<BasicBlock *, std::set<Value *>> &liveOut) {
-    std::cout << function->name << ":\n";
-    std::cout << "liveIn():\n";
-    auto iter = liveIn.begin();
-    while (iter != liveIn.end()) {
-        std::cout << "\t" << iter->first->name << ":";
-        for (Value *v: iter->second) {
-            std::cout << "%" << v->getNum() << " ";
-        }
-        std::cout << std::endl;
-        iter++;
-    }
-    std::cout << "liveOut:\n";
-    iter = liveOut.begin();
-    while (iter != liveOut.end()) {
-        std::cout << "\t" << iter->first->name << ":";
-        for (Value *v: iter->second) {
-            std::cout << "%" << v->getNum() << " ";
-        }
-        std::cout << std::endl;
-        iter++;
-    }
-}
-
-void Codegen::createIG(std::map<Value *, std::set<Value *>> &IG,
-                       std::map<BasicBlock *, std::set<Value *>> &liveIn,
-                       std::map<BasicBlock *, std::set<Value *>> &liveOut) {
-    auto iter = liveIn.begin();
-    while (iter != liveIn.end()) {
-        for (Value *v1: iter->second) {
-            for (Value *v2: iter->second) {
-                if (v1 != v2) {
-                    IG[v1].insert(v2);
-                    IG[v2].insert(v1);
-                }
-            }
-        }
-        iter++;
-    }
-    iter = liveOut.begin();
-    while (iter != liveOut.end()) {
-        for (Value *v1: iter->second) {
-            for (Value *v2: iter->second) {
-                if (v1 != v2) {
-                    IG[v1].insert(v2);
-                    IG[v2].insert(v1);
-                }
-            }
-        }
-        iter++;
     }
 }
 

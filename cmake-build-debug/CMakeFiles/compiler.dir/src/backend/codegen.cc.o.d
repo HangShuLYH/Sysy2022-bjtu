@@ -171,12 +171,12 @@ CMakeFiles/compiler.dir/src/backend/codegen.cc.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/CompileUnit.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
  /usr/include/c++/9/list /usr/include/c++/9/bits/stl_list.h \
  /usr/include/c++/9/bits/list.tcc /usr/include/c++/9/set \
  /usr/include/c++/9/bits/stl_set.h /usr/include/c++/9/bits/stl_multiset.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
  /usr/include/c++/9/cassert /usr/include/assert.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
@@ -190,4 +190,7 @@ CMakeFiles/compiler.dir/src/backend/codegen.cc.o: \
  /usr/include/c++/9/bits/stl_algo.h \
  /usr/include/c++/9/bits/algorithmfwd.h \
  /usr/include/c++/9/bits/stl_heap.h \
- /usr/include/c++/9/bits/uniform_int_dist.h
+ /usr/include/c++/9/bits/uniform_int_dist.h \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/allocRegs.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh

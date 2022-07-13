@@ -163,6 +163,7 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/istream.tcc \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
  /usr/include/c++/9/list /usr/include/c++/9/bits/stl_list.h \
  /usr/include/c++/9/bits/list.tcc /usr/include/c++/9/set \
@@ -171,7 +172,8 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/9/bits/erase_if.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/reg.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
+ /usr/include/c++/9/map /usr/include/c++/9/bits/stl_map.h \
+ /usr/include/c++/9/bits/stl_multimap.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
  /usr/include/c++/9/cassert /usr/include/assert.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
@@ -194,6 +196,4 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/errors/errors.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/IRManager.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/MIRBuilder.hh \
- /usr/include/c++/9/map /usr/include/c++/9/bits/stl_map.h \
- /usr/include/c++/9/bits/stl_multimap.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/IrVisitor.hh

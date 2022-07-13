@@ -176,13 +176,13 @@ CMakeFiles/compiler.dir/main.cpp.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/CompileUnit.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Instruction.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Value.hh \
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
  /usr/include/c++/9/list /usr/include/c++/9/bits/stl_list.h \
  /usr/include/c++/9/bits/list.tcc /usr/include/c++/9/set \
  /usr/include/c++/9/bits/stl_set.h /usr/include/c++/9/bits/stl_multiset.h \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/instr.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/backend/reg.hh \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/Function.hh \
  /usr/include/c++/9/stack /usr/include/c++/9/deque \
  /usr/include/c++/9/bits/stl_deque.h /usr/include/c++/9/bits/deque.tcc \
  /usr/include/c++/9/bits/stl_stack.h /usr/include/c++/9/unordered_set \

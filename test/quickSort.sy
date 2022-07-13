@@ -1,7 +1,7 @@
 const float a = 10.5;
 const float x = -1;
 
-const int qq[4][2] = {x - 2, 2,{3},{5},7,8};
+const int qq[4] = {x - 2, 2,7,8};
 int y = 10;
 int m[5] = {1,2,3,4,5};
 void quickSort(int number[], int first, int last) {
@@ -10,7 +10,7 @@ void quickSort(int number[], int first, int last) {
     m = qq[first];
     const int yy = 10;
     int qqq[5] = {1,2,3,4,5};
-    float abc = qq[0][1];
+    float abc = qq[0];
     int bbb = 3.5;
     int xxxx = -abc + bbb / a + !x;
     int i, j, pivot;
@@ -45,3 +45,207 @@ int main(){
     quickSort(a,0,8);
     return 0;
 }
+/*
+quickSort::BB0:
+	str r0,[sp,#0]
+	str r1,[sp,#4]
+	str r2,[sp,#8]
+	ldr r16,[sp,#4]
+	movw r17,#:lower16:qq
+	movt r17,#:upper16:qq
+	mov r18,#4
+	mla r17,r18,r16,r17
+	ldr r19,[r17,#0]
+	str r19,[sp,#12]
+	mov r20,#1
+	str r20,[sp,#16]
+	mov r21,#2
+	str r21,[sp,#20]
+	mov r22,#3
+	str r22,[sp,#24]
+	mov r23,#4
+	str r23,[sp,#28]
+	mov r24,#5
+	str r24,[sp,#32]
+	movt r25,#-3
+	str r25,[sp,#36]
+	mov r26,#3
+	str r26,[sp,#40]
+	vldr.32 s32,[sp,#36]
+	vneg.f32 s32,s32
+	ldr r27,[sp,#40]
+	vmov s33,r27
+	vcvt.f32.s32 s33,s33
+	vmov s34,#10.5
+	vdiv s35,s33,s34
+	vadd s36,s32,s35
+	vmov s37,#0
+	vadd s38,s36,s37
+	vcvt.s32.f32 s38,s38
+	vmov r28,s38
+	str r28,[sp,#44]
+	ldr r29,[sp,#0]
+	ldr r30,[sp,#48]
+	mov r32,#4
+	mla r31,r32,r30,r29
+	ldr r33,[sp,#52]
+	str r33,[r31,#0]
+	ldr r34,[sp,#4]
+	ldr r35,[sp,#8]
+	cmp r34,r35
+	mov r36,#0
+	movlt r36,#1
+	cmp r36,#1
+	beq quickSort::BB5
+	bne quickSort::BB32
+quickSort::BB5:
+	ldr r37,[sp,#4]
+	str r37,[sp,#56]
+	ldr r38,[sp,#4]
+	str r38,[sp,#48]
+	ldr r39,[sp,#8]
+	str r39,[sp,#52]
+	b quickSort::BB9
+quickSort::BB9:
+	ldr r40,[sp,#48]
+	ldr r41,[sp,#52]
+	cmp r40,r41
+	mov r42,#0
+	movlt r42,#1
+	cmp r42,#1
+	beq quickSort::BB15
+	bne quickSort::BB30
+quickSort::BB15:
+	ldr r43,[sp,#0]
+	ldr r44,[sp,#48]
+	mov r46,#4
+	mla r45,r46,r44,r43
+	ldr r47,[r45,#0]
+	ldr r48,[sp,#0]
+	ldr r49,[sp,#56]
+	mov r51,#4
+	mla r50,r51,r49,r48
+	ldr r52,[r50,#0]
+	cmp r47,r52
+	mov r53,#0
+	movle r53,#1
+	cmp r53,#1
+	beq quickSort::BB16
+	bne quickSort::BB22
+quickSort::BB16:
+	ldr r54,[sp,#48]
+	ldr r55,[sp,#8]
+	cmp r54,r55
+	mov r56,#0
+	movlt r56,#1
+	cmp r56,#1
+	beq quickSort::BB17
+	bne quickSort::BB22
+quickSort::BB17:
+	ldr r57,[sp,#48]
+	mov r58,#1
+	add r59,r57,r58
+	str r59,[sp,#48]
+	b quickSort::BB15
+quickSort::BB22:
+	ldr r60,[sp,#0]
+	ldr r61,[sp,#52]
+	mov r63,#4
+	mla r62,r63,r61,r60
+	ldr r64,[r62,#0]
+	ldr r65,[sp,#0]
+	ldr r66,[sp,#56]
+	mov r68,#4
+	mla r67,r68,r66,r65
+	ldr r69,[r67,#0]
+	cmp r64,r69
+	mov r70,#0
+	movgt r70,#1
+	cmp r70,#1
+	beq quickSort::BB23
+	bne quickSort::BB27
+quickSort::BB23:
+	ldr r71,[sp,#52]
+	mov r72,#1
+	sub r73,r71,r72
+	str r73,[sp,#52]
+	b quickSort::BB22
+quickSort::BB27:
+	ldr r74,[sp,#48]
+	ldr r75,[sp,#52]
+	cmp r74,r75
+	mov r76,#0
+	movlt r76,#1
+	cmp r76,#1
+	beq quickSort::BB28
+	bne quickSort::BB9
+quickSort::BB28:
+	ldr r77,[sp,#0]
+	ldr r78,[sp,#48]
+	mov r80,#4
+	mla r79,r80,r78,r77
+	ldr r81,[r79,#0]
+	str r81,[sp,#60]
+	ldr r82,[sp,#0]
+	ldr r83,[sp,#48]
+	mov r85,#4
+	mla r84,r85,r83,r82
+	ldr r86,[sp,#0]
+	ldr r87,[sp,#52]
+	mov r89,#4
+	mla r88,r89,r87,r86
+	ldr r90,[r88,#0]
+	str r90,[r84,#0]
+	ldr r91,[sp,#0]
+	ldr r92,[sp,#52]
+	mov r94,#4
+	mla r93,r94,r92,r91
+	ldr r95,[sp,#60]
+	str r95,[r93,#0]
+	b quickSort::BB9
+quickSort::BB30:
+	ldr r96,[sp,#0]
+	ldr r97,[sp,#56]
+	mov r99,#4
+	mla r98,r99,r97,r96
+	ldr r100,[r98,#0]
+	str r100,[sp,#60]
+	ldr r101,[sp,#0]
+	ldr r102,[sp,#56]
+	mov r104,#4
+	mla r103,r104,r102,r101
+	ldr r105,[sp,#0]
+	ldr r106,[sp,#52]
+	mov r108,#4
+	mla r107,r108,r106,r105
+	ldr r109,[r107,#0]
+	str r109,[r103,#0]
+	ldr r110,[sp,#0]
+	ldr r111,[sp,#52]
+	mov r113,#4
+	mla r112,r113,r111,r110
+	ldr r114,[sp,#60]
+	str r114,[r112,#0]
+	ldr r115,[sp,#0]
+	ldr r116,[sp,#4]
+	ldr r117,[sp,#52]
+	mov r118,#1
+	sub r119,r117,r118
+	mov r0,r115
+	mov r1,r116
+	mov r2,r119
+	bl quickSort
+	ldr r120,[sp,#0]
+	ldr r121,[sp,#52]
+	mov r122,#1
+	add r123,r121,r122
+	ldr r124,[sp,#8]
+	mov r0,r120
+	mov r1,r123
+	mov r2,r124
+	bl quickSort
+	b quickSort::BB32
+quickSort::BB32:
+	bx lr
+
+*/

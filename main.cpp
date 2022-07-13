@@ -28,43 +28,45 @@ int main (int argc, char *argv[])
     mirBuilder.getPreAndSucc();
 
     irVisitor.print(std::cout);
-//    Codegen codegen(irVisitor,std::cerr);
-//    codegen.generateProgramCode();
+    Codegen codegen(irVisitor,std::cerr);
+    codegen.generateProgramCode();
     //codegen.regAlloc();
-    if(irVisitor.functions[1] == NULL) {
-        std::cout << "NULL!\n";
-    } else {
-        std::cout << "ok\n";
-    }
     std::cout << "end..." <<std::endl;
     return 0;
 }
 /*
  *
- globalVars:
+globalVars:
 	const float @a = 10.5
 	const float @x = -1
 	const int* @qq
+	int* @y
+	int* @m
 	const int @b = 20
 .entryBB:
 entry::BB0
-	const int* @qq = AllocaI(8)
+	const int* @qq = AllocaI(4)
 	int* @0 = GEP const int* @qq 0
 	StoreI -3 int* @0
 	int* @1 = GEP const int* @qq 1
 	StoreI 2 int* @1
-	int* @3 = GEP const int* @qq 2
-	StoreI 3 int* @3
+	int* @2 = GEP const int* @qq 2
+	StoreI 7 int* @2
 	int* @3 = GEP const int* @qq 3
-	StoreI 0 int* @3
-	int* @5 = GEP const int* @qq 4
-	StoreI 5 int* @5
-	int* @5 = GEP const int* @qq 5
-	StoreI 0 int* @5
-	int* @6 = GEP const int* @qq 6
-	StoreI 7 int* @6
-	int* @7 = GEP const int* @qq 7
-	StoreI 8 int* @7
+	StoreI 8 int* @3
+	int* @y = AllocaI
+	StoreI 10 int* @y
+	int* @m = AllocaI(5)
+	int* @4 = GEP int* @m 0
+	StoreI 1 int* @4
+	int* @5 = GEP int* @m 1
+	StoreI 2 int* @5
+	int* @6 = GEP int* @m 2
+	StoreI 3 int* @6
+	int* @7 = GEP int* @m 3
+	StoreI 4 int* @7
+	int* @8 = GEP int* @m 4
+	StoreI 5 int* @8
 define void@quickSort(int* @0,int @1,int @2)
 quickSort::BB0
 	int** @3 = AllocaI
@@ -74,149 +76,152 @@ quickSort::BB0
 	int* @5 = AllocaI
 	StoreI int @2 int* @5
 	int* @6 = AllocaI
-	StoreI const int* @qq int* @6
-	int* @8 = AllocaI(5)
-	int* @9 = GEP int* @8 0
-	StoreI 1 int* @9
-	int* @10 = GEP int* @8 1
-	StoreI 2 int* @10
-	int* @11 = GEP int* @8 2
-	StoreI 3 int* @11
-	int* @12 = GEP int* @8 3
-	StoreI 4 int* @12
-	int* @13 = GEP int* @8 4
-	StoreI 5 int* @13
-	float* @14 = AllocaF
-	StoreF 2 float* @14
-	int* @16 = AllocaI
-	StoreI 3 int* @16
-	int* @17 = AllocaI
-	float @18 = LoadI float* @14
-	float @19 = NEG float @18
-	int @20 = LoadI int* @16
-	float @21 = CastInt2Float int @20
-	float @22 = DivF float @21 10.5
-	float @23 = AddF float @19 float @22
-	float @24 = AddF float @23 0
-	int @25 = CastFloat2Int float @24
-	StoreI int @25 int* @17
-	int* @26 = AllocaI
-	int* @27 = AllocaI
+	int @7 = LoadI int* @4
+	int* @8 = GEP const int* @qq int @7
+	int @9 = LoadI int* @8
+	StoreI int @9 int* @6
+	int* @11 = AllocaI(5)
+	int* @12 = GEP int* @11 0
+	StoreI 1 int* @12
+	int* @13 = GEP int* @11 1
+	StoreI 2 int* @13
+	int* @14 = GEP int* @11 2
+	StoreI 3 int* @14
+	int* @15 = GEP int* @11 3
+	StoreI 4 int* @15
+	int* @16 = GEP int* @11 4
+	StoreI 5 int* @16
+	float* @17 = AllocaF
+	StoreF -3 float* @17
+	int* @18 = AllocaI
+	StoreI 3 int* @18
+	int* @19 = AllocaI
+	float @20 = LoadI float* @17
+	float @21 = NEG float @20
+	int @22 = LoadI int* @18
+	float @23 = CastInt2Float int @22
+	float @24 = DivF float @23 10.5
+	float @25 = AddF float @21 float @24
+	float @26 = AddF float @25 0
+	int @27 = CastFloat2Int float @26
+	StoreI int @27 int* @19
 	int* @28 = AllocaI
 	int* @29 = AllocaI
-	int* @30 = LoadI int** @3
-	int @31 = LoadI int* @26
-	int* @32 = GEP int* @30 int @31
-	int @33 = LoadI int* @27
-	StoreI int @33 int* @32
-	int @34 = LoadI int* @4
-	int @35 = LoadI int* @5
-	int @36 = LTI int @34 int @35
-	goto int @36 ？ quickSort::BB5 : quickSort::BB32
+	int* @30 = AllocaI
+	int* @31 = AllocaI
+	int* @32 = LoadI int** @3
+	int @33 = LoadI int* @28
+	int* @34 = GEP int* @32 int @33
+	int @35 = LoadI int* @29
+	StoreI int @35 int* @34
+	int @36 = LoadI int* @4
+	int @37 = LoadI int* @5
+	int @38 = LTI int @36 int @37
+	goto int @38 ？ quickSort::BB5 : quickSort::BB32
 quickSort::BB5
-	int @37 = LoadI int* @4
-	StoreI int @37 int* @28
-	int @38 = LoadI int* @4
-	StoreI int @38 int* @26
-	int @39 = LoadI int* @5
-	StoreI int @39 int* @27
+	int @39 = LoadI int* @4
+	StoreI int @39 int* @30
+	int @40 = LoadI int* @4
+	StoreI int @40 int* @28
+	int @41 = LoadI int* @5
+	StoreI int @41 int* @29
 	goto quickSort::BB9
 quickSort::BB9
-	int @40 = LoadI int* @26
-	int @41 = LoadI int* @27
-	int @42 = LTI int @40 int @41
-	goto int @42 ？ quickSort::BB15 : quickSort::BB30
+	int @42 = LoadI int* @28
+	int @43 = LoadI int* @29
+	int @44 = LTI int @42 int @43
+	goto int @44 ？ quickSort::BB15 : quickSort::BB30
 quickSort::BB15
-	int* @43 = LoadI int** @3
-	int @44 = LoadI int* @26
-	int* @45 = GEP int* @43 int @44
-	int @46 = LoadI int* @45
-	int* @47 = LoadI int** @3
-	int @48 = LoadI int* @28
-	int* @49 = GEP int* @47 int @48
-	int @50 = LoadI int* @49
-	int @51 = LEI int @46 int @50
-	goto int @51 ？ quickSort::BB16 : quickSort::BB22
+	int* @45 = LoadI int** @3
+	int @46 = LoadI int* @28
+	int* @47 = GEP int* @45 int @46
+	int @48 = LoadI int* @47
+	int* @49 = LoadI int** @3
+	int @50 = LoadI int* @30
+	int* @51 = GEP int* @49 int @50
+	int @52 = LoadI int* @51
+	int @53 = LEI int @48 int @52
+	goto int @53 ？ quickSort::BB16 : quickSort::BB22
 quickSort::BB16
-	int @52 = LoadI int* @26
-	int @53 = LoadI int* @5
-	int @54 = LTI int @52 int @53
-	goto int @54 ？ quickSort::BB17 : quickSort::BB22
+	int @54 = LoadI int* @28
+	int @55 = LoadI int* @5
+	int @56 = LTI int @54 int @55
+	goto int @56 ？ quickSort::BB17 : quickSort::BB22
 quickSort::BB17
-	int @55 = LoadI int* @26
-	int @56 = AddI int @55 1
-	StoreI int @56 int* @26
+	int @57 = LoadI int* @28
+	int @58 = AddI int @57 1
+	StoreI int @58 int* @28
 	goto quickSort::BB15
 quickSort::BB22
-	int* @57 = LoadI int** @3
-	int @58 = LoadI int* @27
-	int* @59 = GEP int* @57 int @58
-	int @60 = LoadI int* @59
-	int* @61 = LoadI int** @3
-	int @62 = LoadI int* @28
-	int* @63 = GEP int* @61 int @62
-	int @64 = LoadI int* @63
-	int @65 = GTI int @60 int @64
-	goto int @65 ？ quickSort::BB23 : quickSort::BB27
+	int* @59 = LoadI int** @3
+	int @60 = LoadI int* @29
+	int* @61 = GEP int* @59 int @60
+	int @62 = LoadI int* @61
+	int* @63 = LoadI int** @3
+	int @64 = LoadI int* @30
+	int* @65 = GEP int* @63 int @64
+	int @66 = LoadI int* @65
+	int @67 = GTI int @62 int @66
+	goto int @67 ？ quickSort::BB23 : quickSort::BB27
 quickSort::BB23
-	int @66 = LoadI int* @27
-	int @67 = SubI int @66 1
-	StoreI int @67 int* @27
+	int @68 = LoadI int* @29
+	int @69 = SubI int @68 1
+	StoreI int @69 int* @29
 	goto quickSort::BB22
 quickSort::BB27
-	int @68 = LoadI int* @26
-	int @69 = LoadI int* @27
-	int @70 = LTI int @68 int @69
-	goto int @70 ？ quickSort::BB28 : quickSort::BB9
+	int @70 = LoadI int* @28
+	int @71 = LoadI int* @29
+	int @72 = LTI int @70 int @71
+	goto int @72 ？ quickSort::BB28 : quickSort::BB9
 quickSort::BB28
-	int* @71 = LoadI int** @3
-	int @72 = LoadI int* @26
-	int* @73 = GEP int* @71 int @72
-	int @74 = LoadI int* @73
-	StoreI int @74 int* @29
-	int* @75 = LoadI int** @3
-	int @76 = LoadI int* @26
-	int* @77 = GEP int* @75 int @76
-	int* @78 = LoadI int** @3
-	int @79 = LoadI int* @27
-	int* @80 = GEP int* @78 int @79
-	int @81 = LoadI int* @80
-	StoreI int @81 int* @77
-	int* @82 = LoadI int** @3
-	int @83 = LoadI int* @27
-	int* @84 = GEP int* @82 int @83
+	int* @73 = LoadI int** @3
+	int @74 = LoadI int* @28
+	int* @75 = GEP int* @73 int @74
+	int @76 = LoadI int* @75
+	StoreI int @76 int* @31
+	int* @77 = LoadI int** @3
+	int @78 = LoadI int* @28
+	int* @79 = GEP int* @77 int @78
+	int* @80 = LoadI int** @3
+	int @81 = LoadI int* @29
+	int* @82 = GEP int* @80 int @81
+	int @83 = LoadI int* @82
+	StoreI int @83 int* @79
+	int* @84 = LoadI int** @3
 	int @85 = LoadI int* @29
-	StoreI int @85 int* @84
+	int* @86 = GEP int* @84 int @85
+	int @87 = LoadI int* @31
+	StoreI int @87 int* @86
 	goto quickSort::BB9
 quickSort::BB30
-	int* @86 = LoadI int** @3
-	int @87 = LoadI int* @28
-	int* @88 = GEP int* @86 int @87
-	int @89 = LoadI int* @88
-	StoreI int @89 int* @29
-	int* @90 = LoadI int** @3
-	int @91 = LoadI int* @28
-	int* @92 = GEP int* @90 int @91
-	int* @93 = LoadI int** @3
-	int @94 = LoadI int* @27
-	int* @95 = GEP int* @93 int @94
-	int @96 = LoadI int* @95
-	StoreI int @96 int* @92
-	int* @97 = LoadI int** @3
-	int @98 = LoadI int* @27
-	int* @99 = GEP int* @97 int @98
+	int* @88 = LoadI int** @3
+	int @89 = LoadI int* @30
+	int* @90 = GEP int* @88 int @89
+	int @91 = LoadI int* @90
+	StoreI int @91 int* @31
+	int* @92 = LoadI int** @3
+	int @93 = LoadI int* @30
+	int* @94 = GEP int* @92 int @93
+	int* @95 = LoadI int** @3
+	int @96 = LoadI int* @29
+	int* @97 = GEP int* @95 int @96
+	int @98 = LoadI int* @97
+	StoreI int @98 int* @94
+	int* @99 = LoadI int** @3
 	int @100 = LoadI int* @29
-	StoreI int @100 int* @99
-	int* @101 = LoadI int** @3
-	int @102 = LoadI int* @4
-	int @103 = LoadI int* @27
-	int @104 = SubI int @103 1
-	call quickSort(int* @101 , int @102 , int @104)
-	int* @105 = LoadI int** @3
-	int @106 = LoadI int* @27
-	int @107 = AddI int @106 1
-	int @108 = LoadI int* @5
-	call quickSort(int* @105 , int @107 , int @108)
+	int* @101 = GEP int* @99 int @100
+	int @102 = LoadI int* @31
+	StoreI int @102 int* @101
+	int* @103 = LoadI int** @3
+	int @104 = LoadI int* @4
+	int @105 = LoadI int* @29
+	int @106 = SubI int @105 1
+	call quickSort(int* @103 , int @104 , int @106)
+	int* @107 = LoadI int** @3
+	int @108 = LoadI int* @29
+	int @109 = AddI int @108 1
+	int @110 = LoadI int* @5
+	call quickSort(int* @107 , int @109 , int @110)
 	goto quickSort::BB32
 quickSort::BB32
 	ret

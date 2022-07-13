@@ -288,6 +288,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/backend/allocRegs.hh">
+			<Option target="compiler"/>
+		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/include/backend/codegen.hh">
 			<Option target="compiler"/>
 		</Unit>
@@ -325,6 +328,9 @@
 			<Option target="compiler"/>
 		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/main.cpp">
+			<Option target="compiler"/>
+		</Unit>
+		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/src/backend/allocRegs.cc">
 			<Option target="compiler"/>
 		</Unit>
 		<Unit filename="/home/hangshu/桌面/Sysy2022-bjtu/src/backend/codegen.cc">

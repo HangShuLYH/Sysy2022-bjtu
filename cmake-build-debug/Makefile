@@ -205,6 +205,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/backend/allocRegs.o: src/backend/allocRegs.cc.o
+.PHONY : src/backend/allocRegs.o
+
+# target to build an object file
+src/backend/allocRegs.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/backend/allocRegs.cc.o
+.PHONY : src/backend/allocRegs.cc.o
+
+src/backend/allocRegs.i: src/backend/allocRegs.cc.i
+.PHONY : src/backend/allocRegs.i
+
+# target to preprocess a source file
+src/backend/allocRegs.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/backend/allocRegs.cc.i
+.PHONY : src/backend/allocRegs.cc.i
+
+src/backend/allocRegs.s: src/backend/allocRegs.cc.s
+.PHONY : src/backend/allocRegs.s
+
+# target to generate assembly for a file
+src/backend/allocRegs.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/backend/allocRegs.cc.s
+.PHONY : src/backend/allocRegs.cc.s
+
 src/backend/codegen.o: src/backend/codegen.cc.o
 .PHONY : src/backend/codegen.o
 
@@ -269,6 +293,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/backend/allocRegs.o"
+	@echo "... src/backend/allocRegs.i"
+	@echo "... src/backend/allocRegs.s"
 	@echo "... src/backend/codegen.o"
 	@echo "... src/backend/codegen.i"
 	@echo "... src/backend/codegen.s"
