@@ -10,6 +10,15 @@
 
 int GR::reg_num = 16;
 int FR::reg_num = 32;
+int bbNameCnt = 0;
+std::map<std::string, std::string> bbNameMapping;
+
+std::string getBBName(std::string name) {
+    if (bbNameMapping.count(name) == 0) {
+        bbNameMapping[name] = ".L" + std::to_string(bbNameCnt++);
+    }
+    return bbNameMapping[name];
+}
 
 std::vector<Instr *> setIntValue(GR target, int value) {
     if (0 <= value && value <= 65535) {
@@ -33,44 +42,107 @@ void Codegen::generateProgramCode() {
     }
     out << ".section .text\n";
     int removeCnt = 0;
-    Function* entry_func = new Function(".init", new Type(TypeID::VOID));
+
+    Function *entry_func = new Function(".init", new Type(TypeID::VOID));
     entry_func->pushBB(irVisitor.entry);
     irVisitor.functions.push_back(entry_func);
-    for (Function *function: irVisitor.functions) {
-        translateFunction(function);
+    std::map<Function *, std::set<GR>> usedGRMapping;
+    std::map<Function *, std::set<FR>> usedFRMapping;
+    std::map<Function *, int> stackSizeMapping;
+    for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
+        Function *function = *itt;
+        int stack_size = translateFunction(function);
+        stackSizeMapping[function] = stack_size;
         ColoringAlloc coloringAlloc(function);
         coloringAlloc.run();
-        //1. remove instr like mov r0,r0
-        //2. find caller save regs
-        //3. add init function
-        //4. rename block
-        //5. replace with alloc regs
+        std::set<GR> allUsedRegsGR;
+        std::set<FR> allUsedRegsFR;
         for (BasicBlock *block: function->basicBlocks) {
-            out << block->name << ":\n";
-            for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
-                Instr* instr = *it;
+            for (auto it = block->getInstrs().rbegin(); it != block->getInstrs().rend();) {
+                Instr *instr = *it;
                 instr->replace(coloringAlloc.getColorGR(), coloringAlloc.getColorFR());
+                instr->replaceBBName(bbNameMapping);
                 if (typeid(*instr) == typeid(MoveReg) && instr->getUseG()[0] == instr->getDefG()[0] ||
-                        typeid(*instr) == typeid(VMoveReg) && instr->getUseF()[0] == instr->getUseF()[0]) {
-                    block->getInstrs().erase(it++);
+                    typeid(*instr) == typeid(VMoveReg) && instr->getUseF()[0] == instr->getUseF()[0]) {
+                    block->getInstrs().erase((++it).base());
                     removeCnt++;
+                } else {
+                    for (GR gr: instr->getDefG()) {
+                        allUsedRegsGR.insert(gr);
+                    }
+                    for (FR fr: instr->getDefF()) {
+                        allUsedRegsFR.insert(fr);
+                    }
+                    it++;
+                }
+            }
+        }
+        usedGRMapping[function] = allUsedRegsGR;
+        usedFRMapping[function] = allUsedRegsFR;
+    }
+    for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
+        Function *function = *itt;
+        for (BasicBlock *block: function->basicBlocks) {
+            for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
+                Instr *instr = *it;
+                if (typeid(*instr) == typeid(Ret)) {
+                    block->getInstrs().erase(it++);
+                    block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), stackSize));
+                    std::set<GR> setGR = usedGRMapping[function];
+                    setGR.insert(GR(15));
+                    if (!setGR.empty()) {
+                        block->getInstrs().push_back(new Pop(setGR));
+                    }
+                    break;
                 } else {
                     it++;
                 }
+            }
+        }
+    }
+    for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
+        Function *function = *itt;
+        out << function->name << ":\n";
+        if (itt != irVisitor.functions.rbegin()) {
+            //simple way
+            out << "\tpush {";
+            bool first = true;
+            for (GR gr: usedGRMapping[function]) {
+                if (first) {
+                    first = false;
+                } else {
+                    out << ",";
+                }
+                out << gr.getName();
+            }
+            out << ",lr}\n";
+            out << "\tsub sp,sp,#" << stackSizeMapping[function] << "\n";
+            if (function->name == "main") {
+                out << "\tbl .init\n";
+            }
+        }
+        for (BasicBlock *block: function->basicBlocks) {
+            out << getBBName(block->name) << ":\n";
+            for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
+                Instr *instr = *it;
+                it++;
                 out << "\t";
                 instr->print(out);
             }
         }
+        if (itt == irVisitor.functions.rbegin()) {
+            out << "\tbx lr\n";
+        }
     }
-    std::cerr << "remove: " << removeCnt << "\n";
 }
 
-void Codegen::translateFunction(Function *function) {
+int Codegen::translateFunction(Function *function) {
     stackMapping.clear();
     stackSize = 0;
     GR::reg_num = 16;
     FR::reg_num = 32;
     for (BasicBlock *bb: function->basicBlocks) {
+        getBBName(bb->name);
         for (Instruction *ir: bb->ir) {
             if (typeid(*ir) == typeid(CallIR)) {
                 int size = 0;
@@ -137,6 +209,7 @@ void Codegen::translateFunction(Function *function) {
             }
         }
     }
+    return stackSize;
 }
 
 std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
@@ -220,7 +293,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(instr);
             }
         } else {
-            src = getGR(storeIr->src.getVal());
+            if (gRegMapping.count(storeIr->src.getVal()) != 0) {
+                src = getGR(storeIr->src.getVal());
+            } else {
+                stackMapping[storeIr->dst] = stackMapping[storeIr->src.getVal()];
+                return vec;
+            }
         }
         if (storeIr->dst->is_Global()) {
             Value *v = new VarValue();
@@ -596,7 +674,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new VMoveReg(FR(0), getFR(returnIr->v)));
             }
         }
-        vec.push_back(new Bx());
+        vec.push_back(new Ret());
         return vec;
     }
     return {};

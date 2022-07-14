@@ -23,6 +23,7 @@ public:
     virtual std::vector<GR> getDefG() = 0;
     virtual std::vector<FR> getDefF() = 0;
     virtual void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) = 0;
+    virtual void replaceBBName(std::map<std::string, std::string> mapping) {}
 };
 class GRegRegInstr: public Instr {
 public:
@@ -672,6 +673,9 @@ public:
     COND cond = NOTHING;
     B(std::string target):target(target){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+    virtual void replaceBBName(std::map<std::string, std::string> mapping) override{
+        target = mapping[target];
+    }
     B(std::string target,COND cond):target(target),cond(cond){}
     void print(std::ostream& out) override final{
         out << "b";
@@ -716,6 +720,9 @@ class Bl: public Instr{
 public:
     std::string target;
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+//    virtual void replaceBBName(std::map<std::string, std::string> mapping) override{
+//        target = mapping[target];
+//    }
     Bl(std::string target):target(target){}
     void print(std::ostream& out) override final{
         out << "bl " << target << "\n";
@@ -733,10 +740,10 @@ public:
         return {};
     }
 };
-class Bx: public Instr{
+class Ret: public Instr{
 public:
     //bx lr
-    Bx(){}
+    Ret(){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
     void print(std::ostream& out) override final{
         out << "bx lr\n";
@@ -759,6 +766,7 @@ public:
     GR dst;
     GR src;
     MoveReg(GR dst,GR src):dst(dst),src(src){}
+
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src = GR(grMapping[src]);
@@ -878,6 +886,68 @@ public:
     }
     std::vector<FR> getDefF() override final{
         return {dst};
+    }
+};
+class Push: public Instr {
+public:
+    std::set<GR> regs;
+    Push(std::set<GR> regs):regs(regs){}
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+    void print(std::ostream& out) override final{
+        out << "push {";
+        bool first = true;
+        for (GR gr: regs) {
+            if (first) {
+                first = false;
+            } else {
+                out << ",";
+            }
+            out << gr.getName();
+        }
+        out << "}";
+    }
+    std::vector<GR> getUseG() override final{
+        return {};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {};
+    }
+    std::vector<FR> getDefF() override final{
+        return {};
+    }
+};
+class Pop: public Instr {
+public:
+    std::set<GR> regs;
+    Pop(std::set<GR> regs):regs(regs){}
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+    void print(std::ostream& out) override final{
+        out << "pop {";
+        bool first = true;
+        for (GR gr: regs) {
+            if (first) {
+                first = false;
+            } else {
+                out << ",";
+            }
+            out << gr.getName();
+        }
+        out << "}\n";
+    }
+    std::vector<GR> getUseG() override final{
+        return {};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {};
+    }
+    std::vector<FR> getDefF() override final{
+        return {};
     }
 };
 #endif //SYSY2022_BJTU_INSTR_HH

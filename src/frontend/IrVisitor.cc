@@ -57,7 +57,7 @@ void IrVisitor::visit(ConstDecl *constDecl) {
 void IrVisitor::visit(ConstDef *constDef) {
     if (constDef->constExpList.empty()) {
         constDef->constInitVal->accept(*this);
-        if (!!tempVal.getVal()) {
+        if (tempVal.getVal()) {
             throw ConstNotInitError();
         }
         ConstValue *var = new ConstValue(constDef->identifier, curDefType, tempVal, isGlobal(),
@@ -76,9 +76,9 @@ void IrVisitor::visit(ConstDef *constDef) {
         }
         var->setArray(true);
         var->setArrayDims(arrayDims);
-
-        cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
-
+        if (!var->is_Global()) {
+            cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
+        }
         pushVars(var);
         if (constDef->constInitVal) {
             tempVal.setVal(var);
@@ -113,10 +113,10 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
             dim_len *= var->getArrayDims()[i];
         }
 
-        Value* t = nullptr;
+        Value *t = nullptr;
         for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
-            t = new VarValue("",var->getType(),false,
-                                    isGlobal()?cnt++:cur_func->varCnt++, true);
+            t = new VarValue("", var->getType(), false,
+                             isGlobal() ? cnt++ : cur_func->varCnt++, true);
             // TempVal src;
             // src.setType(var->getType()->getContained());
             // src.setVal(nullptr);
@@ -126,12 +126,16 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                     // src.setConst(0);
                     if (var->getType()->isIntPointer()) {
                         var->push(0);
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                        }
                     } else {
                         var->push((float) 0.0);
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
+                        }
                     }
                 }
                 init_len += ceil((double) num_cnt / (double) dim_len) + 1;
@@ -145,42 +149,59 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                 if (var->getType()->isIntPointer()) {
                     if (tempVal.isInt()) {
                         var->push(tempVal.getInt());
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
+                        }
                     } else {
                         var->push((int) tempVal.getFloat());
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(
+                                    StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        }
                     }
                 } else {
                     if (tempVal.isInt()) {
                         var->push((float) tempVal.getInt());
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
+                        }
                     } else {
                         var->push(tempVal.getFloat());
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        if (!var->is_Global()) {
+                            cur_bb->pushIr(new GEPIR(t, var, index++));
+                            cur_bb->pushIr(
+                                    StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        }
                     }
                 }
             } else if (tempVal.getVal() && constInitVal->constInitValList[i]->constInitValList.empty()) {
                 num_cnt++;
                 VarValue *temp = nullptr;
                 if (var->getType()->isInt() && tempVal.getVal()->getType()->isFloat()
-                            || var->getType()->isFloat() && tempVal.getVal()->getType()->isInt()) {
+                    || var->getType()->isFloat() && tempVal.getVal()->getType()->isInt()) {
                     temp = new VarValue("", var->getType(), isGlobal(), cur_func ? cur_func->varCnt++ : 0);
-                    cur_bb->pushIr(CastIRManager::getIR(temp, tempVal));
+                    if (!temp->is_Global()) {
+                        cur_bb->pushIr(CastIRManager::getIR(temp, tempVal));
+                    }
                     tempVal.setVal(temp);
                 } else temp = dynamic_cast<VarValue *>(tempVal.getVal());
                 if (var->getType()->isInt()) {
                     var->push(0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, tempVal));
-                    // cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                    if (!var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal));
+                    }
+                    // cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt))
+                    //);
                 } else {
                     var->push((float) 0.0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, tempVal));
+                    if (!var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal));
+                    }
                     // cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
                 }
             }
@@ -191,12 +212,16 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
             for (; left_len > 0; left_len--) {
                 if (var->getType()->isInt()) {
                     var->push(0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                    if (!var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                    }
                 } else {
                     var->push((float) 0.0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    if (!var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    }
                 }
             }
 
@@ -206,12 +231,16 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
             for (size_t left_len(dim_len * (var->getArrayDims()[dims - 1] - init_len)); left_len > 0; left_len--) {
                 if (var->getType()->isInt()) {
                     var->push(0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                    if (var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
+                    }
                 } else {
                     var->push(0);
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    if (var->is_Global()) {
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    }
                 }
             }
         }
@@ -250,7 +279,9 @@ void IrVisitor::visit(VarDef *varDef) {
                                      new Type(TypeID::POINTER, curDefType),
                                      isGlobal(), cur_func ? cur_func->varCnt++ : 0);
         pushVars(var);
-        cur_bb->pushIr(AllocIRManager::getIR(var));
+        if (!var->is_Global()) {
+            cur_bb->pushIr(AllocIRManager::getIR(var));
+        }
         if (varDef->initVal) {
             varDef->initVal->accept(*this);
             if (tempVal.getVal() && curDefType != tempVal.getType()) {
@@ -260,7 +291,9 @@ void IrVisitor::visit(VarDef *varDef) {
                 cur_bb->pushIr(CastIRManager::getIR(v, tempVal));
                 tempVal.setVal(v);
             }
-            cur_bb->pushIr(StoreIRManager::getIR(var, tempVal));
+            if (!var->is_Global()) {
+                cur_bb->pushIr(StoreIRManager::getIR(var, tempVal));
+            }
         }
     } else {
         VarValue *var(nullptr);
@@ -274,7 +307,9 @@ void IrVisitor::visit(VarDef *varDef) {
         }
         var = new VarValue(varDef->identifier, new Type(TypeID::POINTER, curDefType),
                            isGlobal(), cur_func ? cur_func->varCnt++ : 0);
-        cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
+        if (!var->is_Global()) {
+            cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
+        }
         var->setArray(true);
         var->setArrayDims(arrayDims);
         pushVars(var);
@@ -306,22 +341,22 @@ void IrVisitor::visit(InitVal *initVal) {
             dim_len *= var->getArrayDims()[i];
         }
 
-        Value* t = nullptr;
+        Value *t = nullptr;
 
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
-            t = new VarValue("",var->getType(),false,
-                                    isGlobal()?cnt++:cur_func->varCnt++, true);
+            t = new VarValue("", var->getType(), false,
+                             isGlobal() ? cnt++ : cur_func->varCnt++, true);
             if (!initVal->initValList[i]->initValList.empty()) {
                 size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
                 for (; left_len > 0; left_len--) {
                     if (var->getType()->isIntPointer()) {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
                         cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
                     } else {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
                     }
                 }
                 init_len += ceil((double) num_cnt / (double) dim_len) + 1;
@@ -334,34 +369,38 @@ void IrVisitor::visit(InitVal *initVal) {
                 if (var->getType()->isIntPointer()) {
                     if (tempVal.isInt()) {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
                         cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
                     } else {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(
+                                StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
                     }
                 } else {
                     if (tempVal.isInt()) {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
                         cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getInt(), new Type(TypeID::INT, typeInt)));
                     } else {
                         var->push();
-                        cur_bb->pushIr(new GEPIR(t,var,index++));
-                        cur_bb->pushIr(StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
+                        cur_bb->pushIr(new GEPIR(t, var, index++));
+                        cur_bb->pushIr(
+                                StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
                     }
                 }
             } else if (tempVal.getVal() && initVal->initValList[i]->initValList.empty()) {
                 num_cnt++;
-                if ((var->getType()->isIntPointer() && (tempVal.getVal()->getType()->isFloat() || tempVal.getVal()->getType()->isFloatPointer()))
-                        || (var->getType()->isFloatPointer() && (tempVal.getVal()->getType()->isInt() || tempVal.getVal()->getType()->isIntPointer()))) {
-                    VarValue* temp = new VarValue("", var->getType(), isGlobal(), cur_func ? cur_func->varCnt++ : 0);
+                if ((var->getType()->isIntPointer() &&
+                     (tempVal.getVal()->getType()->isFloat() || tempVal.getVal()->getType()->isFloatPointer()))
+                    || (var->getType()->isFloatPointer() &&
+                        (tempVal.getVal()->getType()->isInt() || tempVal.getVal()->getType()->isIntPointer()))) {
+                    VarValue *temp = new VarValue("", var->getType(), isGlobal(), cur_func ? cur_func->varCnt++ : 0);
                     cur_bb->pushIr(CastIRManager::getIR(temp, tempVal));
                     tempVal.setVal(temp);
                 }
                 var->push();
-                cur_bb->pushIr(new GEPIR(t,var,index++));
+                cur_bb->pushIr(new GEPIR(t, var, index++));
                 cur_bb->pushIr(StoreIRManager::getIR(t, tempVal));
             }
         }
@@ -371,12 +410,12 @@ void IrVisitor::visit(InitVal *initVal) {
             for (; left_len > 0; left_len--) {
                 if (var->getType()->isIntPointer()) {
                     var->push();
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
+                    cur_bb->pushIr(new GEPIR(t, var, index++));
                     cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
                 } else {
                     var->push();
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    cur_bb->pushIr(new GEPIR(t, var, index++));
+                    cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
                 }
             }
 
@@ -386,12 +425,12 @@ void IrVisitor::visit(InitVal *initVal) {
             for (size_t left_len(dim_len * (var->getArrayDims()[dims - 1] - init_len)); left_len > 0; left_len--) {
                 if (var->getType()->isIntPointer()) {
                     var->push();
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
+                    cur_bb->pushIr(new GEPIR(t, var, index++));
                     cur_bb->pushIr(StoreIRManager::getIR(t, 0, new Type(TypeID::INT, typeInt)));
                 } else {
                     var->push();
-                    cur_bb->pushIr(new GEPIR(t,var,index++));
-                    cur_bb->pushIr(StoreIRManager::getIR(t, (float)0.0, new Type(TypeID::FLOAT, typeFloat)));
+                    cur_bb->pushIr(new GEPIR(t, var, index++));
+                    cur_bb->pushIr(StoreIRManager::getIR(t, (float) 0.0, new Type(TypeID::FLOAT, typeFloat)));
                 }
             }
         }
@@ -550,15 +589,15 @@ void IrVisitor::visit(AssignStmt *assignStmt) {
     assignStmt->exp->accept(*this);
     if (tempVal.getVal()) {
         if (left->getType()->isIntPointer() && tempVal.isFloat() ||
-                left->getType()->isFloatPointer() && tempVal.isInt()) {
-            Value* v = new VarValue("",left->getType()->getContained(),isGlobal(),
-                                    isGlobal()?cnt++:cur_func->varCnt++,true);
-            cur_bb->pushIr(CastIRManager::getIR(v,tempVal));
+            left->getType()->isFloatPointer() && tempVal.isInt()) {
+            Value *v = new VarValue("", left->getType()->getContained(), isGlobal(),
+                                    isGlobal() ? cnt++ : cur_func->varCnt++, true);
+            cur_bb->pushIr(CastIRManager::getIR(v, tempVal));
             tempVal.setVal(v);
             tempVal.setType(v->getType());
         }
     }
-    cur_bb->pushIr(StoreIRManager::getIR(left,tempVal));
+    cur_bb->pushIr(StoreIRManager::getIR(left, tempVal));
 }
 
 void IrVisitor::visit(SelectStmt *selectStmt) {
@@ -705,9 +744,9 @@ void IrVisitor::visit(LVal *lVal) {
     if (lVal->expList.empty()) {
         if (typeid(ConstValue) == typeid(*tempVal.getVal())) {
             if (tempVal.isInt()) {
-                tempVal.setInt(dynamic_cast<ConstValue*>(tempVal.getVal())->getIntVal());
-            }else {
-                tempVal.setFloat(dynamic_cast<ConstValue*>(tempVal.getVal())->getFloatVal());
+                tempVal.setInt(dynamic_cast<ConstValue *>(tempVal.getVal())->getIntVal());
+            } else {
+                tempVal.setFloat(dynamic_cast<ConstValue *>(tempVal.getVal())->getFloatVal());
             }
             tempVal.setVal(nullptr);
         }
@@ -756,8 +795,8 @@ void IrVisitor::visit(LVal *lVal) {
                     TempVal t4;
                     t4.setType(index->getType());
                     t4.setVal(index);
-                    cur_bb->pushIr(ArithmeticIRManager::getIR(t1,tempVal,t3,'*'));
-                    cur_bb->pushIr(ArithmeticIRManager::getIR(t2,t4,t1,'+'));
+                    cur_bb->pushIr(ArithmeticIRManager::getIR(t1, tempVal, t3, '*'));
+                    cur_bb->pushIr(ArithmeticIRManager::getIR(t2, t4, t1, '+'));
                     index = v2;
                 } else {
                     Value *v1 = new VarValue("", typeInt, isGlobal(),
@@ -775,7 +814,7 @@ void IrVisitor::visit(LVal *lVal) {
                     TempVal t3;
                     t3.setType(index->getType());
                     t3.setVal(index);
-                    cur_bb->pushIr(ArithmeticIRManager::getIR(t1,t3,t2,'+'));
+                    cur_bb->pushIr(ArithmeticIRManager::getIR(t1, t3, t2, '+'));
                     index = v1;
                 }
             }
@@ -784,11 +823,11 @@ void IrVisitor::visit(LVal *lVal) {
     }
     tempVal = val;
     if (typeid(*tempVal.getVal()) == typeid(ConstValue)
-    && !index) {
+        && !index) {
         if (tempVal.getType()->isIntPointer()) {
-            tempVal.setInt(dynamic_cast<ConstValue*>(tempVal.getVal())->getIntValList()[arrayIndex]);
-        }else {
-            tempVal.setFloat(dynamic_cast<ConstValue*>(tempVal.getVal())->getFloatValList()[arrayIndex]);
+            tempVal.setInt(dynamic_cast<ConstValue *>(tempVal.getVal())->getIntValList()[arrayIndex]);
+        } else {
+            tempVal.setFloat(dynamic_cast<ConstValue *>(tempVal.getVal())->getFloatValList()[arrayIndex]);
         }
         tempVal.setType(tempVal.getType()->getContained());
         tempVal.setVal(nullptr);
@@ -831,7 +870,7 @@ void IrVisitor::visit(PrimaryExp *primaryExp) {
         VarValue *v = new VarValue("", tempVal.getVal()->getType()->getContained(),
                                    isGlobal(),
                                    isGlobal() ? cnt++ : cur_func->varCnt++, true);
-        cur_bb->pushIr(LoadIRManager::getIR(v,tempVal.getVal()));
+        cur_bb->pushIr(LoadIRManager::getIR(v, tempVal.getVal()));
         tempVal.setVal(v);
         tempVal.setType(v->getType());
     } else if (primaryExp->number) {
@@ -869,20 +908,20 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             }
         } else {
             TempVal t = tempVal;
-            VarValue* v = nullptr;
+            VarValue *v = nullptr;
             if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
                 v = new VarValue("", tempVal.getType(), isGlobal(),
-                                           isGlobal() ? cnt++ : cur_func->varCnt++, true);
-            } else if (unaryExp->unaryOp->op == unaryop::OP_NOT){
+                                 isGlobal() ? cnt++ : cur_func->varCnt++, true);
+            } else if (unaryExp->unaryOp->op == unaryop::OP_NOT) {
                 v = new VarValue("", typeInt, isGlobal(),
                                  isGlobal() ? cnt++ : cur_func->varCnt++, true);
             }
             tempVal.setVal(v);
             tempVal.setType(v->getType());
             if (unaryExp->unaryOp->op == unaryop::OP_NEG) {
-                cur_bb->pushIr(UnaryIRManager::getIR(tempVal,t,'-'));
+                cur_bb->pushIr(UnaryIRManager::getIR(tempVal, t, '-'));
             } else if (unaryExp->unaryOp->op == unaryop::OP_NOT) {
-                cur_bb->pushIr(UnaryIRManager::getIR(tempVal,t,'!'));
+                cur_bb->pushIr(UnaryIRManager::getIR(tempVal, t, '!'));
             }
         }
     } else {
@@ -923,42 +962,42 @@ void IrVisitor::visit(MulExp *mulExp) {
         //cal const
         if (!left.getVal() && !right.getVal()) {
             if (mulExp->op == mulop::OP_MUL) {
-                tempVal = TempVal::calConstArithmetic(left, right,'*');
-            }else if (mulExp->op == mulop::OP_DIV){
-                tempVal = TempVal::calConstArithmetic(left,right,'/');
+                tempVal = TempVal::calConstArithmetic(left, right, '*');
+            } else if (mulExp->op == mulop::OP_DIV) {
+                tempVal = TempVal::calConstArithmetic(left, right, '/');
             } else {
-                tempVal = TempVal::calConstArithmetic(left,right,'%');
+                tempVal = TempVal::calConstArithmetic(left, right, '%');
             }
             return;
         }
         //cast
         if (left.getType() != right.getType()) {
             if (left.isInt() && left.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,left));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, left));
                 left.setVal(t);
                 left.setType(typeFloat);
             }
             if (right.isInt() && right.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,right));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, right));
                 right.setVal(t);
                 right.setType(typeFloat);
             }
         }
         //cal
-        Value* res = new VarValue("",left.getType(),isGlobal(),
-                                  isGlobal()?cnt++:cur_func->varCnt++,true);
+        Value *res = new VarValue("", left.getType(), isGlobal(),
+                                  isGlobal() ? cnt++ : cur_func->varCnt++, true);
         tempVal.setType(left.getType());
         tempVal.setVal(res);
         if (mulExp->op == mulop::OP_MUL) {
-            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right,'*'));
-        } else if (mulExp->op == mulop::OP_DIV){
-            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right,'/'));
+            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right, '*'));
+        } else if (mulExp->op == mulop::OP_DIV) {
+            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right, '/'));
         } else {
-            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right,'%'));
+            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right, '%'));
         }
     }
 }
@@ -974,38 +1013,38 @@ void IrVisitor::visit(AddExp *addExp) {
         //cal const
         if (!left.getVal() && !right.getVal()) {
             if (addExp->op == addop::OP_ADD) {
-                tempVal = TempVal::calConstArithmetic(left, right,'+');
-            }else {
-                tempVal = TempVal::calConstArithmetic(left,right,'-');
+                tempVal = TempVal::calConstArithmetic(left, right, '+');
+            } else {
+                tempVal = TempVal::calConstArithmetic(left, right, '-');
             }
             return;
         }
         //cast
         if (left.getType() != right.getType()) {
             if (left.isInt() && left.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,left));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, left));
                 left.setVal(t);
                 left.setType(typeFloat);
             }
             if (right.isInt() && right.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,right));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, right));
                 right.setVal(t);
                 right.setType(typeFloat);
             }
         }
         //cal
-        Value* res = new VarValue("",left.getType(),isGlobal(),
-                                  isGlobal()?cnt++:cur_func->varCnt++,true);
+        Value *res = new VarValue("", left.getType(), isGlobal(),
+                                  isGlobal() ? cnt++ : cur_func->varCnt++, true);
         tempVal.setType(left.getType());
         tempVal.setVal(res);
         if (addExp->op == addop::OP_ADD) {
-            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right,'+'));
+            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right, '+'));
         } else {
-            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right,'-'));
+            cur_bb->pushIr(ArithmeticIRManager::getIR(tempVal, left, right, '-'));
         }
     }
 }
@@ -1020,34 +1059,34 @@ void IrVisitor::visit(RelExp *relExp) {
         auto right = tempVal;
         //cal const
         if (!left.getVal() && !right.getVal()) {
-            tempVal = TempVal::calConstLogical(left,right,relExp->op,typeInt);
+            tempVal = TempVal::calConstLogical(left, right, relExp->op, typeInt);
             return;
         }
         //cast
         if (left.getType() != right.getType()) {
             if (left.isInt() && left.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
 
-                cur_bb->pushIr(CastIRManager::getIR(t,left));
+                cur_bb->pushIr(CastIRManager::getIR(t, left));
                 left.setVal(t);
                 left.setType(typeFloat);
             }
             if (right.isInt() && right.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
 
-                cur_bb->pushIr(CastIRManager::getIR(t,right));
+                cur_bb->pushIr(CastIRManager::getIR(t, right));
                 right.setVal(t);
                 right.setType(typeFloat);
             }
         }
         //cal
-        Value* res = new VarValue("",typeInt,isGlobal(),
-                                  isGlobal()?cnt++:cur_func->varCnt++,true);
+        Value *res = new VarValue("", typeInt, isGlobal(),
+                                  isGlobal() ? cnt++ : cur_func->varCnt++, true);
         tempVal.setType(typeInt);
         tempVal.setVal(res);
-        cur_bb->pushIr(LogicalIRManager::getIR(tempVal,left,right,relExp->op));
+        cur_bb->pushIr(LogicalIRManager::getIR(tempVal, left, right, relExp->op));
     }
 }
 
@@ -1061,32 +1100,32 @@ void IrVisitor::visit(EqExp *eqExp) {
         auto right = tempVal;
         //cal const
         if (!left.getVal() && !right.getVal()) {
-            tempVal = TempVal::calConstLogical(left,right,eqExp->op,typeInt);
+            tempVal = TempVal::calConstLogical(left, right, eqExp->op, typeInt);
             return;
         }
         //cast
         if (left.getType() != right.getType()) {
             if (left.isInt() && left.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,left));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, left));
                 left.setVal(t);
                 left.setType(typeFloat);
             }
             if (right.isInt() && right.getVal()) {
-                Value* t = new VarValue("",typeFloat,isGlobal(),
-                                        isGlobal()?cnt++:cur_func->varCnt++,true);
-                cur_bb->pushIr(CastIRManager::getIR(t,right));
+                Value *t = new VarValue("", typeFloat, isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(t, right));
                 right.setVal(t);
                 right.setType(typeFloat);
             }
         }
         //cal
-        Value* res = new VarValue("",typeInt,isGlobal(),
-                                  isGlobal()?cnt++:cur_func->varCnt++,true);
+        Value *res = new VarValue("", typeInt, isGlobal(),
+                                  isGlobal() ? cnt++ : cur_func->varCnt++, true);
         tempVal.setType(typeInt);
         tempVal.setVal(res);
-        cur_bb->pushIr(LogicalIRManager::getIR(tempVal,left,right,eqExp->op));
+        cur_bb->pushIr(LogicalIRManager::getIR(tempVal, left, right, eqExp->op));
     }
 }
 
@@ -1108,14 +1147,14 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
                 (tempVal.isFloat() && tempVal.getFloat() != 0)) {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,1,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 1, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
             } else {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,0,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 0, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
@@ -1136,14 +1175,14 @@ void IrVisitor::visit(LAndExp *lAndEXp) {
                 (tempVal.isFloat() && tempVal.getFloat() != 0)) {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,1,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 1, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
             } else {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,0,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 0, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
@@ -1172,14 +1211,14 @@ void IrVisitor::visit(LOrExp *lOrExp) {
                 (tempVal.isFloat() && tempVal.getFloat() != 0)) {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,1,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 1, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
             } else {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,0,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 0, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
@@ -1200,14 +1239,14 @@ void IrVisitor::visit(LOrExp *lOrExp) {
                 (tempVal.isFloat() && tempVal.getFloat() != 0)) {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,1,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 1, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;
             } else {
                 VarValue *var = new VarValue("", new Type(TypeID::POINTER, typeInt), isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new AllocIIR(var));
-                cur_bb->pushIr(StoreIRManager::getIR(var,0,typeInt));
+                cur_bb->pushIr(StoreIRManager::getIR(var, 0, typeInt));
                 VarValue *v = new VarValue("", typeInt, isGlobal(), cur_func->varCnt++);
                 cur_bb->pushIr(new LoadIIR(v, var));
                 bb->val = v;

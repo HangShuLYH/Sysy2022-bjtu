@@ -10,6 +10,8 @@
 #include "reg.hh"
 #include "IrVisitor.hh"
 #include <string>
+const std::set<GR> caller_save_regs = {GR(0),GR(1),GR(2),GR(3),GR(12),GR(14)};
+const std::set<GR> callee_save_regs = {GR(4),GR(5),GR(6),GR(7),GR(8),GR(9),GR(10),GR(11)};
 class Codegen {
 private:
     IrVisitor irVisitor;
@@ -20,7 +22,7 @@ private:
     std::map<Value*, int> globalMapping;
     std::string asm_code;
     std::ostream& out;
-    void translateFunction(Function* function);
+    int translateFunction(Function* function);
     void generateGlobalCode();
     std::vector<Instr*> translateInstr(Instruction* ir);
     GR getGR(Value* src);

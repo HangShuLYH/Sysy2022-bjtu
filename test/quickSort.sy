@@ -1,6 +1,27 @@
 const float a = 10.5;
 const float x = -1;
+/*
+            if (fRegMapping.count(storeIr->src.getVal()) != 0) {
+                FR src = getFR(storeIr->src.getVal());
+                if (storeIr->dst->is_Global()) {
+                    Value *v = new VarValue();
+                    GR base = getGR(v);
+                    vec.push_back(new MoveWFromSymbol(base, storeIr->dst->getName()));
+                    vec.push_back(new MoveTFromSymbol(base, storeIr->dst->getName()));
+                    vec.push_back(new VStore(src, base, 0));
+                } else {
+                    if (stackMapping.count(storeIr->dst) != 0) {
+                        vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
+                    } else {
+                        vec.push_back(new VStore(src, getGR(storeIr->dst), 0));
+                    }
+                }
+            } else {
+                stackMapping[storeIr->dst] = stackMapping[storeIr->src.getVal()];
+            }
 
+
+*/
 const int qq[4] = {x - 2, 2,7,8};
 int y = 10;
 int m[5] = {1,2,3,4,5};
