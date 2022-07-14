@@ -9,7 +9,7 @@
 #include "allocRegs.hh"
 
 int GR::reg_num = 16;
-int FR::reg_num = 33;
+int FR::reg_num = 32;
 
 std::vector<Instr *> setIntValue(GR target, int value) {
     if (0 <= value && value <= 65535) {
@@ -32,20 +32,39 @@ void Codegen::generateProgramCode() {
         out << ".global " << function->name << "\n";
     }
     out << ".section .text\n";
+    int removeCnt = 0;
+    Function* entry_func = new Function(".init", new Type(TypeID::VOID));
+    entry_func->pushBB(irVisitor.entry);
+    irVisitor.functions.push_back(entry_func);
     for (Function *function: irVisitor.functions) {
         translateFunction(function);
         ColoringAlloc coloringAlloc(function);
         coloringAlloc.run();
+        //1. remove instr like mov r0,r0
+        //2. find caller save regs
+        //3. add init function
+        //4. rename block
+        //5. replace with alloc regs
         for (BasicBlock *block: function->basicBlocks) {
             out << block->name << ":\n";
-            for (Instr *instr: block->getInstrs()) {
+            for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
+                Instr* instr = *it;
+                instr->replace(coloringAlloc.getColorGR(), coloringAlloc.getColorFR());
+                if (typeid(*instr) == typeid(MoveReg) && instr->getUseG()[0] == instr->getDefG()[0] ||
+                        typeid(*instr) == typeid(VMoveReg) && instr->getUseF()[0] == instr->getUseF()[0]) {
+                    block->getInstrs().erase(it++);
+                    removeCnt++;
+                } else {
+                    it++;
+                }
                 out << "\t";
-                instr->replace(coloringAlloc.getColorGR(),coloringAlloc.getColorFR());
                 instr->print(out);
             }
         }
     }
+    std::cerr << "remove: " << removeCnt << "\n";
 }
+
 void Codegen::translateFunction(Function *function) {
     stackMapping.clear();
     stackSize = 0;
@@ -508,6 +527,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                    } else if (gRegMapping.count(v.getVal()) == 0) {
+                        vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(v.getVal()), GR(13),
+                                                       stackMapping[v.getVal()]));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
@@ -518,8 +540,13 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         gRegMapping[v.getVal()] = gr_cnt;
                         vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
                     } else {
-                        vec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
-                        gRegMapping[v.getVal()] = gr_cnt;
+                        if (gRegMapping.count(v.getVal()) != 0) {
+                            vec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
+                            gRegMapping[v.getVal()] = gr_cnt;
+                        } else {
+                            vec.push_back(
+                                    new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13), stackMapping[v.getVal()]));
+                        }
                     }
                 }
                 gr_cnt++;

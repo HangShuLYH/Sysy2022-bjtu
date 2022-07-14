@@ -217,6 +217,9 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/9/bits/erase_if.h \
   ../include/backend/instr.hh \
   ../include/backend/reg.hh \
+  /usr/include/c++/9/map \
+  /usr/include/c++/9/bits/stl_map.h \
+  /usr/include/c++/9/bits/stl_multimap.h \
   ../include/frontend/parser.hh \
   /usr/include/c++/9/cassert \
   /usr/include/assert.h \
@@ -247,9 +250,6 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   ../include/errors/errors.hh \
   ../include/frontend/IRManager.hh \
   ../include/frontend/MIRBuilder.hh \
-  /usr/include/c++/9/map \
-  /usr/include/c++/9/bits/stl_map.h \
-  /usr/include/c++/9/bits/stl_multimap.h \
   ../include/frontend/IrVisitor.hh
 
 src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
@@ -482,12 +482,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../src/frontend/driver.cc:
 
-/usr/include/c++/9/bits/stl_multimap.h:
-
-/usr/include/c++/9/bits/stl_map.h:
-
-/usr/include/c++/9/map:
-
 ../include/frontend/MIRBuilder.hh:
 
 ../include/errors/errors.hh:
@@ -517,6 +511,12 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/cassert:
 
 ../include/frontend/parser.hh:
+
+/usr/include/c++/9/bits/stl_multimap.h:
+
+/usr/include/c++/9/bits/stl_map.h:
+
+/usr/include/c++/9/map:
 
 ../include/backend/instr.hh:
 

@@ -29,9 +29,6 @@ void ColoringAlloc::run() {
         }
     }
     assignColorsGR();
-    if (!spillWorkListGR.empty()) {
-        std::cerr << "spillGR " << spillWorkListGR.size();
-    }
 
     while(true) {
         if (!simplifyWorkListFR.empty()) {
@@ -49,8 +46,16 @@ void ColoringAlloc::run() {
         }
     }
     assignColorsFR();
-    if (!spillWorkListGR.empty()) {
-        std::cerr << "spill " << spillWorkListGR.size();
+    if (!spillWorkListGR.empty() || !spillWorkListFR.empty()) {
+        if (!spillWorkListGR.empty()) {
+            std::cerr << "spillGR " << spillWorkListGR.size();
+            rewriteProgramGR(spillWorkListGR);
+        }
+        if (!spillWorkListFR.empty()) {
+            std::cerr << "spillFR " << spillWorkListGR.size();
+            rewriteProgramFR(spillWorkListFR);
+        }
+        run();
     }
 }
 void ColoringAlloc::liveAnalysis() {
@@ -648,4 +653,10 @@ void ColoringAlloc::assignColorsFR() {
     for (FR n:coloredNodesFR) {
         colorFR[n] = colorFR[getAliasFR(n)];
     }
+}
+void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
+
+}
+void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
+
 }

@@ -56,8 +56,8 @@ private:
     std::map<FR, int> colorFR;
     std::set<GR> spilledNodesGR;
     std::set<FR> spilledNodesFR;
-    int KGR = 10;
-    int KFR = 29;
+    int KGR = 12;
+    int KFR = 31;
 public:
     ColoringAlloc(Function* function):function(function){}
     void run();
@@ -100,5 +100,7 @@ public:
     void assignColorsFR();
     std::map<GR, int> getColorGR(){return colorGR;}
     std::map<FR, int> getColorFR(){return colorFR;}
+    void rewriteProgramGR(std::set<GR> spilledNodes);
+    void rewriteProgramFR(std::set<FR> spilledNodes);
 };
 #endif //SYSY2022_BJTU_ALLOCREGS_HH

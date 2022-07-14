@@ -38,7 +38,7 @@ public:
 
     //add for codegen
     void pushInstr(Instr* instr) {instrs.push_back(instr);}
-    std::vector<Instr*> getInstrs() {return instrs;}
+    std::vector<Instr*>& getInstrs() {return instrs;}
 private:
     std::set<BasicBlock*> preBBs;
     std::set<BasicBlock*> succBBs;
