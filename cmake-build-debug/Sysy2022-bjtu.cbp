@@ -324,6 +324,9 @@
 		<Unit filename="/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/MIRBuilder.cc">
 			<Option target="compiler"/>
 		</Unit>
+		<Unit filename="/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/Value.cc">
+			<Option target="compiler"/>
+		</Unit>
 		<Unit filename="/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/driver.cc">
 			<Option target="driver"/>
 		</Unit>

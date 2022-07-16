@@ -229,6 +229,30 @@ src/frontend/MIRBuilder.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.s
 .PHONY : src/frontend/MIRBuilder.cc.s
 
+src/frontend/Value.o: src/frontend/Value.cc.o
+.PHONY : src/frontend/Value.o
+
+# target to build an object file
+src/frontend/Value.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/Value.cc.o
+.PHONY : src/frontend/Value.cc.o
+
+src/frontend/Value.i: src/frontend/Value.cc.i
+.PHONY : src/frontend/Value.i
+
+# target to preprocess a source file
+src/frontend/Value.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/Value.cc.i
+.PHONY : src/frontend/Value.cc.i
+
+src/frontend/Value.s: src/frontend/Value.cc.s
+.PHONY : src/frontend/Value.s
+
+# target to generate assembly for a file
+src/frontend/Value.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/compiler.dir/build.make CMakeFiles/compiler.dir/src/frontend/Value.cc.s
+.PHONY : src/frontend/Value.cc.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -248,6 +272,9 @@ help:
 	@echo "... src/frontend/MIRBuilder.o"
 	@echo "... src/frontend/MIRBuilder.i"
 	@echo "... src/frontend/MIRBuilder.s"
+	@echo "... src/frontend/Value.o"
+	@echo "... src/frontend/Value.i"
+	@echo "... src/frontend/Value.s"
 .PHONY : help
 
 

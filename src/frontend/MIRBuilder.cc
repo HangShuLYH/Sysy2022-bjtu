@@ -205,6 +205,7 @@ NormalBlock* MIRBuilder::toNormal(BasicBlock* bb){
             nb = getCondToNormal(dynamic_cast<CondBlock*>(bb));
         }
         nb->ir = bb->ir;
+        nb->vars = bb->vars;
 
         std::vector<NormalBlock*> reversed = reversedSucc[dynamic_cast<CondBlock*>(bb)];
         if(reversed.size() != 0){         //  check reversed station
@@ -283,6 +284,7 @@ void MIRBuilder::removeDuplicate(){
                     preNB->setSucc(nowNB->getSucc());
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
+                    preNB->vars.insert(preNB->vars.end(),nowNB->vars.end(),nowNB->vars.end());
                     bbs[j] = preNB;
                     bbs.erase(bbs.begin()+j);
                 }

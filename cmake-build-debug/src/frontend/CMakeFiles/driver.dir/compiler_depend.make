@@ -198,15 +198,21 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: ../src/frontend/IrVisitor.cc 
   /usr/include/c++/7/istream \
   /usr/include/c++/7/bits/istream.tcc \
   ../include/frontend/Value.hh \
+  /usr/include/c++/7/algorithm \
+  /usr/include/c++/7/bits/stl_algo.h \
+  /usr/include/c++/7/bits/algorithmfwd.h \
+  /usr/include/c++/7/bits/stl_heap.h \
+  /usr/include/c++/7/bits/uniform_int_dist.h \
+  /usr/include/c++/7/limits \
+  /usr/include/c++/7/set \
+  /usr/include/c++/7/bits/stl_tree.h \
+  /usr/include/c++/7/bits/stl_set.h \
+  /usr/include/c++/7/bits/stl_multiset.h \
   ../include/frontend/syntax_tree.hh \
   ../include/frontend/BasicBlock.hh \
   /usr/include/c++/7/list \
   /usr/include/c++/7/bits/stl_list.h \
   /usr/include/c++/7/bits/list.tcc \
-  /usr/include/c++/7/set \
-  /usr/include/c++/7/bits/stl_tree.h \
-  /usr/include/c++/7/bits/stl_set.h \
-  /usr/include/c++/7/bits/stl_multiset.h \
   ../include/frontend/Function.hh \
   ../include/frontend/parser.hh \
   /usr/include/c++/7/cassert \
@@ -456,8 +462,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/FlexLexer.hh:
 
-/usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h:
-
 /usr/include/c++/7/bits/codecvt.h:
 
 /usr/include/c++/7/fstream:
@@ -498,8 +502,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/c++/7/stack:
 
-/usr/include/assert.h:
-
 /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h:
 
 /usr/include/c++/7/cassert:
@@ -508,10 +510,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 ../include/frontend/Function.hh:
 
-/usr/include/c++/7/bits/stl_set.h:
-
-/usr/include/c++/7/set:
-
 /usr/include/c++/7/bits/list.tcc:
 
 /usr/include/c++/7/bits/stl_list.h:
@@ -519,6 +517,22 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/7/list:
 
 ../include/frontend/BasicBlock.hh:
+
+/usr/include/c++/7/bits/stl_set.h:
+
+/usr/include/c++/7/set:
+
+/usr/include/c++/7/limits:
+
+/usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h:
+
+/usr/include/c++/7/bits/uniform_int_dist.h:
+
+/usr/include/assert.h:
+
+/usr/include/c++/7/bits/stl_heap.h:
+
+/usr/include/c++/7/bits/stl_algo.h:
 
 /usr/include/x86_64-linux-gnu/bits/timex.h:
 
@@ -700,6 +714,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
+/usr/include/c++/7/bits/algorithmfwd.h:
+
 /usr/include/c++/7/bits/ptr_traits.h:
 
 /usr/include/c++/7/bits/refwrap.h:
@@ -815,8 +831,6 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/7/bits/unordered_set.h:
 
 /usr/include/c++/7/string:
-
-/usr/include/wctype.h:
 
 /usr/include/stdint.h:
 
@@ -945,3 +959,7 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/7/bits/stl_algobase.h:
 
 /usr/include/c++/7/bits/istream.tcc:
+
+/usr/include/wctype.h:
+
+/usr/include/c++/7/algorithm:

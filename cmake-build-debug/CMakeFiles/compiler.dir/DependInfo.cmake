@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/lin/下载/workspace/Sysy2022-bjtu/main.cpp" "CMakeFiles/compiler.dir/main.cpp.o" "gcc" "CMakeFiles/compiler.dir/main.cpp.o.d"
   "/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/MIRBuilder.cc" "CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o" "gcc" "CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o.d"
+  "/home/lin/下载/workspace/Sysy2022-bjtu/src/frontend/Value.cc" "CMakeFiles/compiler.dir/src/frontend/Value.cc.o" "gcc" "CMakeFiles/compiler.dir/src/frontend/Value.cc.o.d"
   )
 
 # Targets to which this target links.

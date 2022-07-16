@@ -156,12 +156,16 @@ src/frontend/CMakeFiles/driver.dir/IrVisitor.cc.o: \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
  /usr/include/c++/7/bits/istream.tcc \
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/Value.hh \
+ /usr/include/c++/7/algorithm /usr/include/c++/7/bits/stl_algo.h \
+ /usr/include/c++/7/bits/algorithmfwd.h \
+ /usr/include/c++/7/bits/stl_heap.h \
+ /usr/include/c++/7/bits/uniform_int_dist.h /usr/include/c++/7/limits \
+ /usr/include/c++/7/set /usr/include/c++/7/bits/stl_tree.h \
+ /usr/include/c++/7/bits/stl_set.h /usr/include/c++/7/bits/stl_multiset.h \
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/syntax_tree.hh \
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/BasicBlock.hh \
  /usr/include/c++/7/list /usr/include/c++/7/bits/stl_list.h \
- /usr/include/c++/7/bits/list.tcc /usr/include/c++/7/set \
- /usr/include/c++/7/bits/stl_tree.h /usr/include/c++/7/bits/stl_set.h \
- /usr/include/c++/7/bits/stl_multiset.h \
+ /usr/include/c++/7/bits/list.tcc \
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/Function.hh \
  /home/lin/下载/workspace/Sysy2022-bjtu/include/frontend/parser.hh \
  /usr/include/c++/7/cassert /usr/include/assert.h \
