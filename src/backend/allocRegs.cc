@@ -213,11 +213,13 @@ void ColoringAlloc::makeWorkList() {
     for (GR gr: grs) {
         if (!gr.isVirtual()) {
             colorGR[gr] = gr.getID();
+            preColoredGR.insert(gr);
         }
     }
     for (FR fr: frs) {
         if (!fr.isVirtual()) {
             colorFR[fr] = fr.getID();
+            preColoredFR.insert(fr);
         }
     }
     for (auto it = grs.begin();it != grs.end();) {

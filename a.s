@@ -181,14 +181,14 @@ quickSort:
 	str r0,[r1,#0]
 	ldr r0,[sp,#0]
 	ldr r1,[sp,#4]
-	ldr r1,[sp,#16]
-	mov r0,#1
-	sub r2,r1,r0
+	ldr r3,[sp,#16]
+	mov r2,#1
+	sub r2,r3,r2
 	bl quickSort
 	ldr r0,[sp,#0]
-	ldr r1,[sp,#16]
-	mov r0,#1
-	add r1,r1,r0
+	ldr r2,[sp,#16]
+	mov r1,#1
+	add r1,r2,r1
 	ldr r2,[sp,#8]
 	bl quickSort
 	b .L13
