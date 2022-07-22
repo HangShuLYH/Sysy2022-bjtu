@@ -57,6 +57,7 @@ void ColoringAlloc::run() {
         }
         run();
     }
+
 }
 void ColoringAlloc::liveAnalysis() {
     std::deque<std::pair<BasicBlock*, GR>> updateI;
@@ -209,6 +210,16 @@ void ColoringAlloc::addEdgeFR(FR lhs,FR rhs) {
     }
 }
 void ColoringAlloc::makeWorkList() {
+    for (GR gr: grs) {
+        if (!gr.isVirtual()) {
+            colorGR[gr] = gr.getID();
+        }
+    }
+    for (FR fr: frs) {
+        if (!fr.isVirtual()) {
+            colorFR[fr] = fr.getID();
+        }
+    }
     for (auto it = grs.begin();it != grs.end();) {
         GR gr = *it;
         grs.erase(it++);
@@ -270,6 +281,9 @@ void ColoringAlloc::simplifyGR() {
     for (auto it = simplifyWorkListGR.begin();it != simplifyWorkListGR.end();) {
         GR gr = *it;
         simplifyWorkListGR.erase(it++);
+        if (!gr.isVirtual()) {
+            continue;
+        }
         stackGR.push(gr);
         for (GR gr2: adjacentGR(gr)) {
             decrementDegreeGR(gr2);
@@ -280,6 +294,9 @@ void ColoringAlloc::simplifyFR() {
     for (auto it = simplifyWorkListFR.begin();it != simplifyWorkListFR.end();) {
         FR fr = *it;
         simplifyWorkListFR.erase(it++);
+        if (!fr.isVirtual()) {
+            continue;
+        }
         stackFR.push(fr);
         for (FR fr2: adjacentFR(fr)) {
             decrementDegreeFR(fr2);
@@ -598,11 +615,6 @@ void ColoringAlloc::assignColorsGR() {
     while(!stackGR.empty()) {
         GR n = stackGR.top();
         stackGR.pop();
-        if (!n.isVirtual()) {
-            colorGR[n] = n.getID();
-            coloredNodesGR.insert(n);
-            continue;
-        }
         std::set<int> okColorsGR;
         for (int i = 0; i < KGR; ++i) {
             okColorsGR.insert(i);
@@ -628,11 +640,6 @@ void ColoringAlloc::assignColorsFR() {
     while(!stackFR.empty()) {
         FR n = stackFR.top();
         stackFR.pop();
-        if (!n.isVirtual()) {
-            colorFR[n] = n.getID();
-            coloredNodesFR.insert(n);
-            continue;
-        }
         std::set<int> okColorsFR;
         for (int i = 0; i < KFR; ++i) {
             okColorsFR.insert(i);
