@@ -72,10 +72,13 @@ class Use {
 private:
     Value* Val;
     User *U;
+    int arg;
 public:
     Value* getVal() { return Val; }
     User* getUser() { return U; }
-    Use(Value* Val, User* U);
+    int getArg() { return arg; }
+    void setVal(Value* Val) { this->Val = Val; }
+    Use(Value* Val, User* U, int arg);
     Use();
 };
 
@@ -97,6 +100,8 @@ public:
     Type* getType() {return type;}
     void addUse(Use* U) { this->Uses.insert(U); }
     void killUse(Use* U) { this->Uses.erase(U); }
+    std::set<Use*> getUses() { return Uses; }
+    void setNum(int num) { this->num = num; }
 protected:
     int num = 0;
     std::string name = "";
@@ -317,5 +322,8 @@ protected:
     std::vector<Use*> Operands;
 public:
     User() {;}
+    void addOperand(Use* Operand) { Operands.push_back(Operand); }
+    std::vector<Use*> getOperands() { return this->Operands; }
+    // void setOperand(Use* Operand, int arg) {this->Operands[arg] = Operand; }
 };
 #endif

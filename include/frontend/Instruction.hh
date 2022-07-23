@@ -21,13 +21,13 @@ public:
 
 class AllocIIR:public Instruction{
 public:
-    bool isArray = false;
+    // bool isArray = false;
     int arrayLen;
     Value* v;
     AllocIIR(Value* v){
         this->v = v;
 
-        Use* use = new Use(v, this);
+        Use* use = new Use(v, this, 0);
         v->addUse(use);
         this->Operands.push_back(use);
     }
@@ -36,12 +36,12 @@ public:
         this->arrayLen = arrayLen;
         this->v = v;
 
-        Use* use = new Use(v, this);
+        Use* use = new Use(v, this, 0);
         v->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        v->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = AllocaI";
         if(isArray)
             out << "(" << arrayLen << ")";
@@ -50,13 +50,13 @@ public:
 };
 class AllocFIR:public Instruction{
 public:
-    bool isArray = false;
+    // bool isArray = false;
     int arrayLen;
     Value* v;
     AllocFIR(Value* v){
         this->v = v;
 
-        Use* use = new Use(v, this);
+        Use* use = new Use(v, this, 0);
         v->addUse(use);
         this->Operands.push_back(use);
     }
@@ -65,12 +65,12 @@ public:
         this->arrayLen = arrayLen;
         this->v = v;
 
-        Use* use = new Use(v, this);
+        Use* use = new Use(v, this, 0);
         v->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        v->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = AllocaF";
         if(isArray)
             out << "(" << arrayLen << ")";
@@ -86,17 +86,17 @@ public:
         this->v1 = v1;
         this->v2 = v2;
 
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
         v1->addUse(use1);
         v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        v1->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = LoadI ";
-        v2->print(out);
+        Operands[1]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -107,17 +107,17 @@ public:
     LoadFIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
         v1->addUse(use1);
         v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        v1->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = LoadI ";
-        v2->print(out);
+        Operands[1]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -132,18 +132,18 @@ public:
             this->src.setInt(src.getFloat());
         }
 
-        Use* use1 = new Use(dst, this);
-        Use* use2 = new Use(&src, this);
+        Use* use1 = new Use(dst, this, 0);
+        Use* use2 = new Use(&this->src, this, 1);
         dst->addUse(use1);
-        src.addUse(use2);
+        this->src.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         out << "StoreI ";
-        src.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        dst->print(out);
+        Operands[0]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -157,18 +157,18 @@ public:
             src.setType(dst->getType()->getContained());
             src.setFloat(src.getFloat());
         }
-        Use* use1 = new Use(dst, this);
-        Use* use2 = new Use(&src, this);
+        Use* use1 = new Use(dst, this, 0);
+        Use* use2 = new Use(&this->src, this, 1);
         dst->addUse(use1);
-        src.addUse(use2);
+        this->src.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         out << "StoreF ";
-        src.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        dst->print(out);
+        Operands[0]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -179,17 +179,17 @@ public:
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
         v1->addUse(use1);
         v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        v1->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = CastInt2Float ";
-        v2->print(out);
+        Operands[1]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -200,17 +200,17 @@ public:
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
         v1->addUse(use1);
         v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        v1->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = CastFloat2Int ";
-        v2->print(out);
+        Operands[1]->getVal()->print(out);
         out << std::endl;
     }
 };
@@ -220,12 +220,12 @@ public:
     TempVal left;
     TempVal right;
     ArithmeticIR(TempVal res,TempVal left,TempVal right) : res(res),left(left),right(right) {
-        Use* use1 = new Use(&res, this);
-        Use* use2 = new Use(&left, this);
-        Use* use3 = new Use(&right, this);
-        res.addUse(use1);
-        left.addUse(use2);
-        right.addUse(use2);
+        Use* use1 = new Use(&this->res, this, 0);
+        Use* use2 = new Use(&this->left, this, 1);
+        Use* use3 = new Use(&this->right, this, 2);
+        this->res.addUse(use1);
+        this->left.addUse(use2);
+        this->right.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
@@ -237,11 +237,11 @@ class AddIIR:public ArithmeticIR{
 public:
     AddIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = AddI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -249,11 +249,11 @@ class AddFIR:public ArithmeticIR{
 public:
     AddFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = AddF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -262,11 +262,11 @@ class SubIIR:public ArithmeticIR{
 public:
     SubIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = SubI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -274,11 +274,11 @@ class SubFIR:public ArithmeticIR{
 public:
     SubFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = SubF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -286,11 +286,11 @@ class MulIIR:public ArithmeticIR{
 public:
     MulIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = MulI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -298,11 +298,11 @@ class MulFIR:public ArithmeticIR{
 public:
     MulFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = MulF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -310,11 +310,11 @@ class DivIIR:public ArithmeticIR{
 public:
     DivIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = DivI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -322,11 +322,11 @@ class DivFIR:public ArithmeticIR{
 public:
     DivFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = DivF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -334,11 +334,11 @@ class ModIR:public ArithmeticIR{
 public:
     ModIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = Mod ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -348,15 +348,15 @@ public:
     TempVal v;
     OP op;
     UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op) {
-        Use* use1 = new Use(&res, this);
-        Use* use2 = new Use(&v, this);
-        res.addUse(use1);
-        v.addUse(use2);
+        Use* use1 = new Use(&this->res, this, 0);
+        Use* use2 = new Use(&this->v, this, 1);
+        this->res.addUse(use1);
+        this->v.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = ";
         switch (op) {
             case OP::NEG:
@@ -364,7 +364,7 @@ public:
             case OP::NOT:
                 out << "NOT ";break;
         }
-        v.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -372,11 +372,11 @@ class LTIIR:public ArithmeticIR{
 public:
     LTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = LTI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -384,11 +384,11 @@ class LTFIR:public ArithmeticIR{
 public:
     LTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = LTF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -396,11 +396,11 @@ class LEIIR:public ArithmeticIR{
 public:
     LEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = LEI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -408,11 +408,11 @@ class LEFIR:public ArithmeticIR{
 public:
     LEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = LEF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -420,11 +420,11 @@ class GTIIR:public ArithmeticIR{
 public:
     GTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = GTI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -432,11 +432,11 @@ class GTFIR:public ArithmeticIR{
 public:
     GTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = GTF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -444,11 +444,11 @@ class GEIIR:public ArithmeticIR{
 public:
     GEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = GEI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -456,11 +456,11 @@ class GEFIR:public ArithmeticIR{
 public:
     GEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = GEF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -468,11 +468,11 @@ class EQUIIR:public ArithmeticIR{
 public:
     EQUIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = EQUI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -480,11 +480,11 @@ class EQUFIR:public ArithmeticIR{
 public:
     EQUFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = EQUF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -492,11 +492,11 @@ class NEIIR:public ArithmeticIR{
 public:
     NEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = NEI ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -504,11 +504,11 @@ class NEFIR:public ArithmeticIR{
 public:
     NEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
     void print(std::ostream& out) override final{
-        res.print(out);
+        dynamic_cast<TempVal*>(Operands[0]->getVal())->print(out);
         out << " = NEF ";
-        left.print(out);
+        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
         out << " ";
-        right.print(out);
+        dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
         out << std::endl;
     }
 };
@@ -536,26 +536,28 @@ public:
     ReturnIR(Value* v){
         this->v = v;
 
-        if(v != nullptr)
-        {
-            Use* use = new Use(v, this);
-            v->addUse(use);
-            this->Operands.push_back(use);
-        }
-
+        Use* use = new Use(v, this, 0);
+        v->addUse(use);
+        this->Operands.push_back(use);
     }
     ReturnIR(int val) {
         retInt = val;
         useInt = true;
+
+        Use* use = new Use(v, this, 0);
+        this->Operands.push_back(use);
     }
     ReturnIR(float val){
         retFloat = val;
         useFloat = true;
+
+        Use* use = new Use(v, this, 0);
+        this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
         out << "ret ";
-        if (v) {
-            v->print(out);
+        if (Operands[0]->getVal()) {
+            Operands[0]->getVal()->print(out);
         }else if (useInt) {
             out << "int " << retInt;
         }else if (useFloat){
@@ -581,13 +583,13 @@ public:
     BasicBlock* falseTarget;
     Value* cond;
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) : trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {
-        Use* use = new Use(cond, this);
+        Use* use = new Use(cond, this, 0);
         cond->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
         out << "goto ";
-        cond->print(out);
+        Operands[0]->getVal()->print(out);
         out << " ？ ";
         if(trueTarget) {
             out << trueTarget->name;
@@ -610,9 +612,9 @@ public:
         this->v2 = v2;
         this->v3 = v3;
 
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
-        Use* use3 = new Use(v3, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        Use* use3 = new Use(v3, this, 2);
         v1->addUse(use1);
         v2->addUse(use2);
         v3->addUse(use3);
@@ -625,25 +627,27 @@ public:
         this->v2 = v2;
         this->arrayLen = arrayLen;
 
-        Use* use1 = new Use(v1, this);
-        Use* use2 = new Use(v2, this);
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        Use* use3 = new Use(v3, this, 2);
         v1->addUse(use1);
         v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
     }
     void print(std::ostream& out) override final{
-        v1->print(out);
+        Operands[0]->getVal()->print(out);
         out << " = GEP ";
-        v2->print(out);
-        if(v3) {
+        Operands[1]->getVal()->print(out);
+        if(Operands[2]->getVal()) {
             out << " ";
-            v3->print(out);
+            Operands[2]->getVal()->print(out);
             out << std::endl;
         }else {
             out << " " << arrayLen << std::endl;
         }
-    };
+    }
 };
 #include "Function.hh"
 class CallIR:public Instruction{
@@ -655,47 +659,83 @@ public:
         this->func = func;
         this->args = args;
 
-        for(auto& arg : args) {
-            Use* use = new Use(&arg, this);
-            this->addUse(use);
+        int i(0);
+        for(; i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i);
+            this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
+
+        Use* use = new Use(returnVal, this, i);
+        this->Operands.push_back(use);
     }
     CallIR(Function* func,std::vector<TempVal> args, Value* v){
         this->func = func;
         this->args = args;
         this->returnVal = v;
 
-        for(auto& arg : args) {
-            Use* use = new Use(&arg, this);
-            this->addUse(use);
+        int i(0);
+        for(; i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i);
+            this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
-        Use* use = new Use(v, this);
-        this->addUse(use);
+        Use* use = new Use(returnVal, this, i);
+        returnVal->addUse(use);
+        this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        if (returnVal) {
-            returnVal->print(out);
+        if (Operands[Operands.size() - 1]->getVal()) {
+            Operands[Operands.size() - 1]->getVal()->print(out);
             out << " = ";
         }
         out << "call " << func->name << "(";
-        for (size_t i = 0; i < args.size(); ++i) {
-            if(args[i].getVal()) {
-                args[i].getVal()->print(out);
+        for (size_t i = 0; i < Operands.size() - 1; ++i) {
+            if(dynamic_cast<TempVal*>(Operands[i]->getVal())) {
+                dynamic_cast<TempVal*>(Operands[i]->getVal())->print(out);
             }else {
-                if(args[i].isInt()) {
-                    out << args[i].getInt();
+                if(dynamic_cast<TempVal*>(Operands[i]->getVal())->isInt()) {
+                    out << dynamic_cast<TempVal*>(Operands[i]->getVal())->getInt();
                 }else {
-                    out << args[i].getFloat();
+                    out << dynamic_cast<TempVal*>(Operands[i]->getVal())->getFloat();
                 }
             }
-            if (i < args.size() - 1) {
+            if (i < Operands.size() - 2) {
                 out << " , ";
             }else {
                 out << ")\n";
             }
         }
+    }
+};
+
+class PhiIR : public Instruction {
+public:
+    Value* dst;
+    std::map<BasicBlock*, Value*> params;
+    PhiIR(std::vector<BasicBlock*> bbs, Value* var) {
+        for(auto& bb : bbs) {
+            params[bb] = var;
+        }
+        dst = var;
+        
+        Use* use = new Use(dst, this, 0);
+        dst->addUse(use);
+        this->Operands.push_back(use);
+    }
+    void print(std::ostream& out) override final{
+        // std::cout << "TEST PHI\n\n" << std::endl;
+        Operands[0]->getVal()->print(out);
+        out << " = Phi(";
+        for(auto iter(params.begin()); iter != params.end(); iter++) {
+            out << iter->first->name << " ";
+            if(!iter->second) {
+                out << "nullptr";
+            }
+            else iter->second->print(out);
+            out << ", ";
+        }
+        out << "\b\b)" << std::endl;
     }
 };
 

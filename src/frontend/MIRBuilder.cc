@@ -4,6 +4,7 @@
 //Created by lin 5.22
 #include "MIRBuilder.hh"
 #include "Function.hh"
+#include <algorithm>
 
 std::vector<BasicBlock*> MIRBuilder::relatedCond(std::vector<BasicBlock*> bbs, BasicBlock* firstBB, BasicBlock* nextAB){
     BasicBlock* lastOrBB = nextAB;
@@ -92,7 +93,7 @@ BasicBlock* MIRBuilder::frontOfNextBB(BasicBlock* bb){
 //create by lin 7.2
 void MIRBuilder::getPreAndSucc(){
     std::cout<<"begin pre and succ:"<<std::endl;
-    std::vector<Function*> functions = irVisitor.functions;
+    std::vector<Function*> functions = irVisitor->functions;
     for (size_t i = 0; i < functions.size(); ++i) {
         if (functions[i]->return_type->isVoid()) {
             if (typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)) {    // solve problem of void
@@ -255,7 +256,7 @@ NormalBlock* MIRBuilder::toNormal(BasicBlock* bb){
 }
 
 void MIRBuilder::print(std::ostream& out){
-    irVisitor.print(std::cout);
+    irVisitor->print(std::cout);
 }
 //end by lin 7.2
 //create by lin 7.3
@@ -269,8 +270,8 @@ void MIRBuilder::putCondToNormal(CondBlock* cb, NormalBlock* nb){
 }
 
 void MIRBuilder::removeDuplicate(){
-    for(size_t i = 0; i < irVisitor.functions.size(); i++){
-        std::vector<BasicBlock*> bbs = irVisitor.functions[i]->basicBlocks;
+    for(size_t i = 0; i < irVisitor->functions.size(); i++){
+        std::vector<BasicBlock*> bbs = irVisitor->functions[i]->basicBlocks;
         std::cout<<bbs.size()<<std::endl;
         for(size_t j = bbs.size() - 1; j > 0 ; j--){
             NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
@@ -281,6 +282,16 @@ void MIRBuilder::removeDuplicate(){
 //                    if(){
 //
 //                }
+                    // std::set<BasicBlock*> succNBsPre = {preNB};
+                    // (*nowNB->getSucc().begin())->setPre(succNBsPre);
+
+                    for(auto succNB : nowNB->getSucc()) {
+                        std::vector<BasicBlock*> preBBs(succNB->getPre());
+                        auto iter = find(preBBs.begin(), preBBs.end(), nowNB);
+                        *iter = preNB;
+                        succNB->setPre(preBBs);
+                    }
+
                     preNB->setSucc(nowNB->getSucc());
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
@@ -290,7 +301,7 @@ void MIRBuilder::removeDuplicate(){
                 }
             }
         }
-        irVisitor.functions[i]->basicBlocks = bbs;
+        irVisitor->functions[i]->basicBlocks = bbs;
     }
 }
 //end by lin 7.3

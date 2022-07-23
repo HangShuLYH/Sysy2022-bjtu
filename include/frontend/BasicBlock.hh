@@ -8,6 +8,9 @@
 #include "Instruction.hh"
 #include <list>
 #include <set>
+#include <map>
+#include <stack>
+#include <utility>
 
 class BasicBlock{
 public:
@@ -15,30 +18,45 @@ public:
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
-
+    std::map<Value*, std::vector<std::pair<Value*, std::vector<Use*>*>>> defuse;
+    
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
+        this->defuse.clear();
     }
     void pushIr(Instruction* instruction) {
         ir.push_back(instruction);
     }
+    std::vector<Instruction*>& getIr() {
+        return ir;
+    }
     void pushVar(Value *v) {
         vars.push_back(v);
+    }
+    void insertDomFrontier(BasicBlock* bb) {
+        domFrontier.insert(bb);
+    }
+    std::set<BasicBlock*> getDomFrontier() {
+        return domFrontier;
     }
     virtual void print(std::ostream& out) = 0;
     virtual void clear() = 0;
     virtual ~BasicBlock(){}
-    void pushPre(BasicBlock* bb){preBBs.insert(bb);}
-    void pushSucc(BasicBlock* bb){succBBs.insert(bb);}
-    void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
-    void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
-    std::set<BasicBlock*> getPre(){return preBBs;}
-    std::set<BasicBlock*> getSucc(){return succBBs;}
-
+    void pushPre(BasicBlock* bb){preBBs.push_back(bb);}
+    void pushSucc(BasicBlock* bb){succBBs.push_back(bb);}
+    void setPre(std::vector<BasicBlock*> pre){preBBs = pre;}
+    void setSucc(std::vector<BasicBlock*> succ){succBBs = succ;}
+    std::vector<BasicBlock*> getPre(){return preBBs;}
+    std::vector<BasicBlock*> getSucc(){return succBBs;}
+    void setIdom(BasicBlock* idom) { this->idom = idom; }
+    BasicBlock* getIdom() { return idom; }
+    
 private:
-    std::set<BasicBlock*> preBBs;
-    std::set<BasicBlock*> succBBs;
+    std::vector<BasicBlock*> preBBs;
+    std::vector<BasicBlock*> succBBs;
+    std::set<BasicBlock*> domFrontier;
+    BasicBlock* idom;
 };
 class NormalBlock:public BasicBlock{
 public:

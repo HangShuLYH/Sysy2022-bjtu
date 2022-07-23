@@ -9,23 +9,23 @@
 
 class DominateTree {
 private:
-    IrVisitor& irVisitor;
-    std::vector<NormalBlock*> doms;
-    std:map<NormalBlock*, int> bbMap;
-    std::list<NormalBlock*> reversePostOrder;
+    IrVisitor* irVisitor;
+    std::vector<BasicBlock*> doms;
+    std::map<BasicBlock*, int> bbMap;
+    std::list<BasicBlock*> reversePostOrder;
 public:
-    DominateTree(IrVisitor& irVisitor) : irVisitor(irVisitor) {}
+    DominateTree(IrVisitor* irVisitor) : irVisitor(irVisitor) {}
     void execute();
     void getIdom(Function* function);
     void getDomFront(Function* function);
-    void getPostOrder(NormalBlock* bb, std::set<NormalBlock*>& visited);
-    void genDominateTree(Function* function);
-    void genBBDom(NormalBlock* bb);
-    NormalBlock* intersect(NormalBlock* bb1, NormalBlock* bb2);
+    void getPostOrder(BasicBlock* bb, std::set<BasicBlock*>& visited);
+    // void genDominateTree(Function* function);
+    // void genBBDom(BasicBlock* bb);
+    BasicBlock* intersect(BasicBlock* bb1, BasicBlock* bb2);
 };
 
 void DominateTree::execute() {
-    for (auto function : irVisitor.getFunctions()) {
+    for (auto function : irVisitor->getFunctions()) {
         if(function->getBB().empty()) continue;
 
         // 清空，初始化
@@ -41,8 +41,8 @@ void DominateTree::execute() {
 // 获得立即支配集
 void DominateTree::getIdom(Function* function) {
     // 获得逆序后续遍历
-    NormalBlock* entryBB = function->getBB()[0];
-    std::set<NormalBlock*> visited = {};
+    BasicBlock* entryBB = function->getBB()[0];
+    std::set<BasicBlock*> visited = {};
     getPostOrder(entryBB, visited);
     reversePostOrder.reverse();
 
@@ -59,7 +59,7 @@ void DominateTree::getIdom(Function* function) {
         changed = false;
         for(auto bb : reversePostOrder) {
             if(bb == entryBB) continue;
-            NormalBlock* newIdom = nullptr;
+            BasicBlock* newIdom = nullptr;
             // 获得bb的前驱  new_idom ← first (processed) predecessor of b /* (pick one) */
             for(auto preBB : bb->getPre()) {
                 if(doms[bbMap[preBB]] != nullptr) {
@@ -87,24 +87,25 @@ void DominateTree::getIdom(Function* function) {
 }
 
 // 后续遍历
-void DominateTree::getPostOrder(NormalBlock* bb, std::set<NormalBlock*>& visited) {
+void DominateTree::getPostOrder(BasicBlock* bb, std::set<BasicBlock*>& visited) {
     visited.insert(bb);
-    list<NormalBlock*> succBBs = bb->getSucc();
-    for(auto succBB : succBBs) {
-        visited.count(succBB) == 0 ? getPostOrder(succBB, visited) : continue;
+    std::vector<BasicBlock*> succBBs = bb->getSucc();
+    for(int i(succBBs.size() - 1); i >= 0; i--) {
+        if(!visited.count(succBBs[i])) getPostOrder(succBBs[i], visited);
     }
     bbMap[bb] = reversePostOrder.size();
     reversePostOrder.push_back(bb);
 }
 
 // 双指针算法求交集
-NormalBlock* intersect(NormalBlock* bb1, NormalBlock* bb2) {
-    NormalBlock* finger1 = bb1, finger2 = bb1;
+BasicBlock* DominateTree::intersect(BasicBlock* bb1, BasicBlock* bb2) {
+    BasicBlock* finger1 = bb1, *finger2 = bb2;
     while(finger1 != finger2) {
         while(bbMap[finger1] < bbMap[finger2]) {
-            finger1 = doms[finger1];
-        } else {
-            finger2 = doms[finger2];
+            finger1 = doms[bbMap[finger1]];
+        } 
+        while(bbMap[finger2] < bbMap[finger1]) {
+            finger2 = doms[bbMap[finger2]];
         }
     }
     return finger1;
@@ -112,11 +113,11 @@ NormalBlock* intersect(NormalBlock* bb1, NormalBlock* bb2) {
 
 // 获得支配前沿
 void DominateTree::getDomFront(Function* function) {
-    for(NormalBlock* bb : function->getBB()) {
+    for(BasicBlock* bb : function->getBB()) {
         if(bb->getPre().size() >= 2) {
-            for(NormalBlock* preBB : bb->getPre()) {
-                NormalBlock* runner = preBB;
-                while(runner != doms[bb]) {
+            for(BasicBlock* preBB : bb->getPre()) {
+                BasicBlock* runner = preBB;
+                while(runner != doms[bbMap[bb]]) {
                     runner->insertDomFrontier(bb);
                     runner = doms[bbMap[runner]];
                 }
@@ -125,16 +126,16 @@ void DominateTree::getDomFront(Function* function) {
     }
 }
 
-// 获得支配树
-void genDominateTree(Function* function) {
-    for(auto bb :: function->getBB()) {
-        getBBDominateTree(bb);
-    }
-}
+// // 获得支配树
+// void genDominateTree(Function* function) {
+//     for(auto bb : function->getBB()) {
+//         getBBDominateTree(bb);
+//     }
+// }
 
-void genBBDom(NormalBlock* bb) {
-    if(!bb) return;
+// void genBBDom(BasicBlock* bb) {
+//     if(!bb) return;
 
-    bb->insertDom(bb);
-    genBBDom(bb->getIdom());
-}
+//     bb->insertDom(bb);
+//     genBBDom(bb->getIdom());
+// }

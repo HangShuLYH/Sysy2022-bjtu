@@ -16,6 +16,7 @@
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
 #include "Value.hh"
 class IrVisitor : public Visitor {
 private:
@@ -55,6 +56,9 @@ public:
     void pushFunctions(Function* func){
         functions.push_back(func);
     }
+    std::vector<Function*> getFunctions() {
+        return functions;
+    }
     void pushGlobalVars(Value *var) {
         var->setGlobal(true);
         globalVars.push_back(var);
@@ -72,7 +76,11 @@ public:
             functions[i]->print(out);
         }
     }
-
+    bool isGlobalVar(Value* var) {
+        if(find(globalVars.begin(), globalVars.end(), var) != globalVars.end())
+            return true;
+        else return false;
+    }
     bool isGlobal() {
         if (cur_bb == entry) {
             return true;
