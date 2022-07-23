@@ -170,4 +170,5 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/location.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/FlexLexer.hh \
  /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/FlexLexer.h \
- /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh
+ /home/hangshu/桌面/Sysy2022-bjtu/include/frontend/parser.hh \
+ /usr/include/c++/9/sstream /usr/include/c++/9/bits/sstream.tcc

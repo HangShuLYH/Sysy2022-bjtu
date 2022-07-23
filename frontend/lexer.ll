@@ -18,7 +18,7 @@ extern driver ddriver;
 %}
 %option noyywrap nounput batch debug noinput
 %x COMMENT
-
+string \"(\\.|[^"\\])*\"
 digit [0-9]
 nonzeroDigit [1-9]
 octalDigit [0-7]
@@ -57,11 +57,15 @@ ident {letter}({letter}|{digit})*
 [ \t\n\f] {
     ;
 }
+{string} {
+    printf("string here!\n");
+    return yy::parser::make_STRING(ddriver.lexer.YYText(),loc);
+}
 "void" {
     return yy::parser::make_VOID(loc);
 }
 "int" {
-     return yy::parser::make_INT(loc);
+    return yy::parser::make_INT(loc);
 }
 "float" {
       return yy::parser::make_FLOAT(loc);
@@ -117,6 +121,7 @@ ident {letter}({letter}|{digit})*
     sscanf(ddriver.lexer.YYText(), "%f",&x);
     return yy::parser::make_FLOATCONST(x,loc);
 }
+
 "<=" {
     return yy::parser::make_LE(loc);
 }

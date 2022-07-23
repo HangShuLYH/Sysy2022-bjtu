@@ -39,6 +39,7 @@ class driver;
 %define api.token.prefix {TOK_}
 
 %token VOID INT FLOAT CONST IF ELSE WHILE BREAK CONTINUE RETURN
+%token <std::string>STRING
 %token <std::string>IDENTIFIER
 %token <int>INTCONST
 %token <float>FLOATCONST
@@ -456,6 +457,10 @@ UnaryExp:PrimaryExp{
     $$->unaryOp=std::shared_ptr<UnaryOp>($1);
     $$->unaryExp=std::shared_ptr<UnaryExp>($2);
   }
+    | STRING {
+     $$=new UnaryExp();
+     $$->stringConst=$1;
+    }
 	;
 UnaryOp: ADD{
     $$=new UnaryOp();

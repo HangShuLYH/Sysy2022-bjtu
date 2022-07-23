@@ -31,6 +31,7 @@ public:
     // The name of the file being parsed.
     // Used later to pass the file name to the location tracker.
     std::string file;
+    std::string preprocess();
     // Error handling.
     void error (const yy::location& l, const std::string& m);
     void error (const std::string& m);

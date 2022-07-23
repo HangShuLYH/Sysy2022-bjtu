@@ -12,7 +12,8 @@ int GR::reg_num = 16;
 int FR::reg_num = 32;
 int bbNameCnt = 0;
 std::map<std::string, std::string> bbNameMapping;
-
+std::map<std::string, std::string> stringConstMapping;
+int stringConstCnt = 0;
 std::string getBBName(std::string name) {
     if (bbNameMapping.count(name) == 0) {
         bbNameMapping[name] = ".L" + std::to_string(bbNameCnt++);
@@ -663,8 +664,13 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         int fr_cnt = 0;
         int cnt = 0;
         std::vector<Instr *> vec;
-        vec.push_back(new Push({}));
         for (TempVal v: callIr->args) {
+            if (v.getType()->isString()) {
+                vec.push_back(new MoveWFromSymbol(GR(0),stringConstMapping[v.getString()]));
+                vec.push_back(new MoveTFromSymbol(GR(0),stringConstMapping[v.getString()]));
+                gr_cnt++;
+                continue;
+            }
             if (!v.isFloat()) {
                 if (gr_cnt >= 4) {
                     if (!v.getVal()) {
@@ -708,14 +714,16 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         fRegMapping[v.getVal()] = fr_cnt;
                         vec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
                     } else {
-                        vec.push_back(new VMoveReg(FR(gr_cnt), getFR(v.getVal())));
+                        vec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
                         fRegMapping[v.getVal()] = fr_cnt;
                     }
                 }
                 fr_cnt++;
             }
         }
+        vec.push_back(new Push({}));
         vec.push_back(new Bl(callIr->func->name));
+        vec.push_back(new Pop({}));
         if (callIr->returnVal) {
             if (callIr->returnVal->getType()->isInt()) {
                 gRegMapping[callIr->returnVal] = 0;
@@ -723,7 +731,6 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 fRegMapping[callIr->returnVal] = 0;
             }
         }
-        vec.push_back(new Pop({}));
         return vec;
     }
     if (typeid(*ir) == typeid(ReturnIR)) {
@@ -771,35 +778,45 @@ void Codegen::generateGlobalCode() {
         if (typeid(*v) == typeid(ConstValue)) {
             dataList.push_back(v);
         } else {
-            bssList.push_back(v);
+            if (v->getType()->isString()) {
+                dataList.push_back(v);
+            } else {
+                bssList.push_back(v);
+            }
         }
     }
     if (!dataList.empty()) {
         out << ".section .data\n";
         for (Value *v: dataList) {
-            out << ".align\n";
-            out << v->getName() << ":\n";
-            out << "\t.4byte ";
-            ConstValue *vv = dynamic_cast<ConstValue *>(v);
-            if (!vv->is_Array()) {
-                if (vv->getType()->isInt()) {
-                    out << vv->getIntVal();
-                } else {
-                    out << vv->getFloatVal();
-                }
-            } else {
-                for (int i = 0; i < vv->getArrayLen(); ++i) {
-                    if (i != 0) {
-                        out << ",";
-                    }
-                    if (vv->getType()->isIntPointer()) {
-                        out << vv->getIntValList()[i];
+            if (!v->getType()->isString()) {
+                out << ".align\n";
+                out << v->getName() << ":\n";
+                out << "\t.4byte ";
+                ConstValue *vv = dynamic_cast<ConstValue *>(v);
+                if (!vv->is_Array()) {
+                    if (vv->getType()->isInt()) {
+                        out << vv->getIntVal();
                     } else {
-                        out << vv->getFloatValList()[i];
+                        out << vv->getFloatVal();
+                    }
+                } else {
+                    for (int i = 0; i < vv->getArrayLen(); ++i) {
+                        if (i != 0) {
+                            out << ",";
+                        }
+                        if (vv->getType()->isIntPointer()) {
+                            out << vv->getIntValList()[i];
+                        } else {
+                            out << vv->getFloatValList()[i];
+                        }
                     }
                 }
+                out << "\n";
+            } else {
+                std::string varName = "_m_global_string_const" + std::to_string(stringConstCnt++);
+                stringConstMapping[v->getName()] = varName;
+                out << varName << ":\n\t.asciz " << v->getName() << "\n";
             }
-            out << "\n";
         }
     }
     if (!bssList.empty()) {

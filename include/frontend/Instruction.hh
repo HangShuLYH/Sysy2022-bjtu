@@ -575,8 +575,10 @@ public:
             }else {
                 if(args[i].isInt()) {
                     out << args[i].getInt();
-                }else {
+                }else if (args[i].isFloat()){
                     out << args[i].getFloat();
+                } else {
+                    out << args[i].getString();
                 }
             }
             if (i < args.size() - 1) {

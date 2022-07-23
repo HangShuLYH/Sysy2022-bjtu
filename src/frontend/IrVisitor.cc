@@ -662,7 +662,7 @@ void IrVisitor::visit(ReturnStmt *returnStmt) {
         }
         returnStmt->exp->accept(*this);
         if (!tempVal.getVal()) {
-            if (curDefType->isInt()) {
+            if (cur_func->return_type->isInt()) {
                 if (tempVal.isInt()) {
                     cur_bb->pushIr(new ReturnIR(tempVal.getInt()));
                 } else {
@@ -677,13 +677,13 @@ void IrVisitor::visit(ReturnStmt *returnStmt) {
             }
         } else {
             VarValue *t = nullptr;
-            if (!curDefType->isVoid()) {
+            if (!cur_func->return_type->isVoid()) {
                 t = new VarValue("", curDefType, isGlobal(), cur_func->varCnt++);
                 tempVal.setVal(t);
             }
-            if (curDefType->isInt() && tempVal.getVal()->getType()->isFloat()) {
+            if (cur_func->return_type->isInt() && tempVal.getVal()->getType()->isFloat()) {
                 cur_bb->pushIr(new CastFloat2IntIR(t, tempVal.getVal()));
-            } else if (curDefType->isFloat() && tempVal.getVal()->getType()->isInt()) {
+            } else if (cur_func->return_type->isFloat() && tempVal.getVal()->getType()->isInt()) {
                 cur_bb->pushIr(new CastInt2FloatIR(t, tempVal.getVal()));
             }
             cur_bb->pushIr(new ReturnIR(tempVal.getVal()));
@@ -924,7 +924,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
                 cur_bb->pushIr(UnaryIRManager::getIR(tempVal, t, '!'));
             }
         }
-    } else {
+    } else if (unaryExp->identifier != ""){
         args.clear();
         call_func = findFunc(unaryExp->identifier);
         if (unaryExp->funcRParams) {
@@ -938,11 +938,15 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             tempVal.setVal(v);
             cur_bb->pushIr(new CallIR(call_func, args, v));
         }
+    } else {
+        tempVal.setType(typeString);
+        tempVal.setString(unaryExp->stringConst);
+        globalVars.push_back(new VarValue(unaryExp->stringConst,typeString, false,0));
     }
 }
 
 void IrVisitor::visit(FuncRParams *funcRParams) {
-    if (funcRParams->expList.size() != call_func->params.size()) {
+    if (funcRParams->expList.size() != call_func->params.size() && !call_func->variant_params) {
         throw ArgsNumberNotMatchError(call_func->name);
     }
     for (size_t i = 0; i < funcRParams->expList.size(); ++i) {

@@ -11,6 +11,7 @@
 enum TypeID {
     INT,
     FLOAT,
+    STRING,
     VOID,
     POINTER,
 };
@@ -23,6 +24,9 @@ public:
     }
     bool isFloat() {
         return tid == FLOAT;
+    }
+    bool isString() {
+        return tid == STRING;
     }
     bool isVoid(){
         return tid == VOID;
@@ -49,6 +53,9 @@ public:
                 break;
             case VOID:
                 out << "void";
+                break;
+            case STRING:
+                out << "string";
                 break;
             case POINTER:
                 contained->print(out);
@@ -130,17 +137,21 @@ private:
     float valFloat;
     Value* val;
     Type* type;
+    std::string stringConst;
 public:
     TempVal() {
         this->valInt = 0;
         this->valFloat = 0.0;
         this->val = nullptr;
         this->type = nullptr;
+        this->stringConst = "";
     }
     void print(std::ostream& out) {
         if (val) {
             val->print(out);
-        } else {
+        } else if (type->isString()) {
+            out << stringConst;
+        }else {
             out << getConst();
         }
     }
@@ -162,11 +173,13 @@ public:
             setFloat(val);
         }
     }
+    std::string getString() {return stringConst;}
     Type* getType() {return type;}
     void setInt(int x) {valInt = x;}
     void setFloat(float x) {valFloat = x;}
     void setVal(Value* v) {val = v;}
     void setType(Type* t) {type = t;}
+    void setString(std::string s) {stringConst = s;}
     Value* getVal() {return val;}
     static TempVal calConstArithmetic(TempVal v1, TempVal v2, char op) {
         TempVal res;

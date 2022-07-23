@@ -18,6 +18,7 @@ public:
     Type* return_type;
     std::vector<BasicBlock*> basicBlocks;
     std::vector<Value*> params;
+    bool variant_params = false;
     Function(std::string name,Type* type){
         this->name = name;
         return_type = type;

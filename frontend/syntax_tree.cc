@@ -344,7 +344,9 @@ void Stmt::visit(int depth) {
     space(depth);
     std::cout << "Stmt" << std::endl;
 #endif
-    if (assignStmt) {
+    if (exp) {
+        exp->visit(depth+1);
+    }else if (assignStmt) {
         assignStmt->visit(depth+1);
     }else if (block){
         block->visit(depth+1);
@@ -525,11 +527,14 @@ void UnaryExp::visit(int depth) {
     } else if (unaryOp) {
         unaryOp->visit(depth + 1);
         unaryExp->visit(depth + 1);
-    } else {
+    } else if (identifier != ""){
 #ifdef DEBUG
         space(depth + 1);
         std::cout << "id:" << identifier << std::endl;
 #endif
+    } else {
+        space(depth + 1);
+        std::cout << "stringConst:" << stringConst << std::endl;
     }
 #ifdef DEBUG
     space(depth);

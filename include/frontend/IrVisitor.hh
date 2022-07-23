@@ -31,8 +31,10 @@ private:
     Type* typeInt = new Type(TypeID::INT);
     Type* typeFloat = new Type(TypeID::FLOAT);
     Type* typeVoid = new Type(TypeID::VOID);
+    Type* typeString = new Type(TypeID::STRING);
     Function* call_func;
     bool useArgs = false;
+    std::string stringConst;
 public:
     std::vector<Function*> functions;
     std::vector<Value*> globalVars;
@@ -56,7 +58,12 @@ public:
                 new VarValue("",typeInt, false,0),
                 new VarValue("",new Type(TypeID::POINTER,typeFloat), false,1)
         }));
-
+        functions.push_back(new Function("putf",typeVoid,{
+                new VarValue("",typeString, false,0)
+        }));
+        functions[functions.size() - 1]->variant_params = true;
+        functions.push_back(new Function("_sysy_starttime",typeVoid,{new VarValue("",typeInt, false,0)}));
+        functions.push_back(new Function("_sysy_stoptime",typeVoid,{new VarValue("",typeInt, false,0)}));
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
     }

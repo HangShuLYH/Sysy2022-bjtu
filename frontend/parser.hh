@@ -524,6 +524,7 @@ namespace yy {
       // INTCONST
       char dummy45[sizeof (int)];
 
+      // STRING
       // IDENTIFIER
       char dummy46[sizeof (std::string)];
     };
@@ -583,33 +584,34 @@ namespace yy {
         TOK_BREAK = 265,
         TOK_CONTINUE = 266,
         TOK_RETURN = 267,
-        TOK_IDENTIFIER = 268,
-        TOK_INTCONST = 269,
-        TOK_FLOATCONST = 270,
-        TOK_LE = 271,
-        TOK_LT = 272,
-        TOK_GE = 273,
-        TOK_GT = 274,
-        TOK_EQU = 275,
-        TOK_NE = 276,
-        TOK_ASSIGN = 277,
-        TOK_ADD = 278,
-        TOK_SUB = 279,
-        TOK_MUL = 280,
-        TOK_DIV = 281,
-        TOK_MOD = 282,
-        TOK_SEMICOLON = 283,
-        TOK_COMMA = 284,
-        TOK_LB = 285,
-        TOK_RB = 286,
-        TOK_BLB = 287,
-        TOK_BRB = 288,
-        TOK_MLB = 289,
-        TOK_MRB = 290,
-        TOK_AND = 291,
-        TOK_OR = 292,
-        TOK_NOT = 293,
-        TOK_END = 294
+        TOK_STRING = 268,
+        TOK_IDENTIFIER = 269,
+        TOK_INTCONST = 270,
+        TOK_FLOATCONST = 271,
+        TOK_LE = 272,
+        TOK_LT = 273,
+        TOK_GE = 274,
+        TOK_GT = 275,
+        TOK_EQU = 276,
+        TOK_NE = 277,
+        TOK_ASSIGN = 278,
+        TOK_ADD = 279,
+        TOK_SUB = 280,
+        TOK_MUL = 281,
+        TOK_DIV = 282,
+        TOK_MOD = 283,
+        TOK_SEMICOLON = 284,
+        TOK_COMMA = 285,
+        TOK_LB = 286,
+        TOK_RB = 287,
+        TOK_BLB = 288,
+        TOK_BRB = 289,
+        TOK_MLB = 290,
+        TOK_MRB = 291,
+        TOK_AND = 292,
+        TOK_OR = 293,
+        TOK_NOT = 294,
+        TOK_END = 295
       };
     };
 
@@ -1284,188 +1286,189 @@ namespace yy {
         // Type destructor.
 switch (yytype)
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.template destroy< AddExp* > ();
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.template destroy< AssignStmt* > ();
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.template destroy< Block* > ();
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.template destroy< BlockItem* > ();
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.template destroy< BlockItemList* > ();
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.template destroy< BreakStmt* > ();
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.template destroy< CompUnit* > ();
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.template destroy< Cond* > ();
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.template destroy< ConstDecl* > ();
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.template destroy< ConstDef* > ();
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.template destroy< ConstDefList* > ();
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.template destroy< ConstExp* > ();
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.template destroy< ConstExpList* > ();
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.template destroy< ConstInitVal* > ();
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.template destroy< ConstInitValList* > ();
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.template destroy< ContinueStmt* > ();
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.template destroy< DeclDef* > ();
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.template destroy< DefType* > ();
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.template destroy< EqExp* > ();
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.template destroy< Exp* > ();
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.template destroy< FuncDef* > ();
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.template destroy< FuncFParam* > ();
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.template destroy< FuncFParams* > ();
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.template destroy< FuncRParams* > ();
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.template destroy< InitVal* > ();
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.template destroy< InitValList* > ();
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.template destroy< IterationStmt* > ();
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.template destroy< LAndExp* > ();
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.template destroy< LOrExp* > ();
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.template destroy< LVal* > ();
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.template destroy< MulExp* > ();
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.template destroy< Number* > ();
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.template destroy< ParamArrayExpList* > ();
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.template destroy< PrimaryExp* > ();
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.template destroy< RelExp* > ();
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.template destroy< ReturnStmt* > ();
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.template destroy< SelectStmt* > ();
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.template destroy< Stmt* > ();
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.template destroy< UnaryExp* > ();
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.template destroy< UnaryOp* > ();
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.template destroy< VarDecl* > ();
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.template destroy< VarDef* > ();
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.template destroy< VarDefList* > ();
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.template destroy< float > ();
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.template destroy< int > ();
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.template destroy< std::string > ();
         break;
 
@@ -1584,13 +1587,13 @@ switch (yytype)
       symbol_type (int tok, std::string v, location_type l)
         : super_type(token_type (tok), std::move (v), std::move (l))
       {
-        YY_ASSERT (tok == token::TOK_IDENTIFIER);
+        YY_ASSERT (tok == token::TOK_STRING || tok == token::TOK_IDENTIFIER);
       }
 #else
       symbol_type (int tok, const std::string& v, const location_type& l)
         : super_type(token_type (tok), v, l)
       {
-        YY_ASSERT (tok == token::TOK_IDENTIFIER);
+        YY_ASSERT (tok == token::TOK_STRING || tok == token::TOK_IDENTIFIER);
       }
 #endif
     };
@@ -1778,6 +1781,21 @@ switch (yytype)
       make_RETURN (const location_type& l)
       {
         return symbol_type (token::TOK_RETURN, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_STRING (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_STRING, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_STRING (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_STRING, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2214,7 +2232,7 @@ switch (yytype)
     /// \param yyvalue   the value to check
     static bool yy_table_value_is_error_ (int yyvalue);
 
-    static const short yypact_ninf_;
+    static const signed char yypact_ninf_;
     static const signed char yytable_ninf_;
 
     /// Convert a scanner token number \a t to a symbol number.
@@ -2491,10 +2509,10 @@ switch (yytype)
     enum
     {
       yyeof_ = 0,
-      yylast_ = 242,     ///< Last index in yytable_.
+      yylast_ = 262,     ///< Last index in yytable_.
       yynnts_ = 45,  ///< Number of nonterminal symbols.
       yyfinal_ = 13, ///< Termination state number.
-      yyntokens_ = 40  ///< Number of tokens.
+      yyntokens_ = 41  ///< Number of tokens.
     };
 
 
@@ -2541,9 +2559,9 @@ switch (yytype)
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39
+      35,    36,    37,    38,    39,    40
     };
-    const int user_token_number_max_ = 294;
+    const int user_token_number_max_ = 295;
 
     if (t <= 0)
       return yyeof_;
@@ -2563,188 +2581,189 @@ switch (yytype)
   {
     switch (this->type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.move< AddExp* > (std::move (that.value));
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.move< AssignStmt* > (std::move (that.value));
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.move< Block* > (std::move (that.value));
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.move< BlockItem* > (std::move (that.value));
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.move< BlockItemList* > (std::move (that.value));
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.move< BreakStmt* > (std::move (that.value));
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.move< CompUnit* > (std::move (that.value));
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.move< Cond* > (std::move (that.value));
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.move< ConstDecl* > (std::move (that.value));
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.move< ConstDef* > (std::move (that.value));
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.move< ConstDefList* > (std::move (that.value));
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.move< ConstExp* > (std::move (that.value));
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.move< ConstExpList* > (std::move (that.value));
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.move< ConstInitVal* > (std::move (that.value));
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.move< ConstInitValList* > (std::move (that.value));
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.move< ContinueStmt* > (std::move (that.value));
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.move< DeclDef* > (std::move (that.value));
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.move< DefType* > (std::move (that.value));
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.move< EqExp* > (std::move (that.value));
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.move< Exp* > (std::move (that.value));
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.move< FuncDef* > (std::move (that.value));
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.move< FuncFParam* > (std::move (that.value));
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.move< FuncFParams* > (std::move (that.value));
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.move< FuncRParams* > (std::move (that.value));
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.move< InitVal* > (std::move (that.value));
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.move< InitValList* > (std::move (that.value));
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.move< IterationStmt* > (std::move (that.value));
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.move< LAndExp* > (std::move (that.value));
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.move< LOrExp* > (std::move (that.value));
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.move< LVal* > (std::move (that.value));
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.move< MulExp* > (std::move (that.value));
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.move< Number* > (std::move (that.value));
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.move< ParamArrayExpList* > (std::move (that.value));
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.move< PrimaryExp* > (std::move (that.value));
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.move< RelExp* > (std::move (that.value));
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.move< ReturnStmt* > (std::move (that.value));
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.move< SelectStmt* > (std::move (that.value));
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.move< Stmt* > (std::move (that.value));
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.move< UnaryExp* > (std::move (that.value));
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.move< UnaryOp* > (std::move (that.value));
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.move< VarDecl* > (std::move (that.value));
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.move< VarDef* > (std::move (that.value));
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.move< VarDefList* > (std::move (that.value));
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.move< float > (std::move (that.value));
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.move< int > (std::move (that.value));
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -2763,188 +2782,189 @@ switch (yytype)
   {
     switch (this->type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.copy< AddExp* > (YY_MOVE (that.value));
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.copy< AssignStmt* > (YY_MOVE (that.value));
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.copy< Block* > (YY_MOVE (that.value));
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.copy< BlockItem* > (YY_MOVE (that.value));
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.copy< BlockItemList* > (YY_MOVE (that.value));
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.copy< BreakStmt* > (YY_MOVE (that.value));
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.copy< CompUnit* > (YY_MOVE (that.value));
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.copy< Cond* > (YY_MOVE (that.value));
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.copy< ConstDecl* > (YY_MOVE (that.value));
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.copy< ConstDef* > (YY_MOVE (that.value));
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.copy< ConstDefList* > (YY_MOVE (that.value));
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.copy< ConstExp* > (YY_MOVE (that.value));
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.copy< ConstExpList* > (YY_MOVE (that.value));
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.copy< ConstInitVal* > (YY_MOVE (that.value));
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.copy< ConstInitValList* > (YY_MOVE (that.value));
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.copy< ContinueStmt* > (YY_MOVE (that.value));
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.copy< DeclDef* > (YY_MOVE (that.value));
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.copy< DefType* > (YY_MOVE (that.value));
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.copy< EqExp* > (YY_MOVE (that.value));
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.copy< Exp* > (YY_MOVE (that.value));
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.copy< FuncDef* > (YY_MOVE (that.value));
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.copy< FuncFParam* > (YY_MOVE (that.value));
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.copy< FuncFParams* > (YY_MOVE (that.value));
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.copy< FuncRParams* > (YY_MOVE (that.value));
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.copy< InitVal* > (YY_MOVE (that.value));
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.copy< InitValList* > (YY_MOVE (that.value));
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.copy< IterationStmt* > (YY_MOVE (that.value));
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.copy< LAndExp* > (YY_MOVE (that.value));
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.copy< LOrExp* > (YY_MOVE (that.value));
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.copy< LVal* > (YY_MOVE (that.value));
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.copy< MulExp* > (YY_MOVE (that.value));
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.copy< Number* > (YY_MOVE (that.value));
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.copy< ParamArrayExpList* > (YY_MOVE (that.value));
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.copy< PrimaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.copy< RelExp* > (YY_MOVE (that.value));
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.copy< ReturnStmt* > (YY_MOVE (that.value));
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.copy< SelectStmt* > (YY_MOVE (that.value));
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.copy< Stmt* > (YY_MOVE (that.value));
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.copy< UnaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.copy< UnaryOp* > (YY_MOVE (that.value));
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.copy< VarDecl* > (YY_MOVE (that.value));
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.copy< VarDef* > (YY_MOVE (that.value));
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.copy< VarDefList* > (YY_MOVE (that.value));
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.copy< float > (YY_MOVE (that.value));
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.copy< int > (YY_MOVE (that.value));
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -2970,188 +2990,189 @@ switch (yytype)
     super_type::move (s);
     switch (this->type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.move< AddExp* > (YY_MOVE (s.value));
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.move< AssignStmt* > (YY_MOVE (s.value));
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.move< Block* > (YY_MOVE (s.value));
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.move< BlockItem* > (YY_MOVE (s.value));
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.move< BlockItemList* > (YY_MOVE (s.value));
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.move< BreakStmt* > (YY_MOVE (s.value));
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.move< CompUnit* > (YY_MOVE (s.value));
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.move< Cond* > (YY_MOVE (s.value));
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.move< ConstDecl* > (YY_MOVE (s.value));
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.move< ConstDef* > (YY_MOVE (s.value));
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.move< ConstDefList* > (YY_MOVE (s.value));
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.move< ConstExp* > (YY_MOVE (s.value));
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.move< ConstExpList* > (YY_MOVE (s.value));
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.move< ConstInitVal* > (YY_MOVE (s.value));
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.move< ConstInitValList* > (YY_MOVE (s.value));
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.move< ContinueStmt* > (YY_MOVE (s.value));
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.move< DeclDef* > (YY_MOVE (s.value));
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.move< DefType* > (YY_MOVE (s.value));
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.move< EqExp* > (YY_MOVE (s.value));
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.move< Exp* > (YY_MOVE (s.value));
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.move< FuncDef* > (YY_MOVE (s.value));
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.move< FuncFParam* > (YY_MOVE (s.value));
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.move< FuncFParams* > (YY_MOVE (s.value));
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.move< FuncRParams* > (YY_MOVE (s.value));
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.move< InitVal* > (YY_MOVE (s.value));
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.move< InitValList* > (YY_MOVE (s.value));
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.move< IterationStmt* > (YY_MOVE (s.value));
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.move< LAndExp* > (YY_MOVE (s.value));
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.move< LOrExp* > (YY_MOVE (s.value));
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.move< LVal* > (YY_MOVE (s.value));
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.move< MulExp* > (YY_MOVE (s.value));
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.move< Number* > (YY_MOVE (s.value));
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.move< ParamArrayExpList* > (YY_MOVE (s.value));
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.move< PrimaryExp* > (YY_MOVE (s.value));
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.move< RelExp* > (YY_MOVE (s.value));
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.move< ReturnStmt* > (YY_MOVE (s.value));
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.move< SelectStmt* > (YY_MOVE (s.value));
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.move< Stmt* > (YY_MOVE (s.value));
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.move< UnaryExp* > (YY_MOVE (s.value));
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.move< UnaryOp* > (YY_MOVE (s.value));
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.move< VarDecl* > (YY_MOVE (s.value));
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.move< VarDef* > (YY_MOVE (s.value));
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.move< VarDefList* > (YY_MOVE (s.value));
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.move< float > (YY_MOVE (s.value));
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.move< int > (YY_MOVE (s.value));
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -3210,7 +3231,7 @@ switch (yytype)
   }
 
 } // yy
-#line 3214 "parser.hh"
+#line 3235 "parser.hh"
 
 
 

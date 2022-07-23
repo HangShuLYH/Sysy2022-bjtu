@@ -247,188 +247,189 @@ namespace yy {
   {
     switch (that.type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.YY_MOVE_OR_COPY< AddExp* > (YY_MOVE (that.value));
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.YY_MOVE_OR_COPY< AssignStmt* > (YY_MOVE (that.value));
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.YY_MOVE_OR_COPY< Block* > (YY_MOVE (that.value));
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.YY_MOVE_OR_COPY< BlockItem* > (YY_MOVE (that.value));
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.YY_MOVE_OR_COPY< BlockItemList* > (YY_MOVE (that.value));
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.YY_MOVE_OR_COPY< BreakStmt* > (YY_MOVE (that.value));
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.YY_MOVE_OR_COPY< CompUnit* > (YY_MOVE (that.value));
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.YY_MOVE_OR_COPY< Cond* > (YY_MOVE (that.value));
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.YY_MOVE_OR_COPY< ConstDecl* > (YY_MOVE (that.value));
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.YY_MOVE_OR_COPY< ConstDef* > (YY_MOVE (that.value));
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.YY_MOVE_OR_COPY< ConstDefList* > (YY_MOVE (that.value));
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.YY_MOVE_OR_COPY< ConstExp* > (YY_MOVE (that.value));
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.YY_MOVE_OR_COPY< ConstExpList* > (YY_MOVE (that.value));
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.YY_MOVE_OR_COPY< ConstInitVal* > (YY_MOVE (that.value));
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.YY_MOVE_OR_COPY< ConstInitValList* > (YY_MOVE (that.value));
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.YY_MOVE_OR_COPY< ContinueStmt* > (YY_MOVE (that.value));
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.YY_MOVE_OR_COPY< DeclDef* > (YY_MOVE (that.value));
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.YY_MOVE_OR_COPY< DefType* > (YY_MOVE (that.value));
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.YY_MOVE_OR_COPY< EqExp* > (YY_MOVE (that.value));
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.YY_MOVE_OR_COPY< Exp* > (YY_MOVE (that.value));
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.YY_MOVE_OR_COPY< FuncDef* > (YY_MOVE (that.value));
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.YY_MOVE_OR_COPY< FuncFParam* > (YY_MOVE (that.value));
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.YY_MOVE_OR_COPY< FuncFParams* > (YY_MOVE (that.value));
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.YY_MOVE_OR_COPY< FuncRParams* > (YY_MOVE (that.value));
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.YY_MOVE_OR_COPY< InitVal* > (YY_MOVE (that.value));
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.YY_MOVE_OR_COPY< InitValList* > (YY_MOVE (that.value));
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.YY_MOVE_OR_COPY< IterationStmt* > (YY_MOVE (that.value));
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.YY_MOVE_OR_COPY< LAndExp* > (YY_MOVE (that.value));
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.YY_MOVE_OR_COPY< LOrExp* > (YY_MOVE (that.value));
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.YY_MOVE_OR_COPY< LVal* > (YY_MOVE (that.value));
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.YY_MOVE_OR_COPY< MulExp* > (YY_MOVE (that.value));
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.YY_MOVE_OR_COPY< Number* > (YY_MOVE (that.value));
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.YY_MOVE_OR_COPY< ParamArrayExpList* > (YY_MOVE (that.value));
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.YY_MOVE_OR_COPY< PrimaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.YY_MOVE_OR_COPY< RelExp* > (YY_MOVE (that.value));
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.YY_MOVE_OR_COPY< ReturnStmt* > (YY_MOVE (that.value));
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.YY_MOVE_OR_COPY< SelectStmt* > (YY_MOVE (that.value));
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.YY_MOVE_OR_COPY< Stmt* > (YY_MOVE (that.value));
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.YY_MOVE_OR_COPY< UnaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.YY_MOVE_OR_COPY< UnaryOp* > (YY_MOVE (that.value));
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.YY_MOVE_OR_COPY< VarDecl* > (YY_MOVE (that.value));
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.YY_MOVE_OR_COPY< VarDef* > (YY_MOVE (that.value));
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.YY_MOVE_OR_COPY< VarDefList* > (YY_MOVE (that.value));
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.YY_MOVE_OR_COPY< float > (YY_MOVE (that.value));
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.YY_MOVE_OR_COPY< int > (YY_MOVE (that.value));
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.YY_MOVE_OR_COPY< std::string > (YY_MOVE (that.value));
         break;
 
@@ -447,188 +448,189 @@ namespace yy {
   {
     switch (that.type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.move< AddExp* > (YY_MOVE (that.value));
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.move< AssignStmt* > (YY_MOVE (that.value));
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.move< Block* > (YY_MOVE (that.value));
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.move< BlockItem* > (YY_MOVE (that.value));
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.move< BlockItemList* > (YY_MOVE (that.value));
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.move< BreakStmt* > (YY_MOVE (that.value));
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.move< CompUnit* > (YY_MOVE (that.value));
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.move< Cond* > (YY_MOVE (that.value));
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.move< ConstDecl* > (YY_MOVE (that.value));
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.move< ConstDef* > (YY_MOVE (that.value));
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.move< ConstDefList* > (YY_MOVE (that.value));
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.move< ConstExp* > (YY_MOVE (that.value));
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.move< ConstExpList* > (YY_MOVE (that.value));
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.move< ConstInitVal* > (YY_MOVE (that.value));
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.move< ConstInitValList* > (YY_MOVE (that.value));
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.move< ContinueStmt* > (YY_MOVE (that.value));
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.move< DeclDef* > (YY_MOVE (that.value));
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.move< DefType* > (YY_MOVE (that.value));
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.move< EqExp* > (YY_MOVE (that.value));
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.move< Exp* > (YY_MOVE (that.value));
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.move< FuncDef* > (YY_MOVE (that.value));
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.move< FuncFParam* > (YY_MOVE (that.value));
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.move< FuncFParams* > (YY_MOVE (that.value));
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.move< FuncRParams* > (YY_MOVE (that.value));
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.move< InitVal* > (YY_MOVE (that.value));
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.move< InitValList* > (YY_MOVE (that.value));
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.move< IterationStmt* > (YY_MOVE (that.value));
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.move< LAndExp* > (YY_MOVE (that.value));
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.move< LOrExp* > (YY_MOVE (that.value));
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.move< LVal* > (YY_MOVE (that.value));
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.move< MulExp* > (YY_MOVE (that.value));
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.move< Number* > (YY_MOVE (that.value));
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.move< ParamArrayExpList* > (YY_MOVE (that.value));
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.move< PrimaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.move< RelExp* > (YY_MOVE (that.value));
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.move< ReturnStmt* > (YY_MOVE (that.value));
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.move< SelectStmt* > (YY_MOVE (that.value));
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.move< Stmt* > (YY_MOVE (that.value));
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.move< UnaryExp* > (YY_MOVE (that.value));
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.move< UnaryOp* > (YY_MOVE (that.value));
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.move< VarDecl* > (YY_MOVE (that.value));
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.move< VarDef* > (YY_MOVE (that.value));
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.move< VarDefList* > (YY_MOVE (that.value));
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.move< float > (YY_MOVE (that.value));
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.move< int > (YY_MOVE (that.value));
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.move< std::string > (YY_MOVE (that.value));
         break;
 
@@ -647,188 +649,189 @@ namespace yy {
     state = that.state;
     switch (that.type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.copy< AddExp* > (that.value);
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.copy< AssignStmt* > (that.value);
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.copy< Block* > (that.value);
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.copy< BlockItem* > (that.value);
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.copy< BlockItemList* > (that.value);
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.copy< BreakStmt* > (that.value);
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.copy< CompUnit* > (that.value);
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.copy< Cond* > (that.value);
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.copy< ConstDecl* > (that.value);
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.copy< ConstDef* > (that.value);
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.copy< ConstDefList* > (that.value);
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.copy< ConstExp* > (that.value);
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.copy< ConstExpList* > (that.value);
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.copy< ConstInitVal* > (that.value);
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.copy< ConstInitValList* > (that.value);
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.copy< ContinueStmt* > (that.value);
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.copy< DeclDef* > (that.value);
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.copy< DefType* > (that.value);
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.copy< EqExp* > (that.value);
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.copy< Exp* > (that.value);
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.copy< FuncDef* > (that.value);
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.copy< FuncFParam* > (that.value);
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.copy< FuncFParams* > (that.value);
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.copy< FuncRParams* > (that.value);
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.copy< InitVal* > (that.value);
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.copy< InitValList* > (that.value);
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.copy< IterationStmt* > (that.value);
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.copy< LAndExp* > (that.value);
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.copy< LOrExp* > (that.value);
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.copy< LVal* > (that.value);
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.copy< MulExp* > (that.value);
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.copy< Number* > (that.value);
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.copy< ParamArrayExpList* > (that.value);
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.copy< PrimaryExp* > (that.value);
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.copy< RelExp* > (that.value);
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.copy< ReturnStmt* > (that.value);
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.copy< SelectStmt* > (that.value);
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.copy< Stmt* > (that.value);
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.copy< UnaryExp* > (that.value);
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.copy< UnaryOp* > (that.value);
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.copy< VarDecl* > (that.value);
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.copy< VarDef* > (that.value);
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.copy< VarDefList* > (that.value);
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.copy< float > (that.value);
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.copy< int > (that.value);
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.copy< std::string > (that.value);
         break;
 
@@ -846,188 +849,189 @@ namespace yy {
     state = that.state;
     switch (that.type_get ())
     {
-      case 79: // AddExp
+      case 80: // AddExp
         value.move< AddExp* > (that.value);
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         value.move< AssignStmt* > (that.value);
         break;
 
-      case 60: // Block
+      case 61: // Block
         value.move< Block* > (that.value);
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         value.move< BlockItem* > (that.value);
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         value.move< BlockItemList* > (that.value);
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         value.move< BreakStmt* > (that.value);
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         value.move< CompUnit* > (that.value);
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         value.move< Cond* > (that.value);
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         value.move< ConstDecl* > (that.value);
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         value.move< ConstDef* > (that.value);
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         value.move< ConstDefList* > (that.value);
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         value.move< ConstExp* > (that.value);
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         value.move< ConstExpList* > (that.value);
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         value.move< ConstInitVal* > (that.value);
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         value.move< ConstInitValList* > (that.value);
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         value.move< ContinueStmt* > (that.value);
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         value.move< DeclDef* > (that.value);
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         value.move< DefType* > (that.value);
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         value.move< EqExp* > (that.value);
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         value.move< Exp* > (that.value);
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         value.move< FuncDef* > (that.value);
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         value.move< FuncFParam* > (that.value);
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         value.move< FuncFParams* > (that.value);
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         value.move< FuncRParams* > (that.value);
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         value.move< InitVal* > (that.value);
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         value.move< InitValList* > (that.value);
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         value.move< IterationStmt* > (that.value);
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         value.move< LAndExp* > (that.value);
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         value.move< LOrExp* > (that.value);
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         value.move< LVal* > (that.value);
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         value.move< MulExp* > (that.value);
         break;
 
-      case 74: // Number
+      case 75: // Number
         value.move< Number* > (that.value);
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         value.move< ParamArrayExpList* > (that.value);
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         value.move< PrimaryExp* > (that.value);
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         value.move< RelExp* > (that.value);
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         value.move< ReturnStmt* > (that.value);
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         value.move< SelectStmt* > (that.value);
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         value.move< Stmt* > (that.value);
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         value.move< UnaryExp* > (that.value);
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         value.move< UnaryOp* > (that.value);
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         value.move< VarDecl* > (that.value);
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         value.move< VarDef* > (that.value);
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         value.move< VarDefList* > (that.value);
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         value.move< float > (that.value);
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         value.move< int > (that.value);
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         value.move< std::string > (that.value);
         break;
 
@@ -1187,7 +1191,7 @@ namespace yy {
     yyla.location.begin.filename = yyla.location.end.filename = &ddriver.file;
 }
 
-#line 1191 "parser.cc"
+#line 1195 "parser.cc"
 
 
     /* Initialize the stack.  The initial state will be set in
@@ -1291,188 +1295,189 @@ namespace yy {
          when using variants.  */
       switch (yyr1_[yyn])
     {
-      case 79: // AddExp
+      case 80: // AddExp
         yylhs.value.emplace< AddExp* > ();
         break;
 
-      case 64: // AssignStmt
+      case 65: // AssignStmt
         yylhs.value.emplace< AssignStmt* > ();
         break;
 
-      case 60: // Block
+      case 61: // Block
         yylhs.value.emplace< Block* > ();
         break;
 
-      case 62: // BlockItem
+      case 63: // BlockItem
         yylhs.value.emplace< BlockItem* > ();
         break;
 
-      case 61: // BlockItemList
+      case 62: // BlockItemList
         yylhs.value.emplace< BlockItemList* > ();
         break;
 
-      case 67: // BreakStmt
+      case 68: // BreakStmt
         yylhs.value.emplace< BreakStmt* > ();
         break;
 
-      case 41: // Begin
-      case 42: // CompUnit
+      case 42: // Begin
+      case 43: // CompUnit
         yylhs.value.emplace< CompUnit* > ();
         break;
 
-      case 71: // Cond
+      case 72: // Cond
         yylhs.value.emplace< Cond* > ();
         break;
 
-      case 44: // ConstDecl
+      case 45: // ConstDecl
         yylhs.value.emplace< ConstDecl* > ();
         break;
 
-      case 46: // ConstDef
+      case 47: // ConstDef
         yylhs.value.emplace< ConstDef* > ();
         break;
 
-      case 45: // ConstDefList
+      case 46: // ConstDefList
         yylhs.value.emplace< ConstDefList* > ();
         break;
 
-      case 84: // ConstExp
+      case 85: // ConstExp
         yylhs.value.emplace< ConstExp* > ();
         break;
 
-      case 47: // ConstExpList
+      case 48: // ConstExpList
         yylhs.value.emplace< ConstExpList* > ();
         break;
 
-      case 48: // ConstInitVal
+      case 49: // ConstInitVal
         yylhs.value.emplace< ConstInitVal* > ();
         break;
 
-      case 49: // ConstInitValList
+      case 50: // ConstInitValList
         yylhs.value.emplace< ConstInitValList* > ();
         break;
 
-      case 68: // ContinueStmt
+      case 69: // ContinueStmt
         yylhs.value.emplace< ContinueStmt* > ();
         break;
 
-      case 43: // DeclDef
+      case 44: // DeclDef
         yylhs.value.emplace< DeclDef* > ();
         break;
 
-      case 56: // DefType
+      case 57: // DefType
         yylhs.value.emplace< DefType* > ();
         break;
 
-      case 81: // EqExp
+      case 82: // EqExp
         yylhs.value.emplace< EqExp* > ();
         break;
 
-      case 70: // Exp
+      case 71: // Exp
         yylhs.value.emplace< Exp* > ();
         break;
 
-      case 55: // FuncDef
+      case 56: // FuncDef
         yylhs.value.emplace< FuncDef* > ();
         break;
 
-      case 58: // FuncFParam
+      case 59: // FuncFParam
         yylhs.value.emplace< FuncFParam* > ();
         break;
 
-      case 57: // FuncFParams
+      case 58: // FuncFParams
         yylhs.value.emplace< FuncFParams* > ();
         break;
 
-      case 77: // FuncRParams
+      case 78: // FuncRParams
         yylhs.value.emplace< FuncRParams* > ();
         break;
 
-      case 53: // InitVal
+      case 54: // InitVal
         yylhs.value.emplace< InitVal* > ();
         break;
 
-      case 54: // InitValList
+      case 55: // InitValList
         yylhs.value.emplace< InitValList* > ();
         break;
 
-      case 66: // IterationStmt
+      case 67: // IterationStmt
         yylhs.value.emplace< IterationStmt* > ();
         break;
 
-      case 82: // LAndExp
+      case 83: // LAndExp
         yylhs.value.emplace< LAndExp* > ();
         break;
 
-      case 83: // LOrExp
+      case 84: // LOrExp
         yylhs.value.emplace< LOrExp* > ();
         break;
 
-      case 72: // LVal
+      case 73: // LVal
         yylhs.value.emplace< LVal* > ();
         break;
 
-      case 78: // MulExp
+      case 79: // MulExp
         yylhs.value.emplace< MulExp* > ();
         break;
 
-      case 74: // Number
+      case 75: // Number
         yylhs.value.emplace< Number* > ();
         break;
 
-      case 59: // ParamArrayExpList
+      case 60: // ParamArrayExpList
         yylhs.value.emplace< ParamArrayExpList* > ();
         break;
 
-      case 73: // PrimaryExp
+      case 74: // PrimaryExp
         yylhs.value.emplace< PrimaryExp* > ();
         break;
 
-      case 80: // RelExp
+      case 81: // RelExp
         yylhs.value.emplace< RelExp* > ();
         break;
 
-      case 69: // ReturnStmt
+      case 70: // ReturnStmt
         yylhs.value.emplace< ReturnStmt* > ();
         break;
 
-      case 65: // SelectStmt
+      case 66: // SelectStmt
         yylhs.value.emplace< SelectStmt* > ();
         break;
 
-      case 63: // Stmt
+      case 64: // Stmt
         yylhs.value.emplace< Stmt* > ();
         break;
 
-      case 75: // UnaryExp
+      case 76: // UnaryExp
         yylhs.value.emplace< UnaryExp* > ();
         break;
 
-      case 76: // UnaryOp
+      case 77: // UnaryOp
         yylhs.value.emplace< UnaryOp* > ();
         break;
 
-      case 50: // VarDecl
+      case 51: // VarDecl
         yylhs.value.emplace< VarDecl* > ();
         break;
 
-      case 52: // VarDef
+      case 53: // VarDef
         yylhs.value.emplace< VarDef* > ();
         break;
 
-      case 51: // VarDefList
+      case 52: // VarDefList
         yylhs.value.emplace< VarDefList* > ();
         break;
 
-      case 15: // FLOATCONST
+      case 16: // FLOATCONST
         yylhs.value.emplace< float > ();
         break;
 
-      case 14: // INTCONST
+      case 15: // INTCONST
         yylhs.value.emplace< int > ();
         break;
 
-      case 13: // IDENTIFIER
+      case 13: // STRING
+      case 14: // IDENTIFIER
         yylhs.value.emplace< std::string > ();
         break;
 
@@ -1497,265 +1502,265 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 100 "parser.yy"
+#line 101 "parser.yy"
                     {
         ddriver.root = yystack_[1].value.as < CompUnit* > ();
         return 0;
     }
-#line 1506 "parser.cc"
+#line 1511 "parser.cc"
     break;
 
   case 3:
-#line 105 "parser.yy"
+#line 106 "parser.yy"
                            {
         yystack_[1].value.as < CompUnit* > ()->declDefList.push_back(std::shared_ptr<DeclDef>(yystack_[0].value.as < DeclDef* > ()));
         yylhs.value.as < CompUnit* > ()=yystack_[1].value.as < CompUnit* > ();
     }
-#line 1515 "parser.cc"
+#line 1520 "parser.cc"
     break;
 
   case 4:
-#line 109 "parser.yy"
+#line 110 "parser.yy"
              {
         yylhs.value.as < CompUnit* > ()=new CompUnit();
         yylhs.value.as < CompUnit* > ()->declDefList.push_back(std::shared_ptr<DeclDef>(yystack_[0].value.as < DeclDef* > ()));
     }
-#line 1524 "parser.cc"
+#line 1529 "parser.cc"
     break;
 
   case 5:
-#line 114 "parser.yy"
+#line 115 "parser.yy"
                   {
         yylhs.value.as < DeclDef* > ()=new DeclDef();
         yylhs.value.as < DeclDef* > ()->constDecl=std::shared_ptr<ConstDecl>(yystack_[0].value.as < ConstDecl* > ());
     }
-#line 1533 "parser.cc"
+#line 1538 "parser.cc"
     break;
 
   case 6:
-#line 118 "parser.yy"
+#line 119 "parser.yy"
              {
         yylhs.value.as < DeclDef* > ()=new DeclDef();
         yylhs.value.as < DeclDef* > ()->varDecl=std::shared_ptr<VarDecl>(yystack_[0].value.as < VarDecl* > ());
     }
-#line 1542 "parser.cc"
+#line 1547 "parser.cc"
     break;
 
   case 7:
-#line 122 "parser.yy"
+#line 123 "parser.yy"
              {
         yylhs.value.as < DeclDef* > ()=new DeclDef();
         yylhs.value.as < DeclDef* > ()->funcDef=std::shared_ptr<FuncDef>(yystack_[0].value.as < FuncDef* > ());
     }
-#line 1551 "parser.cc"
+#line 1556 "parser.cc"
     break;
 
   case 8:
-#line 127 "parser.yy"
+#line 128 "parser.yy"
                                                {
         yylhs.value.as < ConstDecl* > ()=new ConstDecl();
         yylhs.value.as < ConstDecl* > ()->constDefList.swap(yystack_[1].value.as < ConstDefList* > ()->constDefList);
         yylhs.value.as < ConstDecl* > ()->defType=std::shared_ptr<DefType>(yystack_[2].value.as < DefType* > ());
     }
-#line 1561 "parser.cc"
+#line 1566 "parser.cc"
     break;
 
   case 9:
-#line 133 "parser.yy"
+#line 134 "parser.yy"
                                          {
     yystack_[2].value.as < ConstDefList* > ()->constDefList.push_back(std::shared_ptr<ConstDef>(yystack_[0].value.as < ConstDef* > ()));
     yylhs.value.as < ConstDefList* > ()=yystack_[2].value.as < ConstDefList* > ();
 }
-#line 1570 "parser.cc"
+#line 1575 "parser.cc"
     break;
 
   case 10:
-#line 137 "parser.yy"
+#line 138 "parser.yy"
                   {
     yylhs.value.as < ConstDefList* > ()=new ConstDefList();
     yylhs.value.as < ConstDefList* > ()->constDefList.push_back(std::shared_ptr<ConstDef>(yystack_[0].value.as < ConstDef* > ()));
   }
-#line 1579 "parser.cc"
+#line 1584 "parser.cc"
     break;
 
   case 11:
-#line 143 "parser.yy"
+#line 144 "parser.yy"
                                                      {
         yylhs.value.as < ConstDef* > ()=new ConstDef();
         yylhs.value.as < ConstDef* > ()->identifier=yystack_[3].value.as < std::string > ();
         yylhs.value.as < ConstDef* > ()->constExpList.swap(yystack_[2].value.as < ConstExpList* > ()->constExpList);
         yylhs.value.as < ConstDef* > ()->constInitVal=std::shared_ptr<ConstInitVal>(yystack_[0].value.as < ConstInitVal* > ());
     }
-#line 1590 "parser.cc"
+#line 1595 "parser.cc"
     break;
 
   case 12:
-#line 150 "parser.yy"
+#line 151 "parser.yy"
                                            {
         yystack_[3].value.as < ConstExpList* > ()->constExpList.push_back(std::shared_ptr<ConstExp>(yystack_[1].value.as < ConstExp* > ()));
         yylhs.value.as < ConstExpList* > ()=yystack_[3].value.as < ConstExpList* > ();
     }
-#line 1599 "parser.cc"
+#line 1604 "parser.cc"
     break;
 
   case 13:
-#line 154 "parser.yy"
+#line 155 "parser.yy"
             {
         yylhs.value.as < ConstExpList* > ()=new ConstExpList();
     }
-#line 1607 "parser.cc"
+#line 1612 "parser.cc"
     break;
 
   case 14:
-#line 159 "parser.yy"
+#line 160 "parser.yy"
                      {
     yylhs.value.as < ConstInitVal* > ()=new ConstInitVal();
     yylhs.value.as < ConstInitVal* > ()->constExp=std::shared_ptr<ConstExp>(yystack_[0].value.as < ConstExp* > ());
 }
-#line 1616 "parser.cc"
+#line 1621 "parser.cc"
     break;
 
   case 15:
-#line 163 "parser.yy"
+#line 164 "parser.yy"
                                   {
     yylhs.value.as < ConstInitVal* > ()=new ConstInitVal();
     yylhs.value.as < ConstInitVal* > ()->constInitValList.swap(yystack_[1].value.as < ConstInitValList* > ()->constInitValList);
   }
-#line 1625 "parser.cc"
+#line 1630 "parser.cc"
     break;
 
   case 16:
-#line 167 "parser.yy"
+#line 168 "parser.yy"
                  {
     yylhs.value.as < ConstInitVal* > ()=new ConstInitVal();
   }
-#line 1633 "parser.cc"
+#line 1638 "parser.cc"
     break;
 
   case 17:
-#line 171 "parser.yy"
+#line 172 "parser.yy"
                                                     {
     yystack_[2].value.as < ConstInitValList* > ()->constInitValList.push_back(std::shared_ptr<ConstInitVal>(yystack_[0].value.as < ConstInitVal* > ()));
     yylhs.value.as < ConstInitValList* > ()=yystack_[2].value.as < ConstInitValList* > ();
 }
-#line 1642 "parser.cc"
+#line 1647 "parser.cc"
     break;
 
   case 18:
-#line 175 "parser.yy"
+#line 176 "parser.yy"
                       {
     yylhs.value.as < ConstInitValList* > ()=new ConstInitValList();
     yylhs.value.as < ConstInitValList* > ()->constInitValList.push_back(std::shared_ptr<ConstInitVal>(yystack_[0].value.as < ConstInitVal* > ()));
   }
-#line 1651 "parser.cc"
+#line 1656 "parser.cc"
     break;
 
   case 19:
-#line 181 "parser.yy"
+#line 182 "parser.yy"
                                     {
     yylhs.value.as < VarDecl* > ()=new VarDecl();
     yylhs.value.as < VarDecl* > ()->varDefList.swap(yystack_[1].value.as < VarDefList* > ()->varDefList);
     yylhs.value.as < VarDecl* > ()->defType=std::shared_ptr<DefType>(yystack_[2].value.as < DefType* > ());
 }
-#line 1661 "parser.cc"
+#line 1666 "parser.cc"
     break;
 
   case 20:
-#line 188 "parser.yy"
+#line 189 "parser.yy"
                                   {
     yystack_[2].value.as < VarDefList* > ()->varDefList.push_back(std::shared_ptr<VarDef>(yystack_[0].value.as < VarDef* > ()));
     yylhs.value.as < VarDefList* > ()=yystack_[2].value.as < VarDefList* > ();
 }
-#line 1670 "parser.cc"
+#line 1675 "parser.cc"
     break;
 
   case 21:
-#line 192 "parser.yy"
+#line 193 "parser.yy"
                 {
     yylhs.value.as < VarDefList* > ()=new VarDefList();
     yylhs.value.as < VarDefList* > ()->varDefList.push_back(std::shared_ptr<VarDef>(yystack_[0].value.as < VarDef* > ()));
   }
-#line 1679 "parser.cc"
+#line 1684 "parser.cc"
     break;
 
   case 22:
-#line 198 "parser.yy"
+#line 199 "parser.yy"
                               {
     yylhs.value.as < VarDef* > ()=new VarDef();
     yylhs.value.as < VarDef* > ()->identifier=yystack_[1].value.as < std::string > ();
     yylhs.value.as < VarDef* > ()->constExpList.swap(yystack_[0].value.as < ConstExpList* > ()->constExpList);
 }
-#line 1689 "parser.cc"
+#line 1694 "parser.cc"
     break;
 
   case 23:
-#line 203 "parser.yy"
+#line 204 "parser.yy"
                                                 {
     yylhs.value.as < VarDef* > ()=new VarDef();
     yylhs.value.as < VarDef* > ()->identifier=yystack_[3].value.as < std::string > ();
     yylhs.value.as < VarDef* > ()->constExpList.swap(yystack_[2].value.as < ConstExpList* > ()->constExpList);
     yylhs.value.as < VarDef* > ()->initVal=std::shared_ptr<InitVal>(yystack_[0].value.as < InitVal* > ());
   }
-#line 1700 "parser.cc"
+#line 1705 "parser.cc"
     break;
 
   case 24:
-#line 210 "parser.yy"
+#line 211 "parser.yy"
            {
     yylhs.value.as < InitVal* > ()=new InitVal();
     yylhs.value.as < InitVal* > ()->exp=std::shared_ptr<Exp>(yystack_[0].value.as < Exp* > ());
 }
-#line 1709 "parser.cc"
+#line 1714 "parser.cc"
     break;
 
   case 25:
-#line 214 "parser.yy"
+#line 215 "parser.yy"
                  {
     yylhs.value.as < InitVal* > ()=new InitVal();
   }
-#line 1717 "parser.cc"
+#line 1722 "parser.cc"
     break;
 
   case 26:
-#line 217 "parser.yy"
+#line 218 "parser.yy"
                              {
     yylhs.value.as < InitVal* > ()=new InitVal();
     yylhs.value.as < InitVal* > ()->initValList.swap(yystack_[1].value.as < InitValList* > ()->initValList);
   }
-#line 1726 "parser.cc"
+#line 1731 "parser.cc"
     break;
 
   case 27:
-#line 222 "parser.yy"
+#line 223 "parser.yy"
                                      {
     yystack_[2].value.as < InitValList* > ()->initValList.push_back(std::shared_ptr<InitVal>(yystack_[0].value.as < InitVal* > ()));
     yylhs.value.as < InitValList* > ()=yystack_[2].value.as < InitValList* > ();
   }
-#line 1735 "parser.cc"
+#line 1740 "parser.cc"
     break;
 
   case 28:
-#line 226 "parser.yy"
+#line 227 "parser.yy"
            {
     yylhs.value.as < InitValList* > ()=new InitValList();
     yylhs.value.as < InitValList* > ()->initValList.push_back(std::shared_ptr<InitVal>(yystack_[0].value.as < InitVal* > ()));
   }
-#line 1744 "parser.cc"
+#line 1749 "parser.cc"
     break;
 
   case 29:
-#line 232 "parser.yy"
+#line 233 "parser.yy"
                                       {
     yylhs.value.as < FuncDef* > ()=new FuncDef();
     yylhs.value.as < FuncDef* > ()->defType=std::shared_ptr<DefType>(yystack_[4].value.as < DefType* > ());
     yylhs.value.as < FuncDef* > ()->identifier=yystack_[3].value.as < std::string > ();
     yylhs.value.as < FuncDef* > ()->block=std::shared_ptr<Block>(yystack_[0].value.as < Block* > ());
 }
-#line 1755 "parser.cc"
+#line 1760 "parser.cc"
     break;
 
   case 30:
-#line 238 "parser.yy"
+#line 239 "parser.yy"
                                                     {
     yylhs.value.as < FuncDef* > ()=new FuncDef();
     yylhs.value.as < FuncDef* > ()->defType=std::shared_ptr<DefType>(yystack_[5].value.as < DefType* > ());
@@ -1763,56 +1768,56 @@ namespace yy {
     yylhs.value.as < FuncDef* > ()->funcFParams=std::shared_ptr<FuncFParams>(yystack_[2].value.as < FuncFParams* > ());
     yylhs.value.as < FuncDef* > ()->block=std::shared_ptr<Block>(yystack_[0].value.as < Block* > ());
   }
-#line 1767 "parser.cc"
+#line 1772 "parser.cc"
     break;
 
   case 31:
-#line 246 "parser.yy"
+#line 247 "parser.yy"
              {
         yylhs.value.as < DefType* > ()=new DefType();
         yylhs.value.as < DefType* > ()->type=type_specifier::TYPE_VOID;
     }
-#line 1776 "parser.cc"
+#line 1781 "parser.cc"
     break;
 
   case 32:
-#line 250 "parser.yy"
+#line 251 "parser.yy"
          {
         yylhs.value.as < DefType* > ()=new DefType();
         yylhs.value.as < DefType* > ()->type=type_specifier::TYPE_INT;
     }
-#line 1785 "parser.cc"
+#line 1790 "parser.cc"
     break;
 
   case 33:
-#line 254 "parser.yy"
+#line 255 "parser.yy"
            {
         yylhs.value.as < DefType* > ()=new DefType();
         yylhs.value.as < DefType* > ()->type=type_specifier::TYPE_FLOAT;
     }
-#line 1794 "parser.cc"
+#line 1799 "parser.cc"
     break;
 
   case 34:
-#line 259 "parser.yy"
+#line 260 "parser.yy"
                                         {
     yystack_[2].value.as < FuncFParams* > ()->funcFParamList.push_back(std::shared_ptr<FuncFParam>(yystack_[0].value.as < FuncFParam* > ()));
     yylhs.value.as < FuncFParams* > ()=yystack_[2].value.as < FuncFParams* > ();
 }
-#line 1803 "parser.cc"
+#line 1808 "parser.cc"
     break;
 
   case 35:
-#line 263 "parser.yy"
+#line 264 "parser.yy"
                     {
     yylhs.value.as < FuncFParams* > ()=new FuncFParams();
     yylhs.value.as < FuncFParams* > ()->funcFParamList.push_back(std::shared_ptr<FuncFParam>(yystack_[0].value.as < FuncFParam* > ()));
   }
-#line 1812 "parser.cc"
+#line 1817 "parser.cc"
     break;
 
   case 36:
-#line 269 "parser.yy"
+#line 270 "parser.yy"
                                                        {
     yylhs.value.as < FuncFParam* > ()=new FuncFParam();
     yylhs.value.as < FuncFParam* > ()->defType=std::shared_ptr<DefType>(yystack_[4].value.as < DefType* > ());
@@ -1820,608 +1825,617 @@ namespace yy {
     yylhs.value.as < FuncFParam* > ()->isArray = true;
     yylhs.value.as < FuncFParam* > ()->expList.swap(yystack_[0].value.as < ParamArrayExpList* > ()->expList);
 }
-#line 1824 "parser.cc"
+#line 1829 "parser.cc"
     break;
 
   case 37:
-#line 276 "parser.yy"
+#line 277 "parser.yy"
                             {
     yylhs.value.as < FuncFParam* > ()=new FuncFParam();
     yylhs.value.as < FuncFParam* > ()->isArray = false;
     yylhs.value.as < FuncFParam* > ()->defType=std::shared_ptr<DefType>(yystack_[1].value.as < DefType* > ());
     yylhs.value.as < FuncFParam* > ()->identifier=yystack_[0].value.as < std::string > ();
   }
-#line 1835 "parser.cc"
+#line 1840 "parser.cc"
     break;
 
   case 38:
-#line 284 "parser.yy"
+#line 285 "parser.yy"
                                                 {
         yystack_[3].value.as < ParamArrayExpList* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ()));
         yylhs.value.as < ParamArrayExpList* > ()=yystack_[3].value.as < ParamArrayExpList* > ();
     }
-#line 1844 "parser.cc"
+#line 1849 "parser.cc"
     break;
 
   case 39:
-#line 288 "parser.yy"
+#line 289 "parser.yy"
             {
         yylhs.value.as < ParamArrayExpList* > ()=new ParamArrayExpList();
     }
-#line 1852 "parser.cc"
+#line 1857 "parser.cc"
     break;
 
   case 40:
-#line 293 "parser.yy"
+#line 294 "parser.yy"
                            {
     yylhs.value.as < Block* > ()=new Block();
     yylhs.value.as < Block* > ()->blockItemList.swap(yystack_[1].value.as < BlockItemList* > ()->blockItemList);
 }
-#line 1861 "parser.cc"
+#line 1866 "parser.cc"
     break;
 
   case 41:
-#line 299 "parser.yy"
+#line 300 "parser.yy"
                                      {
     yystack_[1].value.as < BlockItemList* > ()->blockItemList.push_back(std::shared_ptr<BlockItem>(yystack_[0].value.as < BlockItem* > ()));
     yylhs.value.as < BlockItemList* > ()=yystack_[1].value.as < BlockItemList* > ();
 }
-#line 1870 "parser.cc"
+#line 1875 "parser.cc"
     break;
 
   case 42:
-#line 303 "parser.yy"
+#line 304 "parser.yy"
                 {
     yylhs.value.as < BlockItemList* > ()=new BlockItemList();
   }
-#line 1878 "parser.cc"
+#line 1883 "parser.cc"
     break;
 
   case 43:
-#line 308 "parser.yy"
+#line 309 "parser.yy"
                    {
     yylhs.value.as < BlockItem* > ()=new BlockItem();
     yylhs.value.as < BlockItem* > ()->constDecl=std::shared_ptr<ConstDecl>(yystack_[0].value.as < ConstDecl* > ());
 }
-#line 1887 "parser.cc"
+#line 1892 "parser.cc"
     break;
 
   case 44:
-#line 312 "parser.yy"
+#line 313 "parser.yy"
                  {
     yylhs.value.as < BlockItem* > ()=new BlockItem();
     yylhs.value.as < BlockItem* > ()->varDecl=std::shared_ptr<VarDecl>(yystack_[0].value.as < VarDecl* > ());
   }
-#line 1896 "parser.cc"
+#line 1901 "parser.cc"
     break;
 
   case 45:
-#line 316 "parser.yy"
+#line 317 "parser.yy"
               {
     yylhs.value.as < BlockItem* > ()=new BlockItem();
     yylhs.value.as < BlockItem* > ()->stmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
   }
-#line 1905 "parser.cc"
+#line 1910 "parser.cc"
     break;
 
   case 46:
-#line 322 "parser.yy"
+#line 323 "parser.yy"
                 {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->assignStmt = std::shared_ptr<AssignStmt>(yystack_[0].value.as < AssignStmt* > ());
     }
-#line 1914 "parser.cc"
+#line 1919 "parser.cc"
     break;
 
   case 47:
-#line 326 "parser.yy"
+#line 327 "parser.yy"
                   {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->exp = std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
     }
-#line 1923 "parser.cc"
+#line 1928 "parser.cc"
     break;
 
   case 48:
-#line 330 "parser.yy"
+#line 331 "parser.yy"
               {
 
     }
-#line 1931 "parser.cc"
+#line 1936 "parser.cc"
     break;
 
   case 49:
-#line 333 "parser.yy"
+#line 334 "parser.yy"
           {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->block=std::shared_ptr<Block>(yystack_[0].value.as < Block* > ());
     }
-#line 1940 "parser.cc"
+#line 1945 "parser.cc"
     break;
 
   case 50:
-#line 337 "parser.yy"
+#line 338 "parser.yy"
                {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->selectStmt = std::shared_ptr<SelectStmt>(yystack_[0].value.as < SelectStmt* > ());
     }
-#line 1949 "parser.cc"
+#line 1954 "parser.cc"
     break;
 
   case 51:
-#line 341 "parser.yy"
+#line 342 "parser.yy"
                   {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->iterationStmt = std::shared_ptr<IterationStmt>(yystack_[0].value.as < IterationStmt* > ());
     }
-#line 1958 "parser.cc"
+#line 1963 "parser.cc"
     break;
 
   case 52:
-#line 345 "parser.yy"
+#line 346 "parser.yy"
               {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->breakStmt = std::shared_ptr<BreakStmt>(yystack_[0].value.as < BreakStmt* > ());
     }
-#line 1967 "parser.cc"
+#line 1972 "parser.cc"
     break;
 
   case 53:
-#line 349 "parser.yy"
+#line 350 "parser.yy"
                  {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->continueStmt = std::shared_ptr<ContinueStmt>(yystack_[0].value.as < ContinueStmt* > ());
     }
-#line 1976 "parser.cc"
+#line 1981 "parser.cc"
     break;
 
   case 54:
-#line 353 "parser.yy"
+#line 354 "parser.yy"
                {
         yylhs.value.as < Stmt* > ()=new Stmt();
         yylhs.value.as < Stmt* > ()->returnStmt = std::shared_ptr<ReturnStmt>(yystack_[0].value.as < ReturnStmt* > ());
     }
-#line 1985 "parser.cc"
+#line 1990 "parser.cc"
     break;
 
   case 55:
-#line 358 "parser.yy"
+#line 359 "parser.yy"
                                     {
         yylhs.value.as < AssignStmt* > ()=new AssignStmt();
         yylhs.value.as < AssignStmt* > ()->lVal=std::shared_ptr<LVal>(yystack_[3].value.as < LVal* > ());
         yylhs.value.as < AssignStmt* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
        }
-#line 1995 "parser.cc"
+#line 2000 "parser.cc"
     break;
 
   case 56:
-#line 364 "parser.yy"
+#line 365 "parser.yy"
                              {
         yylhs.value.as < SelectStmt* > ()=new SelectStmt();
         yylhs.value.as < SelectStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[2].value.as < Cond* > ());
         yylhs.value.as < SelectStmt* > ()->ifStmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
 }
-#line 2005 "parser.cc"
+#line 2010 "parser.cc"
     break;
 
   case 57:
-#line 369 "parser.yy"
+#line 370 "parser.yy"
                                  {
         yylhs.value.as < SelectStmt* > ()=new SelectStmt();
         yylhs.value.as < SelectStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[4].value.as < Cond* > ());
         yylhs.value.as < SelectStmt* > ()->ifStmt=std::shared_ptr<Stmt>(yystack_[2].value.as < Stmt* > ());
         yylhs.value.as < SelectStmt* > ()->elseStmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
     }
-#line 2016 "parser.cc"
+#line 2021 "parser.cc"
     break;
 
   case 58:
-#line 376 "parser.yy"
+#line 377 "parser.yy"
                                    {
         yylhs.value.as < IterationStmt* > ()=new IterationStmt();
         yylhs.value.as < IterationStmt* > ()->cond=std::shared_ptr<Cond>(yystack_[2].value.as < Cond* > ());
         yylhs.value.as < IterationStmt* > ()->stmt=std::shared_ptr<Stmt>(yystack_[0].value.as < Stmt* > ());
     }
-#line 2026 "parser.cc"
+#line 2031 "parser.cc"
     break;
 
   case 59:
-#line 382 "parser.yy"
+#line 383 "parser.yy"
                          {
         yylhs.value.as < BreakStmt* > ()=new BreakStmt();
     }
-#line 2034 "parser.cc"
+#line 2039 "parser.cc"
     break;
 
   case 60:
-#line 386 "parser.yy"
+#line 387 "parser.yy"
                                {
         yylhs.value.as < ContinueStmt* > ()=new ContinueStmt();
     }
-#line 2042 "parser.cc"
+#line 2047 "parser.cc"
     break;
 
   case 61:
-#line 390 "parser.yy"
+#line 391 "parser.yy"
                             {
      yylhs.value.as < ReturnStmt* > ()=new ReturnStmt();
 }
-#line 2050 "parser.cc"
+#line 2055 "parser.cc"
     break;
 
   case 62:
-#line 393 "parser.yy"
+#line 394 "parser.yy"
                          {
         yylhs.value.as < ReturnStmt* > ()=new ReturnStmt();
         yylhs.value.as < ReturnStmt* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
     }
-#line 2059 "parser.cc"
+#line 2064 "parser.cc"
     break;
 
   case 63:
-#line 398 "parser.yy"
+#line 399 "parser.yy"
           {
     yylhs.value.as < Exp* > ()=new Exp();
     yylhs.value.as < Exp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
 }
-#line 2068 "parser.cc"
+#line 2073 "parser.cc"
     break;
 
   case 64:
-#line 404 "parser.yy"
+#line 405 "parser.yy"
            {
     yylhs.value.as < Cond* > ()=new Cond();
     yylhs.value.as < Cond* > ()->lOrExp=std::shared_ptr<LOrExp>(yystack_[0].value.as < LOrExp* > ());
 }
-#line 2077 "parser.cc"
+#line 2082 "parser.cc"
     break;
 
   case 65:
-#line 409 "parser.yy"
+#line 410 "parser.yy"
                                  {
     yylhs.value.as < LVal* > ()=new LVal();
     yylhs.value.as < LVal* > ()->identifier=yystack_[1].value.as < std::string > ();
     yylhs.value.as < LVal* > ()->expList.swap(yystack_[0].value.as < ParamArrayExpList* > ()->expList);
 }
-#line 2087 "parser.cc"
+#line 2092 "parser.cc"
     break;
 
   case 66:
-#line 416 "parser.yy"
+#line 417 "parser.yy"
                     {
     yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
     yylhs.value.as < PrimaryExp* > ()->exp=std::shared_ptr<Exp>(yystack_[1].value.as < Exp* > ());
 }
-#line 2096 "parser.cc"
+#line 2101 "parser.cc"
     break;
 
   case 67:
-#line 420 "parser.yy"
+#line 421 "parser.yy"
               {
     yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
     yylhs.value.as < PrimaryExp* > ()->lVal=std::shared_ptr<LVal>(yystack_[0].value.as < LVal* > ());
   }
-#line 2105 "parser.cc"
+#line 2110 "parser.cc"
     break;
 
   case 68:
-#line 424 "parser.yy"
+#line 425 "parser.yy"
                 {
     yylhs.value.as < PrimaryExp* > ()=new PrimaryExp();
     yylhs.value.as < PrimaryExp* > ()->number=std::shared_ptr<Number>(yystack_[0].value.as < Number* > ());
   }
-#line 2114 "parser.cc"
+#line 2119 "parser.cc"
     break;
 
   case 69:
-#line 429 "parser.yy"
+#line 430 "parser.yy"
                {
     yylhs.value.as < Number* > ()=new Number();
     yylhs.value.as < Number* > ()->type=type_specifier::TYPE_INT;
     yylhs.value.as < Number* > ()->intNum=yystack_[0].value.as < int > ();
     }
-#line 2124 "parser.cc"
+#line 2129 "parser.cc"
     break;
 
   case 70:
-#line 434 "parser.yy"
+#line 435 "parser.yy"
                {
     yylhs.value.as < Number* > ()=new Number();
     yylhs.value.as < Number* > ()->type=type_specifier::TYPE_FLOAT;
     yylhs.value.as < Number* > ()->floatNum=yystack_[0].value.as < float > ();
     }
-#line 2134 "parser.cc"
+#line 2139 "parser.cc"
     break;
 
   case 71:
-#line 441 "parser.yy"
+#line 442 "parser.yy"
                    {
     yylhs.value.as < UnaryExp* > ()=new UnaryExp();
     yylhs.value.as < UnaryExp* > ()->primaryExp=std::shared_ptr<PrimaryExp>(yystack_[0].value.as < PrimaryExp* > ());
 }
-#line 2143 "parser.cc"
+#line 2148 "parser.cc"
     break;
 
   case 72:
-#line 445 "parser.yy"
+#line 446 "parser.yy"
                                       {
     yylhs.value.as < UnaryExp* > ()=new UnaryExp();
     yylhs.value.as < UnaryExp* > ()->identifier=yystack_[3].value.as < std::string > ();
     yylhs.value.as < UnaryExp* > ()->funcRParams=std::shared_ptr<FuncRParams>(yystack_[1].value.as < FuncRParams* > ());
   }
-#line 2153 "parser.cc"
+#line 2158 "parser.cc"
     break;
 
   case 73:
-#line 450 "parser.yy"
+#line 451 "parser.yy"
                       {
     yylhs.value.as < UnaryExp* > ()=new UnaryExp();
     yylhs.value.as < UnaryExp* > ()->identifier=yystack_[2].value.as < std::string > ();
     }
-#line 2162 "parser.cc"
+#line 2167 "parser.cc"
     break;
 
   case 74:
-#line 454 "parser.yy"
+#line 455 "parser.yy"
                           {
     yylhs.value.as < UnaryExp* > ()=new UnaryExp();
     yylhs.value.as < UnaryExp* > ()->unaryOp=std::shared_ptr<UnaryOp>(yystack_[1].value.as < UnaryOp* > ());
     yylhs.value.as < UnaryExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
   }
-#line 2172 "parser.cc"
+#line 2177 "parser.cc"
     break;
 
   case 75:
 #line 460 "parser.yy"
+             {
+     yylhs.value.as < UnaryExp* > ()=new UnaryExp();
+     yylhs.value.as < UnaryExp* > ()->stringConst=yystack_[0].value.as < std::string > ();
+    }
+#line 2186 "parser.cc"
+    break;
+
+  case 76:
+#line 465 "parser.yy"
             {
     yylhs.value.as < UnaryOp* > ()=new UnaryOp();
     yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_POS;
 }
-#line 2181 "parser.cc"
+#line 2195 "parser.cc"
     break;
 
-  case 76:
-#line 464 "parser.yy"
+  case 77:
+#line 469 "parser.yy"
              {
 	yylhs.value.as < UnaryOp* > ()=new UnaryOp();
     yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_NEG;
     }
-#line 2190 "parser.cc"
-    break;
-
-  case 77:
-#line 468 "parser.yy"
-             {
-	yylhs.value.as < UnaryOp* > ()=new UnaryOp();
-	yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_NOT;
-	}
-#line 2199 "parser.cc"
+#line 2204 "parser.cc"
     break;
 
   case 78:
 #line 473 "parser.yy"
+             {
+	yylhs.value.as < UnaryOp* > ()=new UnaryOp();
+	yylhs.value.as < UnaryOp* > ()->op=unaryop::OP_NOT;
+	}
+#line 2213 "parser.cc"
+    break;
+
+  case 79:
+#line 478 "parser.yy"
                                  {
     yystack_[2].value.as < FuncRParams* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[0].value.as < Exp* > ()));
     yylhs.value.as < FuncRParams* > ()=yystack_[2].value.as < FuncRParams* > ();
     }
-#line 2208 "parser.cc"
+#line 2222 "parser.cc"
     break;
 
-  case 79:
-#line 477 "parser.yy"
+  case 80:
+#line 482 "parser.yy"
         {
         yylhs.value.as < FuncRParams* > ()=new FuncRParams();
         yylhs.value.as < FuncRParams* > ()->expList.push_back(std::shared_ptr<Exp>(yystack_[0].value.as < Exp* > ()));
     }
-#line 2217 "parser.cc"
+#line 2231 "parser.cc"
     break;
 
-  case 80:
-#line 483 "parser.yy"
+  case 81:
+#line 488 "parser.yy"
                {
     yylhs.value.as < MulExp* > ()=new MulExp();
     yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
 }
-#line 2226 "parser.cc"
+#line 2240 "parser.cc"
     break;
 
-  case 81:
-#line 487 "parser.yy"
+  case 82:
+#line 492 "parser.yy"
                              {
     yylhs.value.as < MulExp* > ()=new MulExp();
     yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
     yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
     yylhs.value.as < MulExp* > ()->op=mulop::OP_MUL;
   }
-#line 2237 "parser.cc"
+#line 2251 "parser.cc"
     break;
 
-  case 82:
-#line 493 "parser.yy"
+  case 83:
+#line 498 "parser.yy"
                              {
     yylhs.value.as < MulExp* > ()=new MulExp();
     yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
     yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
     yylhs.value.as < MulExp* > ()->op=mulop::OP_DIV;
   }
-#line 2248 "parser.cc"
+#line 2262 "parser.cc"
     break;
 
-  case 83:
-#line 499 "parser.yy"
+  case 84:
+#line 504 "parser.yy"
                              {
     yylhs.value.as < MulExp* > ()=new MulExp();
     yylhs.value.as < MulExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[2].value.as < MulExp* > ());
     yylhs.value.as < MulExp* > ()->unaryExp=std::shared_ptr<UnaryExp>(yystack_[0].value.as < UnaryExp* > ());
     yylhs.value.as < MulExp* > ()->op=mulop::OP_MOD;
   }
-#line 2259 "parser.cc"
+#line 2273 "parser.cc"
     break;
 
-  case 84:
-#line 507 "parser.yy"
+  case 85:
+#line 512 "parser.yy"
              {
     yylhs.value.as < AddExp* > ()=new AddExp();
     yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
 }
-#line 2268 "parser.cc"
+#line 2282 "parser.cc"
     break;
 
-  case 85:
-#line 511 "parser.yy"
+  case 86:
+#line 516 "parser.yy"
                            {
     yylhs.value.as < AddExp* > ()=new AddExp();
     yylhs.value.as < AddExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[2].value.as < AddExp* > ());
     yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
     yylhs.value.as < AddExp* > ()->op=addop::OP_ADD;
   }
-#line 2279 "parser.cc"
+#line 2293 "parser.cc"
     break;
 
-  case 86:
-#line 517 "parser.yy"
+  case 87:
+#line 522 "parser.yy"
                            {
     yylhs.value.as < AddExp* > ()=new AddExp();
     yylhs.value.as < AddExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[2].value.as < AddExp* > ());
     yylhs.value.as < AddExp* > ()->mulExp=std::shared_ptr<MulExp>(yystack_[0].value.as < MulExp* > ());
     yylhs.value.as < AddExp* > ()->op=addop::OP_SUB;
   }
-#line 2290 "parser.cc"
+#line 2304 "parser.cc"
     break;
 
-  case 87:
-#line 525 "parser.yy"
+  case 88:
+#line 530 "parser.yy"
              {
     yylhs.value.as < RelExp* > ()=new RelExp();
     yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
 }
-#line 2299 "parser.cc"
+#line 2313 "parser.cc"
     break;
 
-  case 88:
-#line 529 "parser.yy"
+  case 89:
+#line 534 "parser.yy"
                           {
     yylhs.value.as < RelExp* > ()=new RelExp();
     yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
     yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
     yylhs.value.as < RelExp* > ()->op=relop::OP_LT;
   }
-#line 2310 "parser.cc"
+#line 2324 "parser.cc"
     break;
 
-  case 89:
-#line 535 "parser.yy"
+  case 90:
+#line 540 "parser.yy"
                           {
     yylhs.value.as < RelExp* > ()=new RelExp();
     yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
     yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
     yylhs.value.as < RelExp* > ()->op=relop::OP_GT;
   }
-#line 2321 "parser.cc"
+#line 2335 "parser.cc"
     break;
 
-  case 90:
-#line 541 "parser.yy"
+  case 91:
+#line 546 "parser.yy"
                           {
     yylhs.value.as < RelExp* > ()=new RelExp();
     yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
     yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
     yylhs.value.as < RelExp* > ()->op=relop::OP_LE;
   }
-#line 2332 "parser.cc"
+#line 2346 "parser.cc"
     break;
 
-  case 91:
-#line 547 "parser.yy"
+  case 92:
+#line 552 "parser.yy"
                           {
     yylhs.value.as < RelExp* > ()=new RelExp();
     yylhs.value.as < RelExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[2].value.as < RelExp* > ());
     yylhs.value.as < RelExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
     yylhs.value.as < RelExp* > ()->op=relop::OP_GE;
   }
-#line 2343 "parser.cc"
+#line 2357 "parser.cc"
     break;
 
-  case 92:
-#line 554 "parser.yy"
+  case 93:
+#line 559 "parser.yy"
             {
     yylhs.value.as < EqExp* > ()=new EqExp();
     yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
   }
-#line 2352 "parser.cc"
+#line 2366 "parser.cc"
     break;
 
-  case 93:
-#line 558 "parser.yy"
+  case 94:
+#line 563 "parser.yy"
                           {
     yylhs.value.as < EqExp* > ()=new EqExp();
     yylhs.value.as < EqExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[2].value.as < EqExp* > ());
     yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
     yylhs.value.as < EqExp* > ()->op=relop::OP_EQU;
   }
-#line 2363 "parser.cc"
+#line 2377 "parser.cc"
     break;
 
-  case 94:
-#line 564 "parser.yy"
+  case 95:
+#line 569 "parser.yy"
                          {
     yylhs.value.as < EqExp* > ()=new EqExp();
     yylhs.value.as < EqExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[2].value.as < EqExp* > ());
     yylhs.value.as < EqExp* > ()->relExp=std::shared_ptr<RelExp>(yystack_[0].value.as < RelExp* > ());
     yylhs.value.as < EqExp* > ()->op=relop::OP_NE;
   }
-#line 2374 "parser.cc"
+#line 2388 "parser.cc"
     break;
 
-  case 95:
-#line 571 "parser.yy"
+  case 96:
+#line 576 "parser.yy"
               {
     yylhs.value.as < LAndExp* > ()=new LAndExp();
     yylhs.value.as < LAndExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[0].value.as < EqExp* > ());
   }
-#line 2383 "parser.cc"
+#line 2397 "parser.cc"
     break;
 
-  case 96:
-#line 575 "parser.yy"
+  case 97:
+#line 580 "parser.yy"
                            {
     yylhs.value.as < LAndExp* > ()=new LAndExp();
     yylhs.value.as < LAndExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[2].value.as < LAndExp* > ());
     yylhs.value.as < LAndExp* > ()->eqExp=std::shared_ptr<EqExp>(yystack_[0].value.as < EqExp* > ());
   }
-#line 2393 "parser.cc"
+#line 2407 "parser.cc"
     break;
 
-  case 97:
-#line 581 "parser.yy"
+  case 98:
+#line 586 "parser.yy"
               {
     yylhs.value.as < LOrExp* > ()=new LOrExp();
     yylhs.value.as < LOrExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[0].value.as < LAndExp* > ());
   }
-#line 2402 "parser.cc"
+#line 2416 "parser.cc"
     break;
 
-  case 98:
-#line 585 "parser.yy"
+  case 99:
+#line 590 "parser.yy"
                            {
     yylhs.value.as < LOrExp* > ()=new LOrExp();
     yylhs.value.as < LOrExp* > ()->lOrExp=std::shared_ptr<LOrExp>(yystack_[2].value.as < LOrExp* > ());
     yylhs.value.as < LOrExp* > ()->lAndExp=std::shared_ptr<LAndExp>(yystack_[0].value.as < LAndExp* > ());
   }
-#line 2412 "parser.cc"
+#line 2426 "parser.cc"
     break;
 
-  case 99:
-#line 591 "parser.yy"
+  case 100:
+#line 596 "parser.yy"
                {
     yylhs.value.as < ConstExp* > ()=new ConstExp();
     yylhs.value.as < ConstExp* > ()->addExp=std::shared_ptr<AddExp>(yystack_[0].value.as < AddExp* > ());
   }
-#line 2421 "parser.cc"
+#line 2435 "parser.cc"
     break;
 
 
-#line 2425 "parser.cc"
+#line 2439 "parser.cc"
 
             default:
               break;
@@ -2692,30 +2706,31 @@ namespace yy {
   }
 
 
-  const short parser::yypact_ninf_ = -136;
+  const signed char parser::yypact_ninf_ = -101;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const short
   parser::yypact_[] =
   {
-      92,  -136,  -136,  -136,    69,    28,     4,  -136,  -136,  -136,
-    -136,    37,    41,  -136,  -136,  -136,   -17,    17,  -136,  -136,
-      79,  -136,    13,   -11,  -136,    43,    30,  -136,    41,     9,
-      57,    56,  -136,   152,   204,  -136,  -136,   157,  -136,  -136,
-    -136,    33,    69,     9,    46,  -136,  -136,  -136,  -136,   204,
-      45,  -136,  -136,  -136,  -136,  -136,  -136,  -136,   204,    54,
-     112,   112,    49,   131,  -136,  -136,   119,    55,  -136,  -136,
-     178,    71,    62,  -136,  -136,   -14,  -136,   204,   204,   204,
-     204,   204,  -136,  -136,  -136,    -9,    81,    97,    85,   113,
-     183,  -136,  -136,  -136,  -136,    43,  -136,  -136,  -136,  -136,
-    -136,  -136,  -136,  -136,  -136,   120,    87,  -136,  -136,  -136,
-      75,   204,  -136,   152,  -136,  -136,  -136,  -136,    54,    54,
-     157,  -136,   204,   204,  -136,  -136,  -136,   122,  -136,   204,
-      71,   204,  -136,   118,  -136,  -136,   125,   112,    83,   117,
-     124,   136,   137,  -136,   134,  -136,  -136,    25,   204,   204,
-     204,   204,   204,   204,   204,   204,    25,  -136,   166,   112,
-     112,   112,   112,    83,    83,   117,   124,  -136,    25,  -136
+     101,  -101,  -101,  -101,    93,    18,     4,  -101,  -101,  -101,
+    -101,    10,    25,  -101,  -101,  -101,    12,    49,  -101,  -101,
+     107,  -101,     9,   -12,  -101,    35,    27,  -101,    25,    19,
+      40,    41,  -101,   150,   223,  -101,  -101,   171,  -101,  -101,
+    -101,    24,    93,    19,  -101,    39,  -101,  -101,  -101,  -101,
+     223,    61,  -101,  -101,  -101,  -101,  -101,  -101,  -101,   223,
+      86,    -9,    -9,    52,   137,  -101,  -101,    22,    57,  -101,
+    -101,   184,    67,    92,  -101,  -101,   -13,  -101,   223,   223,
+     223,   223,   223,  -101,  -101,  -101,    50,   111,   115,   105,
+     119,   204,  -101,  -101,  -101,  -101,    35,  -101,  -101,  -101,
+    -101,  -101,  -101,  -101,  -101,  -101,   125,   135,  -101,  -101,
+    -101,   103,   223,  -101,   150,  -101,  -101,  -101,  -101,    86,
+      86,   171,  -101,   223,   223,  -101,  -101,  -101,   130,  -101,
+     223,    67,   223,  -101,   124,  -101,  -101,   140,    -9,    91,
+     117,   132,   129,   141,  -101,   148,  -101,  -101,   116,   223,
+     223,   223,   223,   223,   223,   223,   223,   116,  -101,   170,
+      -9,    -9,    -9,    -9,    91,    91,   117,   132,  -101,   116,
+    -101
   };
 
   const signed char
@@ -2725,136 +2740,143 @@ namespace yy {
        7,     0,     0,     1,     2,     3,    13,     0,    21,    13,
        0,    10,     0,    22,    19,     0,     0,     8,     0,     0,
        0,     0,    35,     0,     0,    13,    20,     0,     9,    42,
-      29,    37,     0,     0,    39,    69,    70,    75,    76,     0,
-       0,    77,    23,    24,    67,    71,    68,    80,     0,    84,
-      63,    99,     0,     0,    11,    14,     0,     0,    34,    30,
-       0,    65,     0,    25,    28,     0,    74,     0,     0,     0,
-       0,     0,    12,    16,    18,     0,     0,     0,     0,     0,
-       0,    48,    40,    43,    44,     0,    49,    41,    45,    46,
-      50,    51,    52,    53,    54,     0,    67,    39,    73,    79,
-       0,     0,    66,     0,    26,    81,    82,    83,    85,    86,
-       0,    15,     0,     0,    59,    60,    61,     0,    47,     0,
-      36,     0,    72,     0,    27,    17,     0,    87,    92,    95,
-      97,    64,     0,    62,     0,    78,    38,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    55,    56,    90,
-      88,    91,    89,    93,    94,    96,    98,    58,     0,    57
+      29,    37,     0,     0,    75,    39,    69,    70,    76,    77,
+       0,     0,    78,    23,    24,    67,    71,    68,    81,     0,
+      85,    63,   100,     0,     0,    11,    14,     0,     0,    34,
+      30,     0,    65,     0,    25,    28,     0,    74,     0,     0,
+       0,     0,     0,    12,    16,    18,     0,     0,     0,     0,
+       0,     0,    48,    40,    43,    44,     0,    49,    41,    45,
+      46,    50,    51,    52,    53,    54,     0,    67,    39,    73,
+      80,     0,     0,    66,     0,    26,    82,    83,    84,    86,
+      87,     0,    15,     0,     0,    59,    60,    61,     0,    47,
+       0,    36,     0,    72,     0,    27,    17,     0,    88,    93,
+      96,    98,    64,     0,    62,     0,    79,    38,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    55,    56,
+      91,    89,    92,    90,    94,    95,    97,    99,    58,     0,
+      57
   };
 
   const short
   parser::yypgoto_[] =
   {
-    -136,  -136,  -136,   171,   128,  -136,   150,   160,   -58,  -136,
-     133,  -136,   158,   -48,  -136,  -136,     0,  -136,   143,    93,
-      18,  -136,  -136,  -135,  -136,  -136,  -136,  -136,  -136,  -136,
-     -19,    63,   -65,  -136,  -136,   -52,  -136,  -136,    59,   -34,
-       6,    34,    48,  -136,   170
+    -101,  -101,  -101,   173,   113,  -101,   154,   169,   -58,  -101,
+     123,  -101,   166,   -46,  -101,  -101,     0,  -101,   151,    84,
+      29,  -101,  -101,  -100,  -101,  -101,  -101,  -101,  -101,  -101,
+     -31,    70,   -66,  -101,  -101,   -14,  -101,  -101,    62,   -34,
+       3,    46,    47,  -101,   172
   };
 
   const short
   parser::yydefgoto_[] =
   {
-      -1,     5,     6,     7,     8,    20,    21,    23,    64,    85,
-       9,    17,    18,    52,    75,    10,    11,    31,    32,    71,
-      96,    66,    97,    98,    99,   100,   101,   102,   103,   104,
-     105,   136,    54,    55,    56,    57,    58,   110,    59,    60,
-     138,   139,   140,   141,    65
+      -1,     5,     6,     7,     8,    20,    21,    23,    65,    86,
+       9,    17,    18,    53,    76,    10,    11,    31,    32,    72,
+      97,    67,    98,    99,   100,   101,   102,   103,   104,   105,
+     106,   137,    55,    56,    57,    58,    59,   111,    60,    61,
+     139,   140,   141,   142,    66
   };
 
   const unsigned char
   parser::yytable_[] =
   {
-      61,   106,    74,    61,    12,    84,    76,     1,     2,     3,
-       4,    33,   158,    22,    53,   113,     1,     2,     3,   114,
-     120,   167,    30,    34,   121,   115,   116,   117,    13,    61,
-      72,    53,    86,   169,    87,    88,    89,    90,    44,    45,
-      46,    39,    30,    14,    29,    24,    25,    40,    47,    48,
-      16,   109,    37,    91,    19,    49,    35,    39,    44,    45,
-      46,    69,   135,    51,    34,   134,    95,    67,    47,    48,
-      41,   127,     1,     2,     3,    49,    70,    50,    73,    77,
-      78,    79,   106,    51,    82,    42,    61,    43,   137,   137,
-     107,   106,   133,   112,    53,     1,     2,     3,     4,   148,
-     149,   150,   151,   106,   131,   111,   132,    27,    28,   129,
-     144,   122,   145,   124,   159,   160,   161,   162,   137,   137,
-     137,   137,     1,     2,     3,     4,    86,   123,    87,    88,
-      89,    90,    44,    45,    46,    80,    81,   152,   153,   118,
-     119,   125,    47,    48,    44,    45,    46,    91,   128,    49,
-     143,    39,    92,   146,    47,    48,   147,    51,   163,   164,
-     154,    49,   157,    63,    83,    44,    45,    46,   156,    51,
-      44,    45,    46,   155,   168,    47,    48,    15,    38,    26,
-      47,    48,    49,    36,    50,    68,   142,    49,   165,    63,
-      51,    44,    45,    46,    93,    51,    44,    45,    46,    94,
-     130,    47,    48,   166,    62,     0,    47,    48,    49,   108,
-       0,   126,     0,    49,     0,     0,    51,    44,    45,    46,
-       0,    51,     0,     0,     0,     0,     0,    47,    48,     0,
-       0,     0,     0,     0,    49,     0,     0,     0,     0,     0,
-       0,     0,    51
+      62,   107,    54,    62,    12,    75,    85,     1,     2,     3,
+       4,    33,     1,     2,     3,    81,    82,   114,    13,    73,
+      54,   115,    30,    34,    16,     1,     2,     3,     4,    87,
+      62,    88,    89,    90,    91,    44,    45,    46,    47,    19,
+     110,    29,    30,    22,    14,    77,    48,    49,   159,    35,
+      37,    92,    39,    50,    41,    39,    93,   168,    40,    68,
+     128,    52,    34,   136,   116,   117,   118,    96,   135,   170,
+      71,    42,    70,    43,    44,    45,    46,    47,    24,    25,
+     121,   134,   107,    54,   122,    48,    49,    62,    83,   138,
+     138,   107,    50,   108,    51,    74,     1,     2,     3,   145,
+      52,   146,   112,   107,     1,     2,     3,     4,   149,   150,
+     151,   152,    78,    79,    80,   160,   161,   162,   163,   138,
+     138,   138,   138,    87,   113,    88,    89,    90,    91,    44,
+      45,    46,    47,   132,   125,   133,    27,    28,   153,   154,
+      48,    49,   123,   119,   120,    92,   124,    50,   126,    39,
+      44,    45,    46,    47,   129,    52,   164,   165,   130,   144,
+     147,    48,    49,    44,    45,    46,    47,   156,    50,   155,
+      64,    84,   148,   157,    48,    49,    52,   158,   169,    15,
+      94,    50,    38,    51,    44,    45,    46,    47,    26,    52,
+      95,    36,   131,    69,   143,    48,    49,    44,    45,    46,
+      47,   166,    50,   167,    64,     0,    63,     0,    48,    49,
+      52,     0,     0,     0,     0,    50,   109,    44,    45,    46,
+      47,     0,     0,    52,     0,     0,     0,     0,    48,    49,
+       0,     0,     0,   127,     0,    50,    44,    45,    46,    47,
+       0,     0,     0,    52,     0,     0,     0,    48,    49,     0,
+       0,     0,     0,     0,    50,     0,     0,     0,     0,     0,
+       0,     0,    52
   };
 
   const short
   parser::yycheck_[] =
   {
-      34,    66,    50,    37,     4,    63,    58,     3,     4,     5,
-       6,    22,   147,    30,    33,    29,     3,     4,     5,    33,
-      29,   156,    22,    34,    33,    77,    78,    79,     0,    63,
-      49,    50,     7,   168,     9,    10,    11,    12,    13,    14,
-      15,    32,    42,    39,    31,    28,    29,    29,    23,    24,
-      13,    70,    22,    28,    13,    30,    13,    32,    13,    14,
-      15,    43,   120,    38,    34,   113,    66,    34,    23,    24,
-      13,    90,     3,     4,     5,    30,    30,    32,    33,    25,
-      26,    27,   147,    38,    35,    29,   120,    31,   122,   123,
-      35,   156,   111,    31,   113,     3,     4,     5,     6,    16,
-      17,    18,    19,   168,    29,    34,    31,    28,    29,    22,
-     129,    30,   131,    28,   148,   149,   150,   151,   152,   153,
-     154,   155,     3,     4,     5,     6,     7,    30,     9,    10,
-      11,    12,    13,    14,    15,    23,    24,    20,    21,    80,
-      81,    28,    23,    24,    13,    14,    15,    28,    28,    30,
-      28,    32,    33,    35,    23,    24,    31,    38,   152,   153,
-      36,    30,    28,    32,    33,    13,    14,    15,    31,    38,
-      13,    14,    15,    37,     8,    23,    24,     6,    28,    19,
-      23,    24,    30,    25,    32,    42,   123,    30,   154,    32,
-      38,    13,    14,    15,    66,    38,    13,    14,    15,    66,
-     107,    23,    24,   155,    34,    -1,    23,    24,    30,    31,
-      -1,    28,    -1,    30,    -1,    -1,    38,    13,    14,    15,
-      -1,    38,    -1,    -1,    -1,    -1,    -1,    23,    24,    -1,
-      -1,    -1,    -1,    -1,    30,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    38
+      34,    67,    33,    37,     4,    51,    64,     3,     4,     5,
+       6,    23,     3,     4,     5,    24,    25,    30,     0,    50,
+      51,    34,    22,    35,    14,     3,     4,     5,     6,     7,
+      64,     9,    10,    11,    12,    13,    14,    15,    16,    14,
+      71,    32,    42,    31,    40,    59,    24,    25,   148,    14,
+      23,    29,    33,    31,    14,    33,    34,   157,    29,    35,
+      91,    39,    35,   121,    78,    79,    80,    67,   114,   169,
+      31,    30,    43,    32,    13,    14,    15,    16,    29,    30,
+      30,   112,   148,   114,    34,    24,    25,   121,    36,   123,
+     124,   157,    31,    36,    33,    34,     3,     4,     5,   130,
+      39,   132,    35,   169,     3,     4,     5,     6,    17,    18,
+      19,    20,    26,    27,    28,   149,   150,   151,   152,   153,
+     154,   155,   156,     7,    32,     9,    10,    11,    12,    13,
+      14,    15,    16,    30,    29,    32,    29,    30,    21,    22,
+      24,    25,    31,    81,    82,    29,    31,    31,    29,    33,
+      13,    14,    15,    16,    29,    39,   153,   154,    23,    29,
+      36,    24,    25,    13,    14,    15,    16,    38,    31,    37,
+      33,    34,    32,    32,    24,    25,    39,    29,     8,     6,
+      67,    31,    28,    33,    13,    14,    15,    16,    19,    39,
+      67,    25,   108,    42,   124,    24,    25,    13,    14,    15,
+      16,   155,    31,   156,    33,    -1,    34,    -1,    24,    25,
+      39,    -1,    -1,    -1,    -1,    31,    32,    13,    14,    15,
+      16,    -1,    -1,    39,    -1,    -1,    -1,    -1,    24,    25,
+      -1,    -1,    -1,    29,    -1,    31,    13,    14,    15,    16,
+      -1,    -1,    -1,    39,    -1,    -1,    -1,    24,    25,    -1,
+      -1,    -1,    -1,    -1,    31,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    39
   };
 
   const signed char
   parser::yystos_[] =
   {
-       0,     3,     4,     5,     6,    41,    42,    43,    44,    50,
-      55,    56,    56,     0,    39,    43,    13,    51,    52,    13,
-      45,    46,    30,    47,    28,    29,    47,    28,    29,    31,
-      56,    57,    58,    22,    34,    13,    52,    22,    46,    32,
-      60,    13,    29,    31,    13,    14,    15,    23,    24,    30,
-      32,    38,    53,    70,    72,    73,    74,    75,    76,    78,
-      79,    79,    84,    32,    48,    84,    61,    34,    58,    60,
-      30,    59,    70,    33,    53,    54,    75,    25,    26,    27,
-      23,    24,    35,    33,    48,    49,     7,     9,    10,    11,
-      12,    28,    33,    44,    50,    56,    60,    62,    63,    64,
-      65,    66,    67,    68,    69,    70,    72,    35,    31,    70,
-      77,    34,    31,    29,    33,    75,    75,    75,    78,    78,
-      29,    33,    30,    30,    28,    28,    28,    70,    28,    22,
-      59,    29,    31,    70,    53,    48,    71,    79,    80,    81,
-      82,    83,    71,    28,    70,    70,    35,    31,    16,    17,
-      18,    19,    20,    21,    36,    37,    31,    28,    63,    79,
-      79,    79,    79,    80,    80,    81,    82,    63,     8,    63
+       0,     3,     4,     5,     6,    42,    43,    44,    45,    51,
+      56,    57,    57,     0,    40,    44,    14,    52,    53,    14,
+      46,    47,    31,    48,    29,    30,    48,    29,    30,    32,
+      57,    58,    59,    23,    35,    14,    53,    23,    47,    33,
+      61,    14,    30,    32,    13,    14,    15,    16,    24,    25,
+      31,    33,    39,    54,    71,    73,    74,    75,    76,    77,
+      79,    80,    80,    85,    33,    49,    85,    62,    35,    59,
+      61,    31,    60,    71,    34,    54,    55,    76,    26,    27,
+      28,    24,    25,    36,    34,    49,    50,     7,     9,    10,
+      11,    12,    29,    34,    45,    51,    57,    61,    63,    64,
+      65,    66,    67,    68,    69,    70,    71,    73,    36,    32,
+      71,    78,    35,    32,    30,    34,    76,    76,    76,    79,
+      79,    30,    34,    31,    31,    29,    29,    29,    71,    29,
+      23,    60,    30,    32,    71,    54,    49,    72,    80,    81,
+      82,    83,    84,    72,    29,    71,    71,    36,    32,    17,
+      18,    19,    20,    21,    22,    37,    38,    32,    29,    64,
+      80,    80,    80,    80,    81,    81,    82,    83,    64,     8,
+      64
   };
 
   const signed char
   parser::yyr1_[] =
   {
-       0,    40,    41,    42,    42,    43,    43,    43,    44,    45,
-      45,    46,    47,    47,    48,    48,    48,    49,    49,    50,
-      51,    51,    52,    52,    53,    53,    53,    54,    54,    55,
-      55,    56,    56,    56,    57,    57,    58,    58,    59,    59,
-      60,    61,    61,    62,    62,    62,    63,    63,    63,    63,
-      63,    63,    63,    63,    63,    64,    65,    65,    66,    67,
-      68,    69,    69,    70,    71,    72,    73,    73,    73,    74,
-      74,    75,    75,    75,    75,    76,    76,    76,    77,    77,
-      78,    78,    78,    78,    79,    79,    79,    80,    80,    80,
-      80,    80,    81,    81,    81,    82,    82,    83,    83,    84
+       0,    41,    42,    43,    43,    44,    44,    44,    45,    46,
+      46,    47,    48,    48,    49,    49,    49,    50,    50,    51,
+      52,    52,    53,    53,    54,    54,    54,    55,    55,    56,
+      56,    57,    57,    57,    58,    58,    59,    59,    60,    60,
+      61,    62,    62,    63,    63,    63,    64,    64,    64,    64,
+      64,    64,    64,    64,    64,    65,    66,    66,    67,    68,
+      69,    70,    70,    71,    72,    73,    74,    74,    74,    75,
+      75,    76,    76,    76,    76,    76,    77,    77,    77,    78,
+      78,    79,    79,    79,    79,    80,    80,    80,    81,    81,
+      81,    81,    81,    82,    82,    82,    83,    83,    84,    84,
+      85
   };
 
   const signed char
@@ -2867,9 +2889,10 @@ namespace yy {
        3,     2,     0,     1,     1,     1,     1,     2,     1,     1,
        1,     1,     1,     1,     1,     4,     5,     7,     5,     2,
        2,     2,     3,     1,     1,     2,     3,     1,     1,     1,
-       1,     1,     4,     3,     2,     1,     1,     1,     3,     1,
-       1,     3,     3,     3,     1,     3,     3,     1,     3,     3,
-       3,     3,     1,     3,     3,     1,     3,     1,     3,     1
+       1,     1,     4,     3,     2,     1,     1,     1,     1,     3,
+       1,     1,     3,     3,     3,     1,     3,     3,     1,     3,
+       3,     3,     3,     1,     3,     3,     1,     3,     1,     3,
+       1
   };
 
 
@@ -2880,11 +2903,11 @@ namespace yy {
   const parser::yytname_[] =
   {
   "$end", "error", "$undefined", "VOID", "INT", "FLOAT", "CONST", "IF",
-  "ELSE", "WHILE", "BREAK", "CONTINUE", "RETURN", "IDENTIFIER", "INTCONST",
-  "FLOATCONST", "LE", "LT", "GE", "GT", "EQU", "NE", "ASSIGN", "ADD",
-  "SUB", "MUL", "DIV", "MOD", "SEMICOLON", "COMMA", "LB", "RB", "BLB",
-  "BRB", "MLB", "MRB", "AND", "OR", "NOT", "END", "$accept", "Begin",
-  "CompUnit", "DeclDef", "ConstDecl", "ConstDefList", "ConstDef",
+  "ELSE", "WHILE", "BREAK", "CONTINUE", "RETURN", "STRING", "IDENTIFIER",
+  "INTCONST", "FLOATCONST", "LE", "LT", "GE", "GT", "EQU", "NE", "ASSIGN",
+  "ADD", "SUB", "MUL", "DIV", "MOD", "SEMICOLON", "COMMA", "LB", "RB",
+  "BLB", "BRB", "MLB", "MRB", "AND", "OR", "NOT", "END", "$accept",
+  "Begin", "CompUnit", "DeclDef", "ConstDecl", "ConstDefList", "ConstDef",
   "ConstExpList", "ConstInitVal", "ConstInitValList", "VarDecl",
   "VarDefList", "VarDef", "InitVal", "InitValList", "FuncDef", "DefType",
   "FuncFParams", "FuncFParam", "ParamArrayExpList", "Block",
@@ -2899,16 +2922,17 @@ namespace yy {
   const short
   parser::yyrline_[] =
   {
-       0,   100,   100,   105,   109,   114,   118,   122,   127,   133,
-     137,   143,   150,   154,   159,   163,   167,   171,   175,   181,
-     188,   192,   198,   203,   210,   214,   217,   222,   226,   232,
-     238,   246,   250,   254,   259,   263,   269,   276,   284,   288,
-     293,   299,   303,   308,   312,   316,   322,   326,   330,   333,
-     337,   341,   345,   349,   353,   358,   364,   369,   376,   382,
-     386,   390,   393,   398,   404,   409,   416,   420,   424,   429,
-     434,   441,   445,   450,   454,   460,   464,   468,   473,   477,
-     483,   487,   493,   499,   507,   511,   517,   525,   529,   535,
-     541,   547,   554,   558,   564,   571,   575,   581,   585,   591
+       0,   101,   101,   106,   110,   115,   119,   123,   128,   134,
+     138,   144,   151,   155,   160,   164,   168,   172,   176,   182,
+     189,   193,   199,   204,   211,   215,   218,   223,   227,   233,
+     239,   247,   251,   255,   260,   264,   270,   277,   285,   289,
+     294,   300,   304,   309,   313,   317,   323,   327,   331,   334,
+     338,   342,   346,   350,   354,   359,   365,   370,   377,   383,
+     387,   391,   394,   399,   405,   410,   417,   421,   425,   430,
+     435,   442,   446,   451,   455,   460,   465,   469,   473,   478,
+     482,   488,   492,   498,   504,   512,   516,   522,   530,   534,
+     540,   546,   552,   559,   563,   569,   576,   580,   586,   590,
+     596
   };
 
   // Print the state stack on the debug stream.
@@ -2942,9 +2966,9 @@ namespace yy {
 
 
 } // yy
-#line 2946 "parser.cc"
+#line 2970 "parser.cc"
 
-#line 596 "parser.yy"
+#line 601 "parser.yy"
 
 /*Parser实现错误处理接口*/
 void yy::parser::error (const location_type& l,

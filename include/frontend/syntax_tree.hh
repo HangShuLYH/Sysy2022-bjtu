@@ -372,10 +372,11 @@ public:
     void visit(int depth) final;
     void accept(Visitor &visitor) override final;
     std::shared_ptr<PrimaryExp> primaryExp = nullptr;
-    std::string identifier;
+    std::string identifier = "";
     std::shared_ptr<FuncRParams> funcRParams = nullptr;
     std::shared_ptr<UnaryOp> unaryOp = nullptr;
     std::shared_ptr<UnaryExp> unaryExp = nullptr;
+    std::string stringConst = "";
 };
 class UnaryOp:TreeNode{
 public:

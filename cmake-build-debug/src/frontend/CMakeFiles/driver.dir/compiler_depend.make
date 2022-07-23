@@ -467,8 +467,12 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
   ../include/frontend/location.hh \
   ../include/frontend/FlexLexer.hh \
   ../include/frontend/FlexLexer.h \
-  ../include/frontend/parser.hh
+  ../include/frontend/parser.hh \
+  /usr/include/c++/9/sstream \
+  /usr/include/c++/9/bits/sstream.tcc
 
+
+/usr/include/c++/9/bits/sstream.tcc:
 
 ../include/frontend/FlexLexer.hh:
 
@@ -745,6 +749,8 @@ src/frontend/CMakeFiles/driver.dir/driver.cc.o: ../src/frontend/driver.cc \
 /usr/include/c++/9/bits/exception.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
+/usr/include/c++/9/sstream:
 
 /usr/include/x86_64-linux-gnu/c++/9/bits/basic_file.h:
 
