@@ -581,10 +581,9 @@ public:
             }
             if (i < args.size() - 1) {
                 out << " , ";
-            }else {
-                out << ")\n";
             }
         }
+        out << ")\n";
     }
 };
 

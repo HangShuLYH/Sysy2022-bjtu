@@ -22,6 +22,11 @@ public:
         this->name = name;
         return_type = type;
     }
+    Function(std::string name,Type* type,std::vector<Value*> params) {
+        this->name = name;
+        this->return_type = type;
+        this->params = params;
+    }
     void pushBB(BasicBlock* basicBlock) {
         basicBlocks.push_back(basicBlock);
     }

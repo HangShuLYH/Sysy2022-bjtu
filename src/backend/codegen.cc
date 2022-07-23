@@ -32,17 +32,24 @@ std::vector<Instr *> setIntValue(GR target, int value) {
                 new MoveT(target, imm_high)};
     }
 }
-
+std::vector<Instr *> setFloatValue(GR target, float value) {
+    union {
+        float floatVal;
+        int intVal;
+    }data;
+    data.floatVal = value;
+    int imm_low = data.intVal & ((1 << 16) - 1);
+    int imm_high = data.intVal >> 16;
+    return {new MoveW(target, imm_low),
+            new MoveT(target, imm_high)};
+}
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
     generateGlobalCode();
-    for (Function *function: irVisitor.functions) {
-        out << ".global " << function->name << "\n";
-    }
+    out << ".global main\n";
     out << ".section .text\n";
     int removeCnt = 0;
-
     Function *entry_func = new Function(".init", new Type(TypeID::VOID));
     entry_func->pushBB(irVisitor.entry);
     irVisitor.functions.push_back(entry_func);
@@ -51,12 +58,15 @@ void Codegen::generateProgramCode() {
     std::map<Function *, int> stackSizeMapping;
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
+        if (function->basicBlocks.empty()) continue;
         int stack_size = translateFunction(function);
         stackSizeMapping[function] = stack_size;
         ColoringAlloc coloringAlloc(function);
         coloringAlloc.run();
         std::set<GR> allUsedRegsGR;
         std::set<FR> allUsedRegsFR;
+
+        std::set<GR> callerSave;
         for (BasicBlock *block: function->basicBlocks) {
             for (auto it = block->getInstrs().rbegin(); it != block->getInstrs().rend();) {
                 Instr *instr = *it;
@@ -68,10 +78,28 @@ void Codegen::generateProgramCode() {
                     removeCnt++;
                 } else {
                     for (GR gr: instr->getDefG()) {
-                        allUsedRegsGR.insert(gr);
+                        if (callee_save_regs.count(gr) != 0) {
+                            allUsedRegsGR.insert(gr);
+                        }
+                        if (caller_save_regs.count(gr) != 0) {
+                            callerSave.erase(gr);
+                        }
+                    }
+                    for (GR gr:instr->getUseG()) {
+                        if (caller_save_regs.count(gr) != 0) {
+                            callerSave.insert(gr);
+                        }
                     }
                     for (FR fr: instr->getDefF()) {
                         allUsedRegsFR.insert(fr);
+                    }
+                    if (typeid(*instr) == typeid(Bl)) {
+                        Push* pushInstr = dynamic_cast<Push*>(*(it-1));
+                        Pop* popInstr = dynamic_cast<Pop*>(*(it+1));
+                        if (pushInstr && popInstr) {
+                            pushInstr->addRegs(callerSave);
+                            popInstr->addRegs(callerSave);
+                        }
                     }
                     it++;
                 }
@@ -90,11 +118,24 @@ void Codegen::generateProgramCode() {
                     block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), stackSize));
                     std::set<GR> setGR = usedGRMapping[function];
                     setGR.insert(GR(15));
+                    if (!usedFRMapping[function].empty()) {
+                        block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
+                    }
                     if (!setGR.empty()) {
                         block->getInstrs().push_back(new Pop(setGR));
                     }
                     break;
-                } else {
+                } else if (typeid(*instr) == typeid(Push)){
+                    Push* pushInstr = dynamic_cast<Push*>(instr);
+                    if (pushInstr->regs.empty()) {
+                        block->getInstrs().erase(it++);
+                    }
+                } else if (typeid(*instr) == typeid(Pop)){
+                    Pop* pushInstr = dynamic_cast<Pop*>(instr);
+                    if (pushInstr->regs.empty()) {
+                        block->getInstrs().erase(it++);
+                    }
+                }else {
                     it++;
                 }
             }
@@ -102,6 +143,7 @@ void Codegen::generateProgramCode() {
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
+        if (function->basicBlocks.empty()) continue;
         out << function->name << ":\n";
         if (itt != irVisitor.functions.rbegin()) {
             //simple way
@@ -115,7 +157,26 @@ void Codegen::generateProgramCode() {
                 }
                 out << gr.getName();
             }
-            out << ",lr}\n";
+            if (!usedGRMapping[function].empty()) {
+                out << ",";
+            }
+            out << "lr}\n";
+
+            //push s regs;
+            if (!usedFRMapping[function].empty()) {
+                out << "\tvpush {";
+                first = true;
+                for (FR fr: usedFRMapping[function]) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        out << ",";
+                    }
+                    out << fr.getName();
+                }
+                out << "}\n";
+            }
+            //push s regs
             out << "\tsub sp,sp,#" << stackSizeMapping[function] << "\n";
             if (function->name == "main") {
                 out << "\tbl .init\n";
@@ -323,7 +384,10 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             Value *val = new VarValue();
             storeIr->src.setVal(val);
             src = getGR(val);
-            vec.push_back(new MoveT(src, storeIr->src.getFloat()));
+            std::vector<Instr *> vv = setFloatValue(src, storeIr->src.getFloat());
+            for (Instr *instr: vv) {
+                vec.push_back(instr);
+            }
             if (storeIr->dst->is_Global()) {
                 Value *v = new VarValue();
                 GR base = getGR(v);
@@ -599,6 +663,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         int fr_cnt = 0;
         int cnt = 0;
         std::vector<Instr *> vec;
+        vec.push_back(new Push({}));
         for (TempVal v: callIr->args) {
             if (!v.isFloat()) {
                 if (gr_cnt >= 4) {
@@ -658,6 +723,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 fRegMapping[callIr->returnVal] = 0;
             }
         }
+        vec.push_back(new Pop({}));
         return vec;
     }
     if (typeid(*ir) == typeid(ReturnIR)) {

@@ -94,6 +94,7 @@ void MIRBuilder::getPreAndSucc(){
     std::cout<<"begin pre and succ:"<<std::endl;
     std::vector<Function*> functions = irVisitor.functions;
     for (size_t i = 0; i < functions.size(); ++i) {
+        if (functions[i]->basicBlocks.empty()) continue;
         if (functions[i]->return_type->isVoid()) {
             if (typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)) {    // solve problem of void
                 functions[i]->basicBlocks.
@@ -270,6 +271,7 @@ void MIRBuilder::putCondToNormal(CondBlock* cb, NormalBlock* nb){
 void MIRBuilder::removeDuplicate(){
     for(size_t i = 0; i < irVisitor.functions.size(); i++){
         std::vector<BasicBlock*> bbs = irVisitor.functions[i]->basicBlocks;
+        if (bbs.empty()) continue;
         std::cout<<bbs.size()<<std::endl;
         for(size_t j = bbs.size() - 1; j > 0 ; j--){
             NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);

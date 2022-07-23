@@ -10,8 +10,8 @@
 #include "reg.hh"
 #include "IrVisitor.hh"
 #include <string>
-const std::set<GR> caller_save_regs = {GR(0),GR(1),GR(2),GR(3),GR(12),GR(14)};
-const std::set<GR> callee_save_regs = {GR(4),GR(5),GR(6),GR(7),GR(8),GR(9),GR(10),GR(11)};
+const std::set<GR> caller_save_regs = {GR(0),GR(1),GR(2),GR(3),GR(12)};
+const std::set<GR> callee_save_regs = {GR(4),GR(5),GR(6),GR(7),GR(8),GR(9),GR(10),GR(11),GR(14)};
 class Codegen {
 private:
     IrVisitor irVisitor;

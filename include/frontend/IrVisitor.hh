@@ -38,6 +38,25 @@ public:
     std::vector<Value*> globalVars;
     BasicBlock *entry = nullptr;
     IrVisitor() {
+        functions.push_back(new Function("getint",typeInt,{}));
+        functions.push_back(new Function("getch",typeInt,{}));
+        functions.push_back(new Function("getfloat",typeFloat,{}));
+        functions.push_back(new Function("getarray",typeInt,
+                                         {new VarValue("",new Type(TypeID::POINTER,typeInt), false,0)}));
+        functions.push_back(new Function("getfarray",typeInt,
+                                         {new VarValue("",new Type(TypeID::POINTER,typeFloat), false,0)}));
+        functions.push_back(new Function("putint",typeVoid,{}));
+        functions.push_back(new Function("putch",typeVoid,{}));
+        functions.push_back(new Function("putfloat",typeVoid,{}));
+        functions.push_back(new Function("putarray",typeVoid,{
+            new VarValue("",typeInt, false,0),
+            new VarValue("",new Type(TypeID::POINTER,typeInt), false,1)
+        }));
+        functions.push_back(new Function("putfarray",typeVoid,{
+                new VarValue("",typeInt, false,0),
+                new VarValue("",new Type(TypeID::POINTER,typeFloat), false,1)
+        }));
+
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
     }
