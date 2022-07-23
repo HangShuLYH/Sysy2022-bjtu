@@ -94,6 +94,7 @@ void MIRBuilder::getPreAndSucc(){
     std::cout<<"begin pre and succ:"<<std::endl;
     std::vector<Function*> functions = irVisitor.functions;
     for (size_t i = 0; i < functions.size(); ++i) {
+        if (functions[i]->basicBlocks.empty()) continue;
         if (functions[i]->return_type->isVoid()) {
             if (typeid(*functions[i]->basicBlocks.back()) != typeid(NormalBlock)) {    // solve problem of void
                 functions[i]->basicBlocks.
@@ -271,16 +272,13 @@ void MIRBuilder::putCondToNormal(CondBlock* cb, NormalBlock* nb){
 void MIRBuilder::removeDuplicate(){
     for(size_t i = 0; i < irVisitor.functions.size(); i++){
         std::vector<BasicBlock*> bbs = irVisitor.functions[i]->basicBlocks;
+        if(bbs.empty()) continue;
         std::cout<<bbs.size()<<std::endl;
         for(size_t j = bbs.size() - 1; j > 0 ; j--){
             NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
             if(nowNB->getPre().size() == 1){
                 NormalBlock* preNB = dynamic_cast<NormalBlock*>(*nowNB->getPre().begin());
                 if(preNB->getSucc().size() == 1){
-//                    std::string name1 =
-//                    if(){
-//
-//                }
                     preNB->setSucc(nowNB->getSucc());
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
@@ -290,6 +288,17 @@ void MIRBuilder::removeDuplicate(){
                 }
             }
         }
+        //remove duplicate jump ir
+        for(size_t j = 0; j < bbs.size() - 1; j++){
+            NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
+            if(nowNB->ir.empty())continue;
+            if(typeid(*(nowNB->ir.back())) == typeid(JumpIR)){
+                if(dynamic_cast<JumpIR*>(nowNB->ir.back())->target->name == bbs[j+1]->name){
+                    nowNB->ir.pop_back();
+                }
+            }
+        }
+        //
         irVisitor.functions[i]->basicBlocks = bbs;
     }
 }
