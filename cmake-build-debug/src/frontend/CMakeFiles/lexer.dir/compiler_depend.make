@@ -229,6 +229,7 @@ src/frontend/CMakeFiles/lexer.dir/lexer.cc.o: ../src/frontend/lexer.cc \
   /usr/include/assert.h \
   ../include/frontend/location.hh \
   ../include/frontend/FlexLexer.hh \
+  ../include/frontend/FlexLexer.h \
   ../include/frontend/parser.hh
 
 

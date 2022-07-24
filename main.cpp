@@ -10,11 +10,6 @@ CompUnit *root;
 
 int main (int argc, char *argv[])
 {
-    // std::cout << "start..." << std::endl;
-    // if(argc < 2){
-    //     std::cout << "please enter a file: ./main test.sy" <<std::endl;
-    //     exit(0);
-    // }
     std::string inputFileName;
     std::string outputFileName = "a.s";
     for (int i = 1;i < argc;i++) {
@@ -26,7 +21,6 @@ int main (int argc, char *argv[])
         }
     }
     root = ddriver.parse(inputFileName);
-//    root = ddriver.parse("../test/quickSort.sy");
     IrVisitor irVisitor;
     try {
         irVisitor.visit(root);

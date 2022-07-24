@@ -3,6 +3,7 @@ project(Sysy2022-bjtu)
 include_directories(include)
 include_directories(include/frontend)
 include_directories(include/backend)
+include_directories(include/errors)
 add_subdirectory(src/frontend)
 add_executable(
         compiler

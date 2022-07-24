@@ -4,7 +4,7 @@
 #include "IrVisitor.hh"
 #include <iostream>
 #include <cmath>
-#include "errors/errors.hh"
+#include "errors.hh"
 #include "IRManager.hh"
 #include "MIRBuilder.hh"
 
@@ -279,9 +279,7 @@ void IrVisitor::visit(VarDef *varDef) {
                                      new Type(TypeID::POINTER, curDefType),
                                      isGlobal(), cur_func ? cur_func->varCnt++ : 0);
         pushVars(var);
-        if (!var->is_Global()) {
-            cur_bb->pushIr(AllocIRManager::getIR(var));
-        }
+        cur_bb->pushIr(AllocIRManager::getIR(var));
         if (varDef->initVal) {
             varDef->initVal->accept(*this);
             if (tempVal.getVal() && curDefType != tempVal.getType()) {
@@ -291,9 +289,7 @@ void IrVisitor::visit(VarDef *varDef) {
                 cur_bb->pushIr(CastIRManager::getIR(v, tempVal));
                 tempVal.setVal(v);
             }
-            if (!var->is_Global()) {
-                cur_bb->pushIr(StoreIRManager::getIR(var, tempVal));
-            }
+            cur_bb->pushIr(StoreIRManager::getIR(var, tempVal));
         }
     } else {
         VarValue *var(nullptr);
@@ -307,9 +303,7 @@ void IrVisitor::visit(VarDef *varDef) {
         }
         var = new VarValue(varDef->identifier, new Type(TypeID::POINTER, curDefType),
                            isGlobal(), cur_func ? cur_func->varCnt++ : 0);
-        if (!var->is_Global()) {
-            cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
-        }
+        cur_bb->pushIr(AllocIRManager::getIR(var, arrayLen));
         var->setArray(true);
         var->setArrayDims(arrayDims);
         pushVars(var);
@@ -679,7 +673,6 @@ void IrVisitor::visit(ReturnStmt *returnStmt) {
             VarValue *t = nullptr;
             if (!cur_func->return_type->isVoid()) {
                 t = new VarValue("", curDefType, isGlobal(), cur_func->varCnt++);
-                tempVal.setVal(t);
             }
             if (cur_func->return_type->isInt() && tempVal.getVal()->getType()->isFloat()) {
                 cur_bb->pushIr(new CastFloat2IntIR(t, tempVal.getVal()));

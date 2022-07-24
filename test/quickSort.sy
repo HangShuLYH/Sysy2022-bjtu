@@ -1,17 +1,25 @@
+// test if-else-if
+int ifElseIf() {
+  int a;
+  a = 5;
+  int b;
+  b = 10;
+  if(a == 6 || b == 0xb) {
+    return a;
+  }
+  else {
+    if (b == 10 && a == 1)
+      a = 25;
+    else if (b == 10 && a == -5)
+      a = a + 15;
+    else
+      a = -+a;
+  }
 
-int add2(int a,int b,int c,int d,int e,int m,int n) {
-    int x = a + b + c + d + e + m + n;
-    int y = add2(x,0,0,0,0,0,0);
-    return y;
+  return a;
 }
-int add3(int a,int b,int c,int d,int e,int m,int n,int k){
-    return 0;
-}
+
 int main(){
-    int n = getint();
-    add2(n,2,3,4,5,6,7);
-    int k = n;
-    starttime();
-    stoptime();
-    return 0;
+  putint(ifElseIf());
+  return 0;
 }

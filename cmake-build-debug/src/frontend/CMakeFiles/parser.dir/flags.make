@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/hangshu/桌面/Sysy2022-bjtu/include -I/home/hangshu/桌面/Sysy2022-bjtu/include/frontend -I/home/hangshu/桌面/Sysy2022-bjtu/include/backend
+CXX_INCLUDES = -I/home/hangshu/桌面/Sysy2022-bjtu/include -I/home/hangshu/桌面/Sysy2022-bjtu/include/frontend -I/home/hangshu/桌面/Sysy2022-bjtu/include/backend -I/home/hangshu/桌面/Sysy2022-bjtu/include/errors
 
 CXX_FLAGS = -g
 

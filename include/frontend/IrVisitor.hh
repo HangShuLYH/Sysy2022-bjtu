@@ -47,9 +47,15 @@ public:
                                          {new VarValue("",new Type(TypeID::POINTER,typeInt), false,0)}));
         functions.push_back(new Function("getfarray",typeInt,
                                          {new VarValue("",new Type(TypeID::POINTER,typeFloat), false,0)}));
-        functions.push_back(new Function("putint",typeVoid,{}));
-        functions.push_back(new Function("putch",typeVoid,{}));
-        functions.push_back(new Function("putfloat",typeVoid,{}));
+        functions.push_back(new Function("putint",typeVoid,{
+            new VarValue("",typeInt,false,0)
+        }));
+        functions.push_back(new Function("putch",typeVoid,{
+                new VarValue("",typeInt,false,0)
+        }));
+        functions.push_back(new Function("putfloat",typeVoid,{
+                new VarValue("",typeFloat,false,0)
+        }));
         functions.push_back(new Function("putarray",typeVoid,{
             new VarValue("",typeInt, false,0),
             new VarValue("",new Type(TypeID::POINTER,typeInt), false,1)

@@ -50,6 +50,12 @@
 				"file" : 1,
 				"line" : 5,
 				"parent" : 2
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 6,
+				"parent" : 2
 			}
 		]
 	},
@@ -75,6 +81,10 @@
 				{
 					"backtrace" : 5,
 					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/backend"
+				},
+				{
+					"backtrace" : 6,
+					"path" : "/home/hangshu/\u684c\u9762/Sysy2022-bjtu/include/errors"
 				}
 			],
 			"language" : "CXX",

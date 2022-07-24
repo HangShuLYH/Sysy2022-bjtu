@@ -9,7 +9,7 @@
 // preprocessor chokes on the line `#define yyFlexLexer yyFlexLexer`
 // in `FlexLexer.h`:
 #undef yyFlexLexer
-#include <FlexLexer.h>
+#include "FlexLexer.h"
 
 // We need this for the yy::calcxx_parser::symbol_type:
 #include "parser.hh"
