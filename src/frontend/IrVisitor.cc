@@ -592,14 +592,40 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
     cur_bb = new SelectBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     condBB.push(cur_bb);
-    auto temp = cur_bb;
+    dynamic_cast<SelectBlock *>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++));
     selectStmt->cond->accept(*this);
-    cur_bb = temp;
+    if (selectStmt->ifStmt &&
+        selectStmt->ifStmt->returnStmt ||
+        selectStmt->ifStmt->breakStmt ||
+        selectStmt->ifStmt->assignStmt ||
+        selectStmt->ifStmt->continueStmt ||
+        selectStmt->ifStmt->assignStmt) {
+        bool temp = isIF;
+        isIF = true;
+        cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+        pushBB();
+        isIF = temp;
+    }
+    bool temp = isIF;
     isIF = true;
     selectStmt->ifStmt->accept(*this);
+    isIF = temp;
     if (selectStmt->elseStmt) {
+        if (selectStmt->elseStmt->returnStmt ||
+            selectStmt->elseStmt->breakStmt ||
+            selectStmt->elseStmt->assignStmt ||
+            selectStmt->elseStmt->continueStmt ||
+            selectStmt->elseStmt->assignStmt) {
+            bool temp = isIF;
+            isIF = false;
+            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+            pushBB();
+            isIF = temp;
+        }
+        temp = isIF;
         isIF = false;
         selectStmt->elseStmt->accept(*this);
+        isIF = temp;
     }
     cur_bb = tempBB;
     condBB.pop();
@@ -913,6 +939,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
     } else if (unaryExp->identifier != "") {
         args.clear();
         call_func = findFunc(unaryExp->identifier);
+        Function *temp = call_func;
         if (unaryExp->funcRParams) {
             unaryExp->funcRParams->accept(*this);
         }
@@ -922,6 +949,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             Value *v = new VarValue("", call_func->return_type,
                                     isGlobal(), cur_func->varCnt++);
             tempVal.setVal(v);
+            call_func = temp;
             cur_bb->pushIr(new CallIR(call_func, args, v));
         }
     } else {

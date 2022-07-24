@@ -7,38 +7,45 @@
 	bx lr
 main:
 	push {lr}
-	sub sp,sp,#0
+	sub sp,sp,#8
 	bl .init
 .L1:
-	bl ififElse
-	add sp,sp, #0
-	pop {pc}
-ififElse:
-	push {lr}
-	sub sp,sp,#8
-.L2:
-	mov r0,#5
+	mov r0,#0
 	str r0,[sp,#0]
-	mov r0,#10
+	mov r0,#0
 	str r0,[sp,#4]
+	b .L2
+.L2:
 	ldr r1,[sp,#0]
-	mov r0,#5
+	mov r0,#100
 	cmp r1,r0
 	mov r0,#0
-	moveq r0,#1
+	movlt r0,#1
 	cmp r0,#1
 	beq .L3
-	bne .L4
+	bne .L6
 .L3:
-	ldr r1,[sp,#4]
-	mov r0,#10
+	ldr r1,[sp,#0]
+	mov r0,#50
 	cmp r1,r0
 	mov r0,#0
 	moveq r0,#1
 	cmp r0,#1
 	beq .L4
-	bne .L4
+	bne .L5
 .L4:
+	b .L5
+.L5:
+	ldr r1,[sp,#4]
 	ldr r0,[sp,#0]
+	add r0,r1,r0
+	str r0,[sp,#4]
+	ldr r1,[sp,#0]
+	mov r0,#1
+	add r0,r1,r0
+	str r0,[sp,#0]
+	b .L2
+.L6:
+	ldr r0,[sp,#4]
 	add sp,sp, #8
 	pop {pc}

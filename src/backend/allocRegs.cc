@@ -8,19 +8,19 @@ void ColoringAlloc::run() {
     liveAnalysis();
     build();
     makeWorkList();
-    std::cerr << "makeWorkList\n";
+    //std::cerr << "makeWorkList\n";
     while(true) {
         if (!simplifyWorkListGR.empty()) {
-            std::cerr << "simplify\n";
+            //std::cerr << "simplify\n";
             simplifyGR();
         } else if (!workListMovesGR.empty()) {
-            std::cerr << "coalesce\n";
+            //std::cerr << "coalesce\n";
             coalesceGR();
         } else if (!freezeWorkListGR.empty()) {
-            std::cerr << "freeze\n";
+            //std::cerr << "freeze\n";
             freezeGR();
         } else if (!spillWorkListGR.empty()) {
-            std::cerr << "selectSpill\n";
+            //std::cerr << "selectSpill\n";
             selectSpillGR();
         }
         if (simplifyWorkListGR.empty() && workListMovesGR.empty() &&

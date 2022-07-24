@@ -91,7 +91,7 @@ BasicBlock* MIRBuilder::frontOfNextBB(BasicBlock* bb){
 
 //create by lin 7.2
 void MIRBuilder::getPreAndSucc(){
-    std::cout<<"begin pre and succ:"<<std::endl;
+    //std::cout<<"begin pre and succ:"<<std::endl;
     std::vector<Function*> functions = irVisitor.functions;
     for (size_t i = 0; i < functions.size(); ++i) {
         if (functions[i]->basicBlocks.empty()) continue;
@@ -105,7 +105,7 @@ void MIRBuilder::getPreAndSucc(){
         functions[i]->basicBlocks = refresh(functions[i]->basicBlocks, NULL);
     }
     removeDuplicate();
-    std::cout<<"end pre and succ:"<<std::endl;
+    //std::cout<<"end pre and succ:"<<std::endl;
 }
 
 std::vector<BasicBlock*> MIRBuilder::refresh(std::vector<BasicBlock*> bbs, BasicBlock* nextAB){
@@ -272,7 +272,7 @@ void MIRBuilder::removeDuplicate(){
     for(size_t i = 0; i < irVisitor.functions.size(); i++){
         std::vector<BasicBlock*> bbs = irVisitor.functions[i]->basicBlocks;
         if (bbs.empty()) continue;
-        std::cout<<bbs.size()<<std::endl;
+        //std::cout<<bbs.size()<<std::endl;
         for(size_t j = bbs.size() - 1; j > 0 ; j--){
             NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
             if(nowNB->getPre().size() == 1){
