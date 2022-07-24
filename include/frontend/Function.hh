@@ -12,6 +12,7 @@
 #include <iostream>
 class Function{
 public:
+    int stackSize = 0;
     int bbCnt = 0;
     int varCnt = 0;
     std::string name;

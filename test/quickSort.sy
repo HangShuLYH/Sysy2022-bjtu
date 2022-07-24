@@ -1,38 +1,17 @@
-/*void quickSort(int number[], int first, int last) {
-    int i, j, pivot;
-    int temp;
-    if (first<last) {
-        pivot = first;
-        i = first;
-        j = last;
-        while (i<j) {
-            while (number[i] <= number[pivot] && i<last)
-                i = i + 1;
-            while (number[j]>number[pivot])
-                j = j - 1;
-            if (i<j) {
-                temp = number[i];
-                number[i] = number[j];
-                number[j] = temp;
-            }
-        }
-        temp = number[pivot];
-        number[pivot] = number[j];
-        number[j] = temp;
-        quickSort(number, first, j - 1);
-        quickSort(number, j + 1, last);
-    }
-}*/
+
+int add2(int a,int b,int c,int d,int e,int m,int n) {
+    int x = a + b + c + d + e + m + n;
+    int y = add2(x,0,0,0,0,0,0);
+    return y;
+}
+int add3(int a,int b,int c,int d,int e,int m,int n,int k){
+    return 0;
+}
 int main(){
+    int n = getint();
+    add2(n,2,3,4,5,6,7);
+    int k = n;
     starttime();
     stoptime();
-    float x = 10.5;
-    int y = 10;
-    putf("%d%d%d%d%d",y,y,y,y,y);
-    putf("%f%f%f%f%f",x,x,x,x,x);
-    /*int m = x;
-    int a[9] = {9,8,7,1,6,5,2,3,4};
-    int n = getint();
-    quickSort(a,0,8);*/
     return 0;
 }

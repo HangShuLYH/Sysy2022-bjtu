@@ -18,7 +18,6 @@ private:
     std::map<Value *, GR> gRegMapping;
     std::map<Value *, FR> fRegMapping;
     std::map<Value*, int> stackMapping;
-    int stackSize = 0;
     std::map<Value*, int> globalMapping;
     std::string asm_code;
     std::ostream& out;

@@ -15,8 +15,18 @@ int main (int argc, char *argv[])
     //     std::cout << "please enter a file: ./main test.sy" <<std::endl;
     //     exit(0);
     // }
-
-    root = ddriver.parse("../test/quickSort.sy");
+    std::string inputFileName;
+    std::string outputFileName = "a.s";
+    for (int i = 1;i < argc;i++) {
+        if (std::string(argv[i]) == "-o") {
+            outputFileName = argv[i+1];
+            i++;
+        } else {
+            inputFileName = argv[i];
+        }
+    }
+    root = ddriver.parse(inputFileName);
+//    root = ddriver.parse("../test/quickSort.sy");
     IrVisitor irVisitor;
     try {
         irVisitor.visit(root);
@@ -28,7 +38,8 @@ int main (int argc, char *argv[])
     mirBuilder.getPreAndSucc();
 
     irVisitor.print(std::cout);
-    Codegen codegen(irVisitor,std::cerr);
+    std::ofstream out(outputFileName);
+    Codegen codegen(irVisitor,out);
     codegen.generateProgramCode();
     //codegen.regAlloc();
     std::cout << "end..." <<std::endl;
