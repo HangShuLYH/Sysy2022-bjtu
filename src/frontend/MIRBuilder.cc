@@ -128,14 +128,14 @@ std::vector<BasicBlock*> MIRBuilder::refresh(std::vector<BasicBlock*> bbs, Basic
             if(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.empty()){
                 firstOfIfBB = nextBB;
             } else{
-                firstOfIfBB = dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.front();
+                firstOfIfBB = frontOfNextBB(dynamic_cast<SelectBlock*>(bbs[i])->ifStmt.front());
             }
 
             BasicBlock* firstOfElseBB;
             if(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt.empty()){
                 firstOfElseBB = nextBB;
             } else{
-                firstOfElseBB = dynamic_cast<SelectBlock*>(bbs[i])->elseStmt.front();
+                firstOfElseBB = frontOfNextBB(dynamic_cast<SelectBlock*>(bbs[i])->elseStmt.front());
             }
 
             dynamic_cast<SelectBlock*>(bbs[i])->cond = relatedCond(dynamic_cast<SelectBlock*>(bbs[i])->cond, firstOfIfBB, firstOfElseBB);
