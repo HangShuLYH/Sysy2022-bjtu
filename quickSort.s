@@ -7,95 +7,38 @@
 	bx lr
 main:
 	push {lr}
-	sub sp,sp,#160
+	sub sp,sp,#0
 	bl .init
 .L1:
-	mov r1,#0
-	str r1,[sp,#0]
-	mov r1,#0
-	str r1,[sp,#4]
-	mov r1,#0
-	str r1,[sp,#8]
-	mov r1,#0
-	str r1,[sp,#12]
-	mov r1,#0
-	str r1,[sp,#16]
-	mov r1,#0
-	str r1,[sp,#20]
-	mov r1,#0
-	str r1,[sp,#24]
-	mov r1,#0
-	str r1,[sp,#28]
-	mov r1,#1
-	str r1,[sp,#32]
-	mov r1,#2
-	str r1,[sp,#36]
-	mov r1,#3
-	str r1,[sp,#40]
-	mov r1,#4
-	str r1,[sp,#44]
-	mov r1,#5
-	str r1,[sp,#48]
-	mov r1,#6
-	str r1,[sp,#52]
-	mov r1,#7
-	str r1,[sp,#56]
-	mov r1,#8
-	str r1,[sp,#60]
-	mov r1,#1
-	str r1,[sp,#64]
-	mov r1,#2
-	str r1,[sp,#68]
-	mov r1,#3
-	str r1,[sp,#72]
-	mov r1,#4
-	str r1,[sp,#76]
-	mov r1,#5
-	str r1,[sp,#80]
-	mov r1,#6
-	str r1,[sp,#84]
-	mov r1,#7
-	str r1,[sp,#88]
-	mov r1,#8
-	str r1,[sp,#92]
-	mov r1,#1
-	str r1,[sp,#96]
-	mov r1,#2
-	str r1,[sp,#100]
-	mov r1,#3
-	str r1,[sp,#104]
-	mov r1,#0
-	str r1,[sp,#108]
-	mov r1,#5
-	str r1,[sp,#112]
-	mov r1,#0
-	str r1,[sp,#116]
-	mov r1,#7
-	str r1,[sp,#120]
-	mov r1,#8
-	str r1,[sp,#124]
-	ldr r1,[sp,#116]
-	str r1,[sp,#128]
-	ldr r1,[sp,#84]
-	str r1,[sp,#132]
-	mov r1,#3
-	str r1,[sp,#136]
-	mov r1,#4
-	str r1,[sp,#140]
-	mov r1,#5
-	str r1,[sp,#144]
-	mov r1,#6
-	str r1,[sp,#148]
-	mov r1,#7
-	str r1,[sp,#152]
-	mov r1,#8
-	str r1,[sp,#156]
-	ldr r1,[sp,#156]
-	ldr r0,[r0,#0]
-	add r1,r1,r0
-	ldr r0,[sp,#132]
-	add r1,r1,r0
-	ldr r0,[sp,#16]
-	add r0,r1,r0
-	add sp,sp, #160
+	bl ififElse
+	add sp,sp, #0
+	pop {pc}
+ififElse:
+	push {lr}
+	sub sp,sp,#8
+.L2:
+	mov r0,#5
+	str r0,[sp,#0]
+	mov r0,#10
+	str r0,[sp,#4]
+	ldr r1,[sp,#0]
+	mov r0,#5
+	cmp r1,r0
+	mov r0,#0
+	moveq r0,#1
+	cmp r0,#1
+	beq .L3
+	bne .L4
+.L3:
+	ldr r1,[sp,#4]
+	mov r0,#10
+	cmp r1,r0
+	mov r0,#0
+	moveq r0,#1
+	cmp r0,#1
+	beq .L4
+	bne .L4
+.L4:
+	ldr r0,[sp,#0]
+	add sp,sp, #8
 	pop {pc}

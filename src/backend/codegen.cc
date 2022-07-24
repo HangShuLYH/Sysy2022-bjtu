@@ -138,7 +138,7 @@ void Codegen::generateProgramCode() {
                     }
                 }
                 if (typeid(*instr) == typeid(Ret)) {
-                    block->getInstrs().erase(it++);
+                    block->getInstrs().erase(it);
                     block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), function->stackSize));
                     std::set<GR> setGR = usedGRMapping[function];
                     setGR.insert(GR(15));
@@ -152,12 +152,16 @@ void Codegen::generateProgramCode() {
                 } else if (typeid(*instr) == typeid(Push)){
                     Push* pushInstr = dynamic_cast<Push*>(instr);
                     if (pushInstr->regs.empty()) {
-                        block->getInstrs().erase(it++);
+                        block->getInstrs().erase(it);
+                    } else {
+                        it++;
                     }
                 } else if (typeid(*instr) == typeid(Pop)){
                     Pop* pushInstr = dynamic_cast<Pop*>(instr);
                     if (pushInstr->regs.empty()) {
-                        block->getInstrs().erase(it++);
+                        block->getInstrs().erase(it);
+                    } else {
+                        it++;
                     }
                 }else {
                     it++;
