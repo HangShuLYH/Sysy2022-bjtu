@@ -48,13 +48,13 @@ std::vector<BasicBlock*> MIRBuilder::relatedContinueBreak(std::vector<BasicBlock
                         dynamic_cast<NormalBlock*>(bbs[i])->nextBB = nextAB;
                         dynamic_cast<NormalBlock*>(bbs[i])->
                                 ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
-                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir));
                         break;
                     case 2:
                         dynamic_cast<NormalBlock*>(bbs[i])->nextBB = firstCond;
                         dynamic_cast<NormalBlock*>(bbs[i])->
                                 ir.erase(std::begin(dynamic_cast<NormalBlock*>(bbs[i])->ir)+ro->index,
-                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir)-1);
+                                         std::end(dynamic_cast<NormalBlock*>(bbs[i])->ir));
                         break;
                 }
             }
@@ -167,14 +167,20 @@ std::vector<BasicBlock*> MIRBuilder::refresh(std::vector<BasicBlock*> bbs, Basic
                               dynamic_cast<IterationBlock*>(bbs[i])->cond.front());
             newBBs.insert(newBBs.end(), tempBBs.begin(), tempBBs.end());
         } else if(typeid(*bbs[i]) == typeid(NormalBlock)){     //NormalBlock
-            NormalBlock* nb = toNormal(nextBB);
+            BasicBlock* next;
+            if (dynamic_cast<NormalBlock*>(bbs[i])->nextBB) {
+                next = dynamic_cast<NormalBlock*>(bbs[i])->nextBB;
+            } else {
+                next = nextBB;
+            }
+            NormalBlock* nb = toNormal(next);
             if(nb){
                 nb->pushPre(dynamic_cast<NormalBlock*>(bbs[i]));
                 dynamic_cast<NormalBlock*>(bbs[i])->pushSucc(nb);
             }
 
             //  solve return sentence
-            dynamic_cast<NormalBlock*>(bbs[i])->ir.push_back(new JumpIR(nextBB));
+            dynamic_cast<NormalBlock*>(bbs[i])->ir.push_back(new JumpIR(nb));
             ReturnOfRelated* ro = relatedIR(dynamic_cast<NormalBlock*>(bbs[i])->ir);
             if(ro->type == 3){
                 dynamic_cast<NormalBlock*>(bbs[i])->
