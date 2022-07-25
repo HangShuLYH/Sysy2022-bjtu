@@ -511,6 +511,7 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
 void IrVisitor::visit(ParamArrayExpList *paramArrayExpList) {}
 
 void IrVisitor::visit(Block *block) {
+    BasicBlock* temp = cur_bb;
     cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
     pushBB();
     for (size_t i = 0; i < block->blockItemList.size(); ++i) {
@@ -522,7 +523,7 @@ void IrVisitor::visit(Block *block) {
             pushBB();
         }
     }
-    cur_bb = cur_bb->parent;
+    cur_bb = temp;
 }
 
 void IrVisitor::visit(BlockItemList *blockItemList) {}
@@ -772,8 +773,38 @@ void IrVisitor::visit(LVal *lVal) {
         } else {
             if (!useVal) {
                 index = tempVal.getVal();
+                Value *v1 = new VarValue("", typeInt, isGlobal(),
+                                         isGlobal() ? cnt++ : cur_func->varCnt++,
+                                         true);
+                TempVal t1;
+                t1.setType(typeInt);
+                t1.setVal(v1);
+
+                TempVal t2;
+                t2.setType(typeInt);
+                t2.setVal(index);
+
+                TempVal t3;
+                t3.setType(typeInt);
+                t3.setInt(arrayDimLen);
+                t3.setVal(nullptr);
+
+                TempVal t4;
+                t4.setType(typeInt);
+                t4.setInt(arrayIndex);
+                t4.setVal(nullptr);
+
+                Value *v2 = new VarValue("", typeInt, isGlobal(),
+                                         isGlobal() ? cnt++ : cur_func->varCnt++,
+                                         true);
+                TempVal t5;
+                t5.setType(typeInt);
+                t5.setVal(v2);
+                cur_bb->pushIr(ArithmeticIRManager::getIR(t1, t2, t3, '*'));
+                cur_bb->pushIr(ArithmeticIRManager::getIR(t5, t1, t4, '+'));
                 useVal = true;
-            } else {
+                index = v2;
+            }else {
                 if (tempVal.getVal()) {
                     Value *v1 = new VarValue("", typeInt, isGlobal(),
                                              isGlobal() ? cnt++ : cur_func->varCnt++,
@@ -791,7 +822,7 @@ void IrVisitor::visit(LVal *lVal) {
 
                     TempVal t3;
                     t3.setType(typeInt);
-                    t2.setInt(arrayDimLen);
+                    t3.setInt(arrayDimLen);
 
                     TempVal t4;
                     t4.setType(index->getType());
