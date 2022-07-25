@@ -16,48 +16,49 @@ float f(int m){
     return 0;
 }
 */
-float a = 10;
+// int a[4][2] = {{1,2},{3,4},{},7};
+// float a = 10;
 const float b[2] = {2, 1};
 int arr[5][3] = {1, 2, 3, {b[0]}, {5}, 6, 7, 8, 9, 10};
-int c[2] = {1,2};
+// int c[2] = {1,2};
 
-int f(int a[]){
-    while(a[0] > a[1]){
-        a[2] = a[2] + 1;
-        if(a[0] < a[2]){
-            break;
-        }
-        while(a[1] > a[2]){
-            if(a[0] < a[2]){
-                continue;
-            }
-            a[0] = a[0] - 1;
-        }
-    }
-    return 1;
-}
-int f2(int m[][6][5],int ww){
-    m[2][0][0] = m[1][2][0];
-     f(m[2][3]);
-   f2(m,1);
-   f(arr[4]);
-    ww = 1;
-   while(1.0);
+// int f(int a[]){
+//     while(a[0] > a[1]){
+//         a[2] = a[2] + 1;
+//         if(a[0] < a[2]){
+//             break;
+//         }
+//         while(a[1] > a[2]){
+//             if(a[0] < a[2]){
+//                 continue;
+//             }
+//             a[0] = a[0] - 1;
+//         }
+//     }
+//     return 1;
+// }
+// int f2(int m[][6][5],int ww){
+//     m[2][0][0] = m[1][2][0];
+//      f(m[2]);
+//    f2(m,1);
+//    f(arr[4]);
+//     ww = 1;
+//    while(1.0);
 
-    int i = 0;
-    int j = 10;
-    {
-        i = 10;
-        {
-            int j = 10;
-            {
-                j = 20;
-            }
-        }
-    }
+//     int i = 0;
+//     int j = 10;
+//     {
+//         i = 10;
+//         {
+//             int j = 10;
+//             {
+//                 j = 20;
+//             }
+//         }
+//     }
 
-    return 1;
-}
+//     return 1;
+// }
 
 int main(){
     return 0;

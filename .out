@@ -1,0 +1,362 @@
+globalVars:
+        int* @M
+        int* @L
+        int* @N
+.entryBB:
+entry::BB0
+        int* @M = AllocaI
+        int* @L = AllocaI
+        int* @N = AllocaI
+define int@mul(int* @0,int* @1,int* @2,int* @3,int* @4,int* @5,int* @6,int* @7,int* @8)
+mul::BB0
+        int** @9 = AllocaI
+        StoreI int* @0 int** @9
+        int** @10 = AllocaI
+        StoreI int* @1 int** @10
+        int** @11 = AllocaI
+        StoreI int* @2 int** @11
+        int** @12 = AllocaI
+        StoreI int* @3 int** @12
+        int** @13 = AllocaI
+        StoreI int* @4 int** @13
+        int** @14 = AllocaI
+        StoreI int* @5 int** @14
+        int** @15 = AllocaI
+        StoreI int* @6 int** @15
+        int** @16 = AllocaI
+        StoreI int* @7 int** @16
+        int** @17 = AllocaI
+        StoreI int* @8 int** @17
+        int* @18 = AllocaI
+        StoreI 0 int* @18
+        int* @19 = LoadI int** @15
+        int* @21 = LoadI int** @9
+        int @23 = LoadI int* @22
+        int* @24 = LoadI int** @12
+        int @26 = LoadI int* @25
+        int @27 = MulI int @23 int @26
+        int* @28 = LoadI int** @9
+        int* @29 = GEP int* @28 1
+        int @30 = LoadI int* @29
+        int* @31 = LoadI int** @13
+        int @33 = LoadI int* @32
+        int @34 = MulI int @30 int @33
+        int @35 = AddI int @27 int @34
+        int* @36 = LoadI int** @9
+        int* @37 = GEP int* @36 2
+        int @38 = LoadI int* @37
+        int* @39 = LoadI int** @14
+        int @41 = LoadI int* @40
+        int @42 = MulI int @38 int @41
+        int @43 = AddI int @35 int @42
+        StoreI int @43 int* @20
+        int* @44 = LoadI int** @15
+        int* @45 = GEP int* @44 1
+        int* @46 = LoadI int** @9
+        int @48 = LoadI int* @47
+        int* @49 = LoadI int** @12
+        int* @50 = GEP int* @49 1
+        int @51 = LoadI int* @50
+        int @52 = MulI int @48 int @51
+        int* @53 = LoadI int** @9
+        int* @54 = GEP int* @53 1
+        int @55 = LoadI int* @54
+        int* @56 = LoadI int** @13
+        int* @57 = GEP int* @56 1
+        int @58 = LoadI int* @57
+        int @59 = MulI int @55 int @58
+        int @60 = AddI int @52 int @59
+        int* @61 = LoadI int** @9
+        int* @62 = GEP int* @61 2
+        int @63 = LoadI int* @62
+        int* @64 = LoadI int** @14
+        int* @65 = GEP int* @64 1
+        int @66 = LoadI int* @65
+        int @67 = MulI int @63 int @66
+        int @68 = AddI int @60 int @67
+        StoreI int @68 int* @45
+        int* @69 = LoadI int** @15
+        int* @70 = GEP int* @69 2
+        int* @71 = LoadI int** @9
+        int @73 = LoadI int* @72
+        int* @74 = LoadI int** @12
+        int* @75 = GEP int* @74 2
+        int @76 = LoadI int* @75
+        int @77 = MulI int @73 int @76
+        int* @78 = LoadI int** @9
+        int* @79 = GEP int* @78 1
+        int @80 = LoadI int* @79
+        int* @81 = LoadI int** @13
+        int* @82 = GEP int* @81 2
+        int @83 = LoadI int* @82
+        int @84 = MulI int @80 int @83
+        int @85 = AddI int @77 int @84
+        int* @86 = LoadI int** @9
+        int* @87 = GEP int* @86 2
+        int @88 = LoadI int* @87
+        int* @89 = LoadI int** @14
+        int* @90 = GEP int* @89 2
+        int @91 = LoadI int* @90
+        int @92 = MulI int @88 int @91
+        int @93 = AddI int @85 int @92
+        StoreI int @93 int* @70
+        int* @94 = LoadI int** @16
+        int* @96 = LoadI int** @10
+        int @98 = LoadI int* @97
+        int* @99 = LoadI int** @12
+        int @101 = LoadI int* @100
+        int @102 = MulI int @98 int @101
+        int* @103 = LoadI int** @10
+        int* @104 = GEP int* @103 1
+        int @105 = LoadI int* @104
+        int* @106 = LoadI int** @13
+        int @108 = LoadI int* @107
+        int @109 = MulI int @105 int @108
+        int @110 = AddI int @102 int @109
+        int* @111 = LoadI int** @10
+        int* @112 = GEP int* @111 2
+        int @113 = LoadI int* @112
+        int* @114 = LoadI int** @14
+        int @116 = LoadI int* @115
+        int @117 = MulI int @113 int @116
+        int @118 = AddI int @110 int @117
+        StoreI int @118 int* @95
+        int* @119 = LoadI int** @16
+        int* @120 = GEP int* @119 1
+        int* @121 = LoadI int** @10
+        int @123 = LoadI int* @122
+        int* @124 = LoadI int** @12
+        int* @125 = GEP int* @124 1
+        int @126 = LoadI int* @125
+        int @127 = MulI int @123 int @126
+        int* @128 = LoadI int** @10
+        int* @129 = GEP int* @128 1
+        int @130 = LoadI int* @129
+        int* @131 = LoadI int** @13
+        int* @132 = GEP int* @131 1
+        int @133 = LoadI int* @132
+        int @134 = MulI int @130 int @133
+        int @135 = AddI int @127 int @134
+        int* @136 = LoadI int** @10
+        int* @137 = GEP int* @136 2
+        int @138 = LoadI int* @137
+        int* @139 = LoadI int** @14
+        int* @140 = GEP int* @139 1
+        int @141 = LoadI int* @140
+        int @142 = MulI int @138 int @141
+        int @143 = AddI int @135 int @142
+        StoreI int @143 int* @120
+        int* @144 = LoadI int** @16
+        int* @145 = GEP int* @144 2
+        int* @146 = LoadI int** @10
+        int @148 = LoadI int* @147
+        int* @149 = LoadI int** @12
+        int* @150 = GEP int* @149 2
+        int @151 = LoadI int* @150
+        int @152 = MulI int @148 int @151
+        int* @153 = LoadI int** @10
+        int* @154 = GEP int* @153 1
+        int @155 = LoadI int* @154
+        int* @156 = LoadI int** @13
+        int* @157 = GEP int* @156 2
+        int @158 = LoadI int* @157
+        int @159 = MulI int @155 int @158
+        int @160 = AddI int @152 int @159
+        int* @161 = LoadI int** @10
+        int* @162 = GEP int* @161 2
+        int @163 = LoadI int* @162
+        int* @164 = LoadI int** @14
+        int* @165 = GEP int* @164 2
+        int @166 = LoadI int* @165
+        int @167 = MulI int @163 int @166
+        int @168 = AddI int @160 int @167
+        StoreI int @168 int* @145
+        int* @169 = LoadI int** @17
+        int* @171 = LoadI int** @11
+        int @173 = LoadI int* @172
+        int* @174 = LoadI int** @12
+        int @176 = LoadI int* @175
+        int @177 = MulI int @173 int @176
+        int* @178 = LoadI int** @11
+        int* @179 = GEP int* @178 1
+        int @180 = LoadI int* @179
+        int* @181 = LoadI int** @13
+        int @183 = LoadI int* @182
+        int @184 = MulI int @180 int @183
+        int @185 = AddI int @177 int @184
+        int* @186 = LoadI int** @11
+        int* @187 = GEP int* @186 2
+        int @188 = LoadI int* @187
+        int* @189 = LoadI int** @14
+        int @191 = LoadI int* @190
+        int @192 = MulI int @188 int @191
+        int @193 = AddI int @185 int @192
+        StoreI int @193 int* @170
+        int* @194 = LoadI int** @17
+        int* @195 = GEP int* @194 1
+        int* @196 = LoadI int** @11
+        int @198 = LoadI int* @197
+        int* @199 = LoadI int** @12
+        int* @200 = GEP int* @199 1
+        int @201 = LoadI int* @200
+        int @202 = MulI int @198 int @201
+        int* @203 = LoadI int** @11
+        int* @204 = GEP int* @203 1
+        int @205 = LoadI int* @204
+        int* @206 = LoadI int** @13
+        int* @207 = GEP int* @206 1
+        int @208 = LoadI int* @207
+        int @209 = MulI int @205 int @208
+        int @210 = AddI int @202 int @209
+        int* @211 = LoadI int** @11
+        int* @212 = GEP int* @211 2
+        int @213 = LoadI int* @212
+        int* @214 = LoadI int** @14
+        int* @215 = GEP int* @214 1
+        int @216 = LoadI int* @215
+        int @217 = MulI int @213 int @216
+        int @218 = AddI int @210 int @217
+        StoreI int @218 int* @195
+        int* @219 = LoadI int** @17
+        int* @220 = GEP int* @219 2
+        int* @221 = LoadI int** @11
+        int @223 = LoadI int* @222
+        int* @224 = LoadI int** @12
+        int* @225 = GEP int* @224 2
+        int @226 = LoadI int* @225
+        int @227 = MulI int @223 int @226
+        int* @228 = LoadI int** @11
+        int* @229 = GEP int* @228 1
+        int @230 = LoadI int* @229
+        int* @231 = LoadI int** @13
+        int* @232 = GEP int* @231 2
+        int @233 = LoadI int* @232
+        int @234 = MulI int @230 int @233
+        int @235 = AddI int @227 int @234
+        int* @236 = LoadI int** @11
+        int* @237 = GEP int* @236 2
+        int @238 = LoadI int* @237
+        int* @239 = LoadI int** @14
+        int* @240 = GEP int* @239 2
+        int @241 = LoadI int* @240
+        int @242 = MulI int @238 int @241
+        int @243 = AddI int @235 int @242
+        StoreI int @243 int* @220
+        ret int 0
+define int@main()
+main::BB0
+        StoreI 3 int* @N
+        StoreI 3 int* @M
+        StoreI 3 int* @L
+        int* @0 = AllocaI(3)
+        int* @1 = AllocaI(3)
+        int* @2 = AllocaI(3)
+        int* @3 = AllocaI(3)
+        int* @4 = AllocaI(3)
+        int* @5 = AllocaI(3)
+        int* @6 = AllocaI(6)
+        int* @7 = AllocaI(3)
+        int* @8 = AllocaI(3)
+        int* @9 = AllocaI
+        StoreI 0 int* @9
+        goto main::BB4
+main::BB4
+        int* @9 = Phi(main::BB0 int* @9, main::BB5 int* @9) 
+        int @10 = LoadI int* @9
+        int @11 = LoadI int* @M
+        int @12 = LTI int @10 int @11
+        goto int @12 ？ main::BB5 : main::BB6
+main::BB5
+        int @13 = LoadI int* @9
+        int* @14 = GEP int* @0 int @13
+        int @15 = LoadI int* @9
+        StoreI int @15 int* @14
+        int @16 = LoadI int* @9
+        int* @17 = GEP int* @1 int @16
+        int @18 = LoadI int* @9
+        StoreI int @18 int* @17
+        int @19 = LoadI int* @9
+        int* @20 = GEP int* @2 int @19
+        int @21 = LoadI int* @9
+        StoreI int @21 int* @20
+        int @22 = LoadI int* @9
+        int* @23 = GEP int* @3 int @22
+        int @24 = LoadI int* @9
+        StoreI int @24 int* @23
+        int @25 = LoadI int* @9
+        int* @26 = GEP int* @4 int @25
+        int @27 = LoadI int* @9
+        StoreI int @27 int* @26
+        int @28 = LoadI int* @9
+        int* @29 = GEP int* @5 int @28
+        int @30 = LoadI int* @9
+        StoreI int @30 int* @29
+        int @31 = LoadI int* @9
+        int @32 = AddI int @31 1
+        StoreI int @32 int* @9
+        goto main::BB4
+main::BB6
+        int @33 = call mul(int* @0 , int* @1 , int* @2 , int* @3 , int* @4 , int* @5 , int* @6 , int* @7 , int* @8)
+        StoreI int @33 int* @9
+        int* @34 = AllocaI
+        goto main::BB10
+main::BB10
+        int* @34 = Phi(main::BB6 int* @34, main::BB11 int* @34) 
+        int* @9 = Phi(main::BB6 int* @9, main::BB11 int* @9) 
+        int @35 = LoadI int* @9
+        int @36 = LoadI int* @N
+        int @37 = LTI int @35 int @36
+        goto int @37 ？ main::BB11 : main::BB12
+main::BB11
+        int @38 = LoadI int* @9
+        int* @39 = GEP int* @6 int @38
+        int @40 = LoadI int* @39
+        StoreI int @40 int* @34
+        int @41 = LoadI int* @9
+        int @42 = AddI int @41 1
+        StoreI int @42 int* @9
+        goto main::BB10
+main::BB12
+        StoreI 10 int* @34
+        StoreI 0 int* @9
+        goto main::BB16
+main::BB16
+        int* @34 = Phi(main::BB12 int* @34, main::BB17 int* @34) 
+        int* @9 = Phi(main::BB12 int* @9, main::BB17 int* @9) 
+        int @43 = LoadI int* @9
+        int @44 = LoadI int* @N
+        int @45 = LTI int @43 int @44
+        goto int @45 ？ main::BB17 : main::BB18
+main::BB17
+        int @46 = LoadI int* @9
+        int* @47 = GEP int* @7 int @46
+        int @48 = LoadI int* @47
+        StoreI int @48 int* @34
+        int @49 = LoadI int* @9
+        int @50 = AddI int @49 1
+        StoreI int @50 int* @9
+        goto main::BB16
+main::BB18
+        StoreI 10 int* @34
+        StoreI 0 int* @9
+        goto main::BB22
+main::BB22
+        int* @34 = Phi(main::BB18 int* @34, main::BB23 int* @34) 
+        int* @9 = Phi(main::BB18 int* @9, main::BB23 int* @9) 
+        int @51 = LoadI int* @9
+        int @52 = LoadI int* @N
+        int @53 = LTI int @51 int @52
+        goto int @53 ？ main::BB23 : main::BB24
+main::BB23
+        int @54 = LoadI int* @9
+        int* @55 = GEP int* @8 int @54
+        int @56 = LoadI int* @55
+        StoreI int @56 int* @34
+        int @57 = LoadI int* @9
+        int @58 = AddI int @57 1
+        StoreI int @58 int* @9
+        goto main::BB22
+main::BB24
+        StoreI 10 int* @34
+        ret int 0
+end...

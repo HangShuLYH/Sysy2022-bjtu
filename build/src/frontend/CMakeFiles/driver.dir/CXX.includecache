@@ -38,18 +38,6 @@ Instruction.hh
 Function.hh
 ../include/frontend/Function.hh
 
-../include/frontend/FlexLexer.h
-iostream
--
-
-../include/frontend/FlexLexer.hh
-FlexLexer.h
--
-parser.hh
-../include/frontend/parser.hh
-location.hh
-../include/frontend/location.hh
-
 ../include/frontend/Function.hh
 string
 ../include/frontend/string
@@ -128,18 +116,6 @@ set
 syntax_tree.hh
 ../include/frontend/syntax_tree.hh
 
-../include/frontend/driver.hh
-fstream
--
-string
--
-map
--
-parser.hh
-../include/frontend/parser.hh
-FlexLexer.hh
-../include/frontend/FlexLexer.hh
-
 ../include/frontend/location.hh
 iostream
 -
@@ -191,10 +167,4 @@ IRManager.hh
 /mnt/e/Sysy2022-bjtu/src/frontend/IRManager.hh
 MIRBuilder.hh
 /mnt/e/Sysy2022-bjtu/src/frontend/MIRBuilder.hh
-
-/mnt/e/Sysy2022-bjtu/src/frontend/driver.cc
-driver.hh
-/mnt/e/Sysy2022-bjtu/src/frontend/driver.hh
-parser.hh
-/mnt/e/Sysy2022-bjtu/src/frontend/parser.hh
 

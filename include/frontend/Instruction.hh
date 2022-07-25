@@ -713,6 +713,7 @@ class PhiIR : public Instruction {
 public:
     Value* dst;
     std::map<BasicBlock*, Value*> params;
+    bool deleted = false;
     PhiIR(std::vector<BasicBlock*> bbs, Value* var) {
         for(auto& bb : bbs) {
             params[bb] = var;
@@ -724,19 +725,23 @@ public:
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        // std::cout << "TEST PHI\n\n" << std::endl;
-        Operands[0]->getVal()->print(out);
-        out << " = Phi(";
-        for(auto iter(params.begin()); iter != params.end(); iter++) {
-            out << iter->first->name << " ";
-            if(!iter->second) {
-                out << "nullptr";
+        if(!deleted)
+        {
+            Operands[0]->getVal()->print(out);
+            out << " = Phi(";
+            for(auto iter(params.begin()); iter != params.end(); iter++) {
+                out << iter->first->name << " ";
+                if(!iter->second) {
+                    out << "nullptr";
+                }
+                else iter->second->print(out);
+                out << ", ";
             }
-            else iter->second->print(out);
-            out << ", ";
+            out << "\b\b)" << std::endl;
         }
-        out << "\b\b)" << std::endl;
+        else out << "\r";
     }
+    void deletePhiIR() { deleted = true; }
 };
 
 #endif //SYSY2022_BJTU_INSTRUCTION_HH

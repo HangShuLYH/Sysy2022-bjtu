@@ -21,6 +21,7 @@ public:
     void genDefUse();
     void addPhiDefUse(BasicBlock* bb, Use* use);
     void placePhi();
+    void removeRedundantPhi();
     void rename();
     void addStartDefUse(BasicBlock* bb, Value* val, std::vector<Use*>* vec);
 };
@@ -39,6 +40,7 @@ void Mem2reg::execute()
         // insideBlockForwarding(function);
         genDefUse();
         placePhi();
+        // removeRedundantPhi();
         rename();
     }
 }
@@ -113,7 +115,7 @@ void Mem2reg::addPhiDefUse(BasicBlock* bb, Use* use) {
     std::pair<Value*, std::vector<Use*>*> p(use->getVal(), vec);
 
     for(auto ir : bb->getIr()) {
-        if((typeid(*ir) == typeid(StoreIIR) || typeid(*ir) == typeid(StoreFIR)) && ir->getOperands()[0]->getVal() == use->getVal()) {
+        if((typeid(*ir) == typeid(StoreIIR) || typeid(*ir) == typeid(StoreFIR) || typeid(*ir) == typeid(PhiIR)) && ir->getOperands()[0]->getVal() == use->getVal()) {
             break;
         }
         else {
@@ -144,8 +146,9 @@ void Mem2reg::placePhi() {
             W.erase(W.begin());
             for(auto& dfBB : bb->getDomFrontier()) {
                 if(!bbPhis[dfBB].count(defsite.first)) {
-                    dfBB->ir.insert(dfBB->ir.begin(), new PhiIR(dfBB->getPre(), defsite.first));
-                    this->addPhiDefUse(dfBB, dfBB->ir[0]->getOperands()[0]);
+                    PhiIR* phiIr = new PhiIR(dfBB->getPre(), defsite.first);
+                    this->addPhiDefUse(dfBB, phiIr->getOperands()[0]);
+                    dfBB->ir.insert(dfBB->ir.begin(), phiIr);
                     bbPhis[dfBB].insert(defsite.first);
 
                     // 查找是否存在相同的变量，bb的var可改进为set
@@ -173,6 +176,23 @@ void Mem2reg::placePhi() {
         }
     }
 }
+
+// 【废弃代码】与重命名以整合
+void Mem2reg::removeRedundantPhi() {
+    for(auto& bb : function->getBB()) {
+        for(auto& defuse : bb->defuse) {
+            for(auto iter(defuse.second.begin()); iter != defuse.second.end();) {
+                std::vector<Use*>* vec(iter->second);
+                if(vec && vec->size() == 1 && typeid(*(*vec)[0]->getUser()) == typeid(PhiIR)) {
+                    dynamic_cast<PhiIR*>((*vec)[0]->getUser())->deletePhiIR();
+                    defuse.second.erase(iter);
+                }
+                else iter++;
+            }
+        }
+    }
+}
+
 
 void Mem2reg::rename() {
     for(auto& bb : function->getBB()) {
@@ -202,18 +222,26 @@ void Mem2reg::rename() {
 
     for(auto& bb : function->getBB()) {
         for(auto& defuse : bb->defuse) {
-            for(auto iter(defuse.second.begin()); iter != defuse.second.end(); iter++) {
+            for(auto iter(defuse.second.begin()); iter != defuse.second.end();) {
                 std::vector<Use*>* vec(iter->second);
                 if(vec && vec->size() > 0 && typeid(*(*vec)[0]->getUser()) == typeid(PhiIR)) {
-                    PhiIR* phiIR = dynamic_cast<PhiIR*>((*vec)[0]->getUser());
-                    for(auto& param : phiIR->params) {
-                        if(param.first->defuse.count(param.second)) {
-                            param.second = param.first->defuse[param.second].rbegin()->first;
-                        } else {
-                            param.second = nullptr;
+                    if(vec->size() == 1) {
+                        dynamic_cast<PhiIR*>((*vec)[0]->getUser())->deletePhiIR();
+                        defuse.second.erase(iter);
+                    }
+                    else {
+                        PhiIR* phiIR = dynamic_cast<PhiIR*>((*vec)[0]->getUser());
+                        for(auto& param : phiIR->params) {
+                            if(param.first->defuse.count(param.second)) {
+                                param.second = param.first->defuse[param.second].rbegin()->first;
+                            } else {
+                                param.second = nullptr;
+                            }
                         }
+                        iter++;
                     }
                 }
+                else iter++;
             }
         }
     }

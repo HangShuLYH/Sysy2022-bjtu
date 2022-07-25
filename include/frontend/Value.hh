@@ -98,7 +98,9 @@ public:
     std::string getName() {return name;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
-    void addUse(Use* U) { this->Uses.insert(U); }
+    void addUse(Use* U) {
+        this->Uses.insert(U);
+    }
     void killUse(Use* U) { this->Uses.erase(U); }
     std::set<Use*> getUses() { return Uses; }
     void setNum(int num) { this->num = num; }
@@ -324,6 +326,5 @@ public:
     User() {;}
     void addOperand(Use* Operand) { Operands.push_back(Operand); }
     std::vector<Use*> getOperands() { return this->Operands; }
-    // void setOperand(Use* Operand, int arg) {this->Operands[arg] = Operand; }
 };
 #endif
