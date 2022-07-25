@@ -5,30 +5,37 @@
 #include "errors/errors.hh"
 #include "MIRBuilder.hh"
 #include "codegen.hh"
+
 driver ddriver;
 CompUnit *root;
 
-int main (int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     std::string inputFileName;
     std::string outputFileName = "a.s";
+    bool printAST = false;
     bool printIR = false;
-    for (int i = 1;i < argc;i++) {
+    for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "-o") {
-            outputFileName = argv[i+1];
+            outputFileName = argv[i + 1];
             i++;
-        }else if (std::string(argv[i]) == "-g") {
+        } else if (std::string(argv[i]) == "-g") {
             printIR = true;
-        }else {
+        } else if (std::string(argv[i]) == "-tree") {
+            printAST = true;
+        } else {
             inputFileName = argv[i];
         }
     }
+
     root = ddriver.parse(inputFileName);
+    if (printAST) {
+        root->visit(0);
+    }
     IrVisitor irVisitor;
     try {
         irVisitor.visit(root);
-    }catch (SyntaxError &e) {
-        std::cerr << "error: " << e.what() << "\n";
+    } catch (SyntaxError &e) {
+        std::cerr << "error: " << e.what()<< "\n";
         return EXIT_FAILURE;
     }
     MIRBuilder mirBuilder(irVisitor);
@@ -37,10 +44,10 @@ int main (int argc, char *argv[])
         irVisitor.print(std::cout);
     }
     std::ofstream out(outputFileName);
-    Codegen codegen(irVisitor,out);
+    Codegen codegen(irVisitor, out);
     codegen.generateProgramCode();
-    //codegen.regAlloc();
-    //std::cout << "end..." <<std::endl;
+//codegen.regAlloc();
+//std::cout << "end..." <<std::endl;
     return 0;
 }
 /*

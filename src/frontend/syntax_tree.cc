@@ -382,7 +382,9 @@ void SelectStmt::visit(int depth) {
     std::cout << "SelectStmt" << std::endl;
 #endif
     cond->visit(depth+1);
-    ifStmt->visit(depth+1);
+    if (ifStmt) {
+        ifStmt->visit(depth + 1);
+    }
     if (elseStmt){
         elseStmt->visit(depth+1);
     }
@@ -397,7 +399,9 @@ void IterationStmt::visit(int depth) {
     std::cout << "IterationStmt" << std::endl;
 #endif
     cond->visit(depth+1);
-    stmt->visit(depth+1);
+    if (stmt) {
+        stmt->visit(depth + 1);
+    }
 #ifdef DEBUG
     space(depth);
     std::cout << "IterationStmt" << std::endl;

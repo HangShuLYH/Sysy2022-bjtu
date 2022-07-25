@@ -594,36 +594,36 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
     condBB.push(cur_bb);
     dynamic_cast<SelectBlock *>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++));
     selectStmt->cond->accept(*this);
+    bool temp = isIF;
+    isIF = true;
+    cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+    pushBB();
+    isIF = temp;
     if (selectStmt->ifStmt) {
         if (selectStmt->ifStmt->returnStmt ||
             selectStmt->ifStmt->breakStmt ||
             selectStmt->ifStmt->assignStmt ||
             selectStmt->ifStmt->continueStmt ||
             selectStmt->ifStmt->assignStmt) {
-            bool temp = isIF;
-            isIF = true;
-            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
-            pushBB();
-            isIF = temp;
         }
-        bool temp = isIF;
+        temp = isIF;
         isIF = true;
         selectStmt->ifStmt->accept(*this);
         isIF = temp;
     }
+    temp = isIF;
+    isIF = false;
+    cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+    pushBB();
+    isIF = temp;
     if (selectStmt->elseStmt) {
         if (selectStmt->elseStmt->returnStmt ||
             selectStmt->elseStmt->breakStmt ||
             selectStmt->elseStmt->assignStmt ||
             selectStmt->elseStmt->continueStmt ||
             selectStmt->elseStmt->assignStmt) {
-            bool temp = isIF;
-            isIF = false;
-            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
-            pushBB();
-            isIF = temp;
         }
-        bool temp = isIF;
+        temp = isIF;
         isIF = false;
         selectStmt->elseStmt->accept(*this);
         isIF = temp;
@@ -640,16 +640,17 @@ void IrVisitor::visit(IterationStmt *iterationStmt) {
     condBB.push(cur_bb);
     dynamic_cast<IterationBlock *>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++));
     iterationStmt->cond->accept(*this);
-    if (iterationStmt->stmt &&
-        iterationStmt->stmt->returnStmt ||
-        iterationStmt->stmt->breakStmt ||
-        iterationStmt->stmt->assignStmt ||
-        iterationStmt->stmt->continueStmt ||
-        iterationStmt->stmt->assignStmt) {
-        cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
-        pushBB();
+    if (iterationStmt->stmt) {
+        if (iterationStmt->stmt->returnStmt ||
+            iterationStmt->stmt->breakStmt ||
+            iterationStmt->stmt->assignStmt ||
+            iterationStmt->stmt->continueStmt ||
+            iterationStmt->stmt->assignStmt) {
+            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+            pushBB();
+        }
+        iterationStmt->stmt->accept(*this);
     }
-    iterationStmt->stmt->accept(*this);
     cur_bb = tempBB;
     condBB.pop();
     loopCnt--;

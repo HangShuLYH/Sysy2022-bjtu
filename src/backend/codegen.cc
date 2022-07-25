@@ -684,9 +684,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
     }
     if (typeid(*ir) == typeid(BranchIR)) {
         BranchIR *branchIr = dynamic_cast<BranchIR *>(ir);
-        return {new CmpImm(getGR(branchIr->cond), 1),
-                new B(branchIr->trueTarget->name, EQU),
-                new B(branchIr->falseTarget->name, NE)};
+        return {new CmpImm(getGR(branchIr->cond), 0),
+                new B(branchIr->trueTarget->name, NE),
+                new B(branchIr->falseTarget->name, EQU)};
     }
     if (typeid(*ir) == typeid(CallIR)) {
         CallIR *callIr = dynamic_cast<CallIR *>(ir);
