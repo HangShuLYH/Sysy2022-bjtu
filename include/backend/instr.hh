@@ -848,7 +848,7 @@ public:
         src1 = GR(grMapping[src1]);
     }
     void print(std::ostream& out) override final{
-        out << "rsub " << dst.getName() << "," << src1.getName() << ",#" << src2 << "\n";
+        out << "rsb " << dst.getName() << "," << src1.getName() << ",#" << src2 << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {src1};

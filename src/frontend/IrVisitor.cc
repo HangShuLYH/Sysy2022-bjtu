@@ -115,7 +115,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
 
         for (size_t i = 0; i < constInitVal->constInitValList.size(); ++i) {
             Value *t = new VarValue("", var->getType(), false, isGlobal() ? cnt++ : cur_func->varCnt++, true);
-            if (!constInitVal->constInitValList[i]->constInitValList.empty()) {
+            if (!constInitVal->constInitValList[i]->constExp) {
                 size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
                 for (; left_len > 0; left_len--) {
                     if (var->getType()->isIntPointer()) {
@@ -137,7 +137,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
             }
 
             constInitVal->constInitValList[i]->accept(*this);
-            if (!tempVal.getVal() && constInitVal->constInitValList[i]->constInitValList.empty()) {
+            if (!tempVal.getVal() && constInitVal->constInitValList[i]->constExp) {
                 num_cnt++;
                 if (var->getType()->isIntPointer()) {
                     if (tempVal.isInt()) {
@@ -170,7 +170,7 @@ void IrVisitor::visit(ConstInitVal *constInitVal) {
                         }
                     }
                 }
-            } else if (tempVal.getVal() && constInitVal->constInitValList[i]->constInitValList.empty()) {
+            } else if (tempVal.getVal() && constInitVal->constInitValList[i]->constExp) {
                 num_cnt++;
                 VarValue *temp = nullptr;
                 if (var->getType()->isInt() && tempVal.getVal()->getType()->isFloat()
@@ -331,7 +331,7 @@ void IrVisitor::visit(InitVal *initVal) {
 
         for (size_t i = 0; i < initVal->initValList.size(); ++i) {
             Value *t = new VarValue("", var->getType(), false, isGlobal() ? cnt++ : cur_func->varCnt++, true);
-            if (!initVal->initValList[i]->initValList.empty()) {
+            if (!initVal->initValList[i]->exp) {
                 size_t left_len(num_cnt % dim_len == 0 ? 0 : dim_len - num_cnt % dim_len);
                 for (; left_len > 0; left_len--) {
                     if (var->getType()->isIntPointer()) {
@@ -349,7 +349,7 @@ void IrVisitor::visit(InitVal *initVal) {
             }
 
             initVal->initValList[i]->accept(*this);
-            if (!tempVal.getVal() && initVal->initValList[i]->initValList.empty()) {
+            if (!tempVal.getVal() && initVal->initValList[i]->exp) {
                 num_cnt++;
                 if (var->getType()->isIntPointer()) {
                     if (tempVal.isInt()) {
@@ -374,7 +374,7 @@ void IrVisitor::visit(InitVal *initVal) {
                                 StoreIRManager::getIR(t, tempVal.getFloat(), new Type(TypeID::FLOAT, typeFloat)));
                     }
                 }
-            } else if (tempVal.getVal() && initVal->initValList[i]->initValList.empty()) {
+            } else if (tempVal.getVal() && initVal->initValList[i]->exp) {
                 num_cnt++;
                 if ((var->getType()->isIntPointer() &&
                      (tempVal.getVal()->getType()->isFloat() || tempVal.getVal()->getType()->isFloatPointer()))
@@ -594,22 +594,23 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
     condBB.push(cur_bb);
     dynamic_cast<SelectBlock *>(cur_bb)->cond.push_back(new CondBlock(cur_bb, cur_func->name, cur_func->bbCnt++));
     selectStmt->cond->accept(*this);
-    if (selectStmt->ifStmt &&
-        selectStmt->ifStmt->returnStmt ||
-        selectStmt->ifStmt->breakStmt ||
-        selectStmt->ifStmt->assignStmt ||
-        selectStmt->ifStmt->continueStmt ||
-        selectStmt->ifStmt->assignStmt) {
+    if (selectStmt->ifStmt) {
+        if (selectStmt->ifStmt->returnStmt ||
+            selectStmt->ifStmt->breakStmt ||
+            selectStmt->ifStmt->assignStmt ||
+            selectStmt->ifStmt->continueStmt ||
+            selectStmt->ifStmt->assignStmt) {
+            bool temp = isIF;
+            isIF = true;
+            cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
+            pushBB();
+            isIF = temp;
+        }
         bool temp = isIF;
         isIF = true;
-        cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
-        pushBB();
+        selectStmt->ifStmt->accept(*this);
         isIF = temp;
     }
-    bool temp = isIF;
-    isIF = true;
-    selectStmt->ifStmt->accept(*this);
-    isIF = temp;
     if (selectStmt->elseStmt) {
         if (selectStmt->elseStmt->returnStmt ||
             selectStmt->elseStmt->breakStmt ||
@@ -622,7 +623,7 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
             pushBB();
             isIF = temp;
         }
-        temp = isIF;
+        bool temp = isIF;
         isIF = false;
         selectStmt->elseStmt->accept(*this);
         isIF = temp;

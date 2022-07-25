@@ -12,11 +12,14 @@ int main (int argc, char *argv[])
 {
     std::string inputFileName;
     std::string outputFileName = "a.s";
+    bool printIR = false;
     for (int i = 1;i < argc;i++) {
         if (std::string(argv[i]) == "-o") {
             outputFileName = argv[i+1];
             i++;
-        } else {
+        }else if (std::string(argv[i]) == "-g") {
+            printIR = true;
+        }else {
             inputFileName = argv[i];
         }
     }
@@ -30,13 +33,14 @@ int main (int argc, char *argv[])
     }
     MIRBuilder mirBuilder(irVisitor);
     mirBuilder.getPreAndSucc();
-
-    irVisitor.print(std::cout);
+    if (printIR) {
+        irVisitor.print(std::cout);
+    }
     std::ofstream out(outputFileName);
     Codegen codegen(irVisitor,out);
     codegen.generateProgramCode();
     //codegen.regAlloc();
-    std::cout << "end..." <<std::endl;
+    //std::cout << "end..." <<std::endl;
     return 0;
 }
 /*
