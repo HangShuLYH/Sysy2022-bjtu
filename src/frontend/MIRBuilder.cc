@@ -9,20 +9,40 @@ std::vector<BasicBlock*> MIRBuilder::relatedCond(std::vector<BasicBlock*> bbs, B
     BasicBlock* lastOrBB = nextAB;
     dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->trueBB = firstBB;
     dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->falseBB = nextAB;
-    dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
-            ir.push_back(new BranchIR(firstBB, nextAB, dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->val));
+    CondBlock* condBlock = dynamic_cast<CondBlock*>(bbs[bbs.size()-1]);
+    if (condBlock->val.getVal()) {
+        condBlock->ir.push_back(new BranchIR(firstBB,nextAB,condBlock->val.getVal()));
+    } else if (condBlock->val.getConst() != 0){
+        condBlock->ir.push_back(new JumpIR(firstBB));
+    } else {
+        condBlock->ir.push_back(new JumpIR(nextAB));
+    }
+//    dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->
+//            ir.push_back(new BranchIR(firstBB, nextAB, dynamic_cast<CondBlock*>(bbs[bbs.size()-1])->val));
 
     for(int i = bbs.size() - 2; i >= 0; --i){
         if(dynamic_cast<CondBlock*>(bbs[i])->isAnd){
             dynamic_cast<CondBlock*>(bbs[i])->trueBB = bbs[i+1];
             dynamic_cast<CondBlock*>(bbs[i])->falseBB = lastOrBB;
-            dynamic_cast<CondBlock*>(bbs[i])->
-                    ir.push_back(new BranchIR(bbs[i+1], lastOrBB, dynamic_cast<CondBlock*>(bbs[i])->val));
+            CondBlock* cb = dynamic_cast<CondBlock*>(bbs[i]);
+            if (cb->val.getVal()) {
+                cb->ir.push_back(new BranchIR(bbs[i+1],lastOrBB,cb->val.getVal()));
+            } else if (cb->val.getConst() != 0){
+                cb->ir.push_back(new JumpIR(bbs[i+1]));
+            } else {
+                cb->ir.push_back(new JumpIR(lastOrBB));
+            }
         } else{
             dynamic_cast<CondBlock*>(bbs[i])->trueBB = firstBB;
             dynamic_cast<CondBlock*>(bbs[i])->falseBB = bbs[i+1];
-            dynamic_cast<CondBlock*>(bbs[i])->
-                    ir.push_back(new BranchIR(firstBB, bbs[i+1], dynamic_cast<CondBlock*>(bbs[i])->val));
+            CondBlock* cb = dynamic_cast<CondBlock*>(bbs[i]);
+            if (cb->val.getVal()) {
+                cb->ir.push_back(new BranchIR(firstBB,bbs[i+1],cb->val.getVal()));
+            } else if (cb->val.getConst() != 0){
+                cb->ir.push_back(new JumpIR(firstBB));
+            } else {
+                cb->ir.push_back(new JumpIR(bbs[i+1]));
+            }
             if(i+1<bbs.size()){
                 lastOrBB = bbs[i+1];
             }

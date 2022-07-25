@@ -62,7 +62,7 @@ class CondBlock:public BasicBlock{
 public:
     BasicBlock* trueBB = nullptr;
     BasicBlock* falseBB = nullptr;
-    Value* val = nullptr;
+    TempVal val;
     bool isAnd = false;
     CondBlock(BasicBlock* parent,std::string func_name,int cnt): BasicBlock(parent,func_name,cnt){}
     void print(std::ostream& out) override final{
@@ -95,8 +95,7 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty() &&
-                !dynamic_cast<CondBlock*>(*iter)->val) {
+            if ((*iter)->ir.empty() && !dynamic_cast<CondBlock*>(*iter)->val.getType()) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;
@@ -148,8 +147,7 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty() &&
-                !dynamic_cast<CondBlock*>(*iter)->val) {
+            if ((*iter)->ir.empty() && !dynamic_cast<CondBlock*>(*iter)->val.getType()) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;

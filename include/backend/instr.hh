@@ -49,6 +49,9 @@ public:
             case Div:
                 out << "sdiv ";
                 break;
+            default:
+                out << "wrongInstr ";
+                break;
         }
         out << dst.getName() << "," << src1.getName() << "," << src2.getName() << "\n";
     }
@@ -110,7 +113,7 @@ public:
     enum Type {Add,Sub} op;
     GR dst, src1;
     int src2;
-    GRegImmInstr(Type op,GR dst,GR src1,int src2): dst(dst),src1(src1),src2(src2){}
+    GRegImmInstr(Type op,GR dst,GR src1,int src2): dst(dst),src1(src1),src2(src2),op(op){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src1 = GR(grMapping[src1]);
