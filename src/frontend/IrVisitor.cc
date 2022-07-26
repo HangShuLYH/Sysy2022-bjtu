@@ -749,6 +749,12 @@ void IrVisitor::visit(LVal *lVal) {
             tempVal.setVal(nullptr);
         }
         if (tempVal.getVal() && tempVal.getVal()->getArrayDims().size() != 0) {
+            Value *v1 = new VarValue("", tempVal.getType(), isGlobal(),
+                                     isGlobal() ? cnt++ : cur_func->varCnt++,
+                                     true);
+            cur_bb->pushIr(new GEPIR(v1,tempVal.getVal(),0));
+            tempVal.setVal(v1);
+            tempVal.setType(v1->getType());
             useArgs = true;
         }
         return;
