@@ -758,14 +758,14 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 fr_cnt++;
             }
         }
-        //vec.push_back(new Push({}));
+//        vec.push_back(new Push({}));
         vec.push_back(new Bl(callIr->func->name));
-        //vec.push_back(new Pop({}));
+//        vec.push_back(new Pop({}));
         if (callIr->returnVal) {
             if (callIr->returnVal->getType()->isInt()) {
-                gRegMapping[callIr->returnVal] = 0;
+                vec.push_back(new MoveReg(getGR(callIr->returnVal),GR(0)));
             } else {
-                fRegMapping[callIr->returnVal] = 0;
+                vec.push_back(new VMoveReg(getFR(callIr->returnVal),FR(0)));
             }
         }
         return vec;

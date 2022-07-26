@@ -6,96 +6,34 @@
 .L0:
 	bx lr
 main:
-	push {lr}
-	sub sp,sp,#160
+	push {r4,lr}
+	sub sp,sp,#0
 	bl .init
 .L1:
 	mov r0,#1
+	bl findfa
+	mov r4,r0
+	mov r0,#2
+	bl findfa
+	cmp r4,r0
+	mov r0,#0
+	moveq r0,#1
+	cmp r0,#0
+	bne .L2
+	beq .L3
+.L2:
+	mov r0,#1
+	add sp,sp, #0
+	pop {r4,pc}
+.L3:
+	mov r0,#0
+	add sp,sp, #0
+	pop {r4,pc}
+findfa:
+	push {lr}
+	sub sp,sp,#4
+.L4:
 	str r0,[sp,#0]
-	mov r0,#2
-	str r0,[sp,#4]
-	mov r0,#3
-	str r0,[sp,#8]
-	mov r0,#4
-	str r0,[sp,#12]
-	mov r0,#0
-	str r0,[sp,#16]
-	mov r0,#0
-	str r0,[sp,#20]
-	mov r0,#7
-	str r0,[sp,#24]
-	mov r0,#0
-	str r0,[sp,#28]
-	mov r0,#0
-	str r0,[sp,#32]
-	mov r0,#0
-	str r0,[sp,#36]
-	mov r0,#0
-	str r0,[sp,#40]
-	mov r0,#0
-	str r0,[sp,#44]
-	mov r0,#0
-	str r0,[sp,#48]
-	mov r0,#0
-	str r0,[sp,#52]
-	mov r0,#0
-	str r0,[sp,#56]
-	mov r0,#0
-	str r0,[sp,#60]
 	mov r0,#1
-	str r0,[sp,#64]
-	mov r0,#2
-	str r0,[sp,#68]
-	mov r0,#3
-	str r0,[sp,#72]
-	mov r0,#4
-	str r0,[sp,#76]
-	mov r0,#5
-	str r0,[sp,#80]
-	mov r0,#6
-	str r0,[sp,#84]
-	mov r0,#7
-	str r0,[sp,#88]
-	mov r0,#8
-	str r0,[sp,#92]
-	mov r0,#1
-	str r0,[sp,#96]
-	mov r0,#2
-	str r0,[sp,#100]
-	mov r0,#3
-	str r0,[sp,#104]
-	mov r0,#0
-	str r0,[sp,#108]
-	mov r0,#5
-	str r0,[sp,#112]
-	mov r0,#0
-	str r0,[sp,#116]
-	mov r0,#7
-	str r0,[sp,#120]
-	mov r0,#8
-	str r0,[sp,#124]
-	ldr r0,[sp,#116]
-	str r0,[sp,#128]
-	ldr r0,[sp,#84]
-	str r0,[sp,#132]
-	mov r0,#3
-	str r0,[sp,#136]
-	mov r0,#4
-	str r0,[sp,#140]
-	mov r0,#5
-	str r0,[sp,#144]
-	mov r0,#6
-	str r0,[sp,#148]
-	mov r0,#7
-	str r0,[sp,#152]
-	mov r0,#8
-	str r0,[sp,#156]
-	ldr r1,[sp,#156]
-	ldr r0,[sp,#128]
-	add r1,r1,r0
-	ldr r0,[sp,#132]
-	add r1,r1,r0
-	ldr r0,[sp,#120]
-	add r0,r1,r0
-	add sp,sp, #160
+	add sp,sp, #4
 	pop {pc}

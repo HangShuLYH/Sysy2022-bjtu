@@ -186,12 +186,14 @@ void ColoringAlloc::build() {
 
 void ColoringAlloc::addEdgeGR(GR lhs, GR rhs) {
     if (adjSetGR.count(std::make_pair(lhs, rhs)) == 0 && lhs != rhs) {
-        if (lhs.isVirtual()) {
+        adjSetGR.insert(std::make_pair(lhs,rhs));
+        adjSetGR.insert(std::make_pair(rhs,lhs));
+        if (preColoredGR.count(lhs) == 0) {
             adjListGR[lhs].insert(rhs);
             if (degreeGR.count(lhs) == 0) degreeGR[lhs] = 0;
             degreeGR[lhs]++;
         }
-        if (rhs.isVirtual()) {
+        if (preColoredGR.count(rhs) == 0) {
             adjListGR[rhs].insert(lhs);
             if (degreeGR.count(rhs) == 0) degreeGR[rhs] = 0;
             degreeGR[rhs]++;
@@ -201,12 +203,14 @@ void ColoringAlloc::addEdgeGR(GR lhs, GR rhs) {
 
 void ColoringAlloc::addEdgeFR(FR lhs, FR rhs) {
     if (adjSetFR.count(std::make_pair(lhs, rhs)) == 0 && lhs != rhs) {
-        if (lhs.isVirtual()) {
+        adjSetFR.insert(std::make_pair(lhs,rhs));
+        adjSetFR.insert(std::make_pair(rhs,lhs));
+        if (preColoredFR.count(lhs) == 0) {
             adjListFR[lhs].insert(rhs);
             if (degreeFR.count(lhs) == 0) degreeFR[lhs] = 0;
             degreeFR[lhs]++;
         }
-        if (rhs.isVirtual()) {
+        if (preColoredFR.count(rhs) == 0) {
             adjListFR[rhs].insert(lhs);
             if (degreeFR.count(rhs) == 0) degreeFR[rhs] = 0;
             degreeFR[rhs]++;
@@ -293,7 +297,7 @@ void ColoringAlloc::simplifyGR() {
     for (auto it = simplifyWorkListGR.begin(); it != simplifyWorkListGR.end();) {
         GR gr = *it;
         it = simplifyWorkListGR.erase(it);
-        if (!gr.isVirtual()) {
+        if (preColoredGR.count(gr) != 0) {
             continue;
         }
         stackGR.push(gr);
@@ -307,7 +311,7 @@ void ColoringAlloc::simplifyFR() {
     for (auto it = simplifyWorkListFR.begin(); it != simplifyWorkListFR.end();) {
         FR fr = *it;
         it = simplifyWorkListFR.erase(it);
-        if (!fr.isVirtual()) {
+        if (preColoredFR.count(fr) != 0) {
             continue;
         }
         stackFR.push(fr);
@@ -403,7 +407,7 @@ void ColoringAlloc::coalesceGR() {
         GR x = getAliasGR(instr->getDefG()[0]);
         GR y = getAliasGR(instr->getUseG()[0]);
         GR u, v;
-        if (!y.isVirtual()) {
+        if (preColoredGR.count(y) != 0) {
             u = y;
             v = x;
         } else {
@@ -414,13 +418,13 @@ void ColoringAlloc::coalesceGR() {
         if (u == v) {
             coalescedMovesGR.insert(instr);
             addWorkListGR(u);
-        } else if (!v.isVirtual() ||
+        } else if (preColoredGR.count(v) != 0 ||
                    adjSetGR.count(std::make_pair(u, v)) != 0) {
             constrainedMovesGR.insert(instr);
             addWorkListGR(u);
             addWorkListGR(v);
         } else {
-            bool flag = !u.isVirtual();
+            bool flag = (preColoredGR.count(u) != 0);
             for (GR t: adjacentGR(v)) {
                 flag &= okGR(t, u);
             }
@@ -428,7 +432,7 @@ void ColoringAlloc::coalesceGR() {
             for (GR gr: adjacentGR(v)) {
                 temp.insert(gr);
             }
-            if (flag || u.isVirtual() && conservativeGR(temp)) {
+            if (flag || preColoredGR.count(u) == 0 && conservativeGR(temp)) {
                 coalescedMovesGR.insert(instr);
                 combineGR(u, v);
                 addWorkListGR(u);
@@ -445,7 +449,7 @@ void ColoringAlloc::coalesceFR() {
         FR x = getAliasFR(instr->getDefF()[0]);
         FR y = getAliasFR(instr->getUseF()[0]);
         FR u, v;
-        if (!y.isVirtual()) {
+        if (preColoredFR.count(y) != 0) {
             u = y;
             v = x;
         } else {
@@ -456,13 +460,13 @@ void ColoringAlloc::coalesceFR() {
         if (u == v) {
             coalescedMovesFR.insert(instr);
             addWorkListFR(u);
-        } else if (!v.isVirtual() ||
+        } else if (preColoredFR.count(v) != 0 ||
                    adjSetFR.count(std::make_pair(u, v)) != 0) {
             constrainedMovesFR.insert(instr);
             addWorkListFR(u);
             addWorkListFR(v);
         } else {
-            bool flag = !u.isVirtual();
+            bool flag = (preColoredFR.count(u) != 0);
             for (FR t: adjacentFR(v)) {
                 flag &= okFR(t, u);
             }
@@ -470,7 +474,7 @@ void ColoringAlloc::coalesceFR() {
             for (FR gr: adjacentFR(v)) {
                 temp.insert(gr);
             }
-            if (flag || u.isVirtual() && conservativeFR(temp)) {
+            if (flag || preColoredFR.count(u) && conservativeFR(temp)) {
                 coalescedMovesFR.insert(instr);
                 combineFR(u, v);
                 addWorkListFR(u);
@@ -482,14 +486,14 @@ void ColoringAlloc::coalesceFR() {
 }
 
 void ColoringAlloc::addWorkListGR(GR gr) {
-    if (gr.isVirtual() && !(moveRelatedGR(gr) && degreeGR[gr] < KGR)) {
+    if (preColoredGR.count(gr) == 0 && !(moveRelatedGR(gr) && degreeGR[gr] < KGR)) {
         freezeWorkListGR.erase(gr);
         simplifyWorkListGR.insert(gr);
     }
 }
 
 void ColoringAlloc::addWorkListFR(FR fr) {
-    if (fr.isVirtual() && !(moveRelatedFR(fr) && degreeFR[fr] < KFR)) {
+    if (preColoredFR.count(fr) == 0  && !(moveRelatedFR(fr) && degreeFR[fr] < KFR)) {
         freezeWorkListFR.erase(fr);
         simplifyWorkListFR.insert(fr);
     }
@@ -510,12 +514,12 @@ FR ColoringAlloc::getAliasFR(FR fr) {
 }
 
 bool ColoringAlloc::okGR(GR t, GR r) {
-    return degreeGR[t] < KGR || !t.isVirtual() ||
+    return degreeGR[t] < KGR || preColoredGR.count(t) != 0 ||
            adjSetGR.count(std::make_pair(t, r));
 }
 
 bool ColoringAlloc::okFR(FR t, FR r) {
-    return degreeFR[t] < KFR || !t.isVirtual() ||
+    return degreeFR[t] < KFR || preColoredFR.count(t) != 0 ||
            adjSetFR.count(std::make_pair(t, r));
 }
 
@@ -537,9 +541,9 @@ bool ColoringAlloc::conservativeFR(std::set<FR> nodesFR) {
 
 void ColoringAlloc::combineGR(GR u, GR v) {
     if (freezeWorkListGR.count(v) != 0) {
-        freezeWorkListGR.insert(v);
+        freezeWorkListGR.erase(v);
     } else {
-        spillWorkListGR.insert(v);
+        spillWorkListGR.erase(v);
     }
     coalescedNodesGR.insert(v);
     aliasGR[v] = u;
@@ -552,16 +556,16 @@ void ColoringAlloc::combineGR(GR u, GR v) {
         decrementDegreeGR(gr);
     }
     if (degreeGR[u] >= KGR && freezeWorkListGR.count(u) != 0) {
-        freezeWorkListGR.insert(u);
+        freezeWorkListGR.erase(u);
         spillWorkListGR.insert(u);
     }
 }
 
 void ColoringAlloc::combineFR(FR u, FR v) {
     if (freezeWorkListFR.count(v) != 0) {
-        freezeWorkListFR.insert(v);
+        freezeWorkListFR.erase(v);
     } else {
-        spillWorkListFR.insert(v);
+        spillWorkListFR.erase(v);
     }
     coalescedNodesFR.insert(v);
     aliasFR[v] = u;
@@ -574,7 +578,7 @@ void ColoringAlloc::combineFR(FR u, FR v) {
         decrementDegreeFR(fr);
     }
     if (degreeFR[u] >= KFR && freezeWorkListFR.count(u) != 0) {
-        freezeWorkListFR.insert(u);
+        freezeWorkListFR.erase(u);
         spillWorkListFR.insert(u);
     }
 }
@@ -678,7 +682,8 @@ void ColoringAlloc::assignColorsGR() {
             colorGR[n] = *okColorsGR.begin();
         }
     }
-    for (GR n: coloredNodesGR) {
+    for (GR n: coalescedNodesGR) {
+        GR x = getAliasGR(n);
         colorGR[n] = colorGR[getAliasGR(n)];
     }
 }
@@ -704,7 +709,7 @@ void ColoringAlloc::assignColorsFR() {
             colorFR[n] = *okColorsFR.begin();
         }
     }
-    for (FR n: coloredNodesFR) {
+    for (FR n: coalescedNodesFR) {
         colorFR[n] = colorFR[getAliasFR(n)];
     }
 }

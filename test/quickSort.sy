@@ -1,9 +1,54 @@
-int main(){
-    const int a[4][2] = {{1, 2}, {3, 4}, {}, 7};
-    const int N = 3;
-    int b[4][2] = {};
-    int c[4][2] = {1, 2, 3, 4, 5, 6, 7, 8};
-    int d[N + 1][2] = {1, 2, {3}, {5}, a[3][0], 8};
-    int e[4][2][1] = {{d[2][1], {c[2][1]}}, {3, 4}, {5, 6}, {7, 8}};
-    return e[3][1][0] + e[0][0][0] + e[0][1][0] + d[3][0];
+
+int findfa(int a) {
+  return 1;
 }
+int main() {
+    if(findfa(1) == findfa(2)) {
+        return 1;
+    }
+  return 0;
+}
+/*
+.arch armv7ve
+.arm
+.global main
+.section .text
+.init:
+.L0:
+	bx lr
+main:
+	push {lr}
+	sub sp,sp,#0
+	bl .init
+.L1:
+	mov r0,#1
+	bl findfa
+	mov r16,r0
+	mov r0,#2
+	bl findfa
+	mov r17,r0
+	cmp r16,r17
+	mov r18,#0
+	moveq r18,#1
+	cmp r18,#0
+	bne .L2
+	beq .L3
+.L2:
+	mov r0,#1
+	add sp,sp, #0
+	pop {pc}
+.L3:
+	mov r0,#0
+	add sp,sp, #0
+	pop {pc}
+findfa:
+	push {lr}
+	sub sp,sp,#4
+.L4:
+	str r0,[sp,#0]
+	mov r0,#1
+	add sp,sp, #4
+	pop {pc}
+
+
+*/
