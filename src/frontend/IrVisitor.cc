@@ -748,6 +748,9 @@ void IrVisitor::visit(LVal *lVal) {
             }
             tempVal.setVal(nullptr);
         }
+        if (tempVal.getVal()->getArrayDims().size() != 0) {
+            useArgs = true;
+        }
         return;
     }
 
