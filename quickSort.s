@@ -14,14 +14,18 @@ main:
 	sub sp,sp,#4
 	bl .init
 .L1:
-	add r0,sp, #0
+	movw r0,#:lower16:buf
+	movt r0,#:upper16:buf
+	add r0,r0, #400
 	bl getarray
 	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	mov r0,#0
 	bl merge_sort
 	ldr r0,[sp,#0]
-	add r1,sp, #0
+	movw r1,#:lower16:buf
+	movt r1,#:upper16:buf
+	add r1,r1, #0
 	bl putarray
 	mov r0,#0
 	add sp,sp, #4

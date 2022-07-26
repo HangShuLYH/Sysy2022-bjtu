@@ -739,10 +739,6 @@ void IrVisitor::visit(LVal *lVal) {
         tempVal.setVal(v);
         tempVal.setType(v->getType());
     }
-    if (lVal->expList.size() < tempVal.getVal()->getArrayDims().size()) {
-        useArgs = true;
-        return;
-    }
     if (lVal->expList.empty()) {
         if (typeid(ConstValue) == typeid(*tempVal.getVal())) {
             if (tempVal.isInt()) {
@@ -865,7 +861,20 @@ void IrVisitor::visit(LVal *lVal) {
         tempVal.setVal(nullptr);
         return;
     }
-
+    if (lVal->expList.size() < tempVal.getVal()->getArrayDims().size()) {
+        useArgs = true;
+        Value *v1 = new VarValue("", tempVal.getType(), isGlobal(),
+                                 isGlobal() ? cnt++ : cur_func->varCnt++,
+                                 true);
+        if (!index) {
+            cur_bb->pushIr(new GEPIR(v1, tempVal.getVal(), arrayIndex));
+        } else {
+            cur_bb->pushIr(new GEPIR(v1, tempVal.getVal(),index));
+        }
+        tempVal.setVal(v1);
+        tempVal.setType(v1->getType());
+        return;
+    }
     Value *v = new VarValue("",
                             new Type(TypeID::POINTER, val.getVal()->getType()->getContained()),
                             isGlobal(),
