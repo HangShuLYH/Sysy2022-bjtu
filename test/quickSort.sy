@@ -7,37 +7,6 @@ int main()
     int a;
     a = 1;
     {
-        int a;
-        a = 2;
-        {
-            a = 3;
-            putint(a);
-        }
-        putint(a);
-    }
-    putint(a); putch(10);
-
-    while (a < 5) {
-        int a = 0;
-        a = a + 1;
-        if (a)
-            break;
-    }
-    putint(a); putch(10);
-
-    {
-        {
-            {
-                {}
-            }
-            c[2] = 1;
-            {
-                int c[2][8] = {{0, 9}, 8, 3};
-            }
-        }
-    }
-
-    {
         int b = 2;
         if (c[2]) {
             int c[7][1][5] = {{}, {}, {2, 1, 8}, {{}}};
