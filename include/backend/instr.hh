@@ -737,7 +737,7 @@ public:
         return {};
     }
     std::vector<GR> getDefG() override final{
-        return {};
+        return {GR(0),GR(1),GR(2),GR(3),GR(12)};
     }
     std::vector<FR> getDefF() override final{
         return {};

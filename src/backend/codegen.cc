@@ -758,9 +758,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 fr_cnt++;
             }
         }
-        vec.push_back(new Push({}));
+        //vec.push_back(new Push({}));
         vec.push_back(new Bl(callIr->func->name));
-        vec.push_back(new Pop({}));
+        //vec.push_back(new Pop({}));
         if (callIr->returnVal) {
             if (callIr->returnVal->getType()->isInt()) {
                 gRegMapping[callIr->returnVal] = 0;
