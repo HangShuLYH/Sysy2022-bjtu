@@ -969,6 +969,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             Value *v = new VarValue("", call_func->return_type,
                                     isGlobal(), cur_func->varCnt++);
             tempVal.setVal(v);
+            tempVal.setType(v->getType());
             call_func = temp;
             cur_bb->pushIr(new CallIR(call_func, args, v));
         }
