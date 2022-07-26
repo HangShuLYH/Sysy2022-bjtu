@@ -94,8 +94,8 @@ void Codegen::generateProgramCode() {
                         allUsedRegsFR.insert(fr);
                     }
                     if (typeid(*instr) == typeid(Bl)) {
-                        Push* pushInstr = dynamic_cast<Push*>(*(it-1));
-                        Pop* popInstr = dynamic_cast<Pop*>(*(it+1));
+                        Push* pushInstr = dynamic_cast<Push*>(*(it+1));
+                        Pop* popInstr = dynamic_cast<Pop*>(*(it-1));
                         if (pushInstr && popInstr) {
                             pushInstr->addRegs(callerSave);
                             popInstr->addRegs(callerSave);

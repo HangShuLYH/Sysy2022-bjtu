@@ -4,8 +4,7 @@ int c[4] = {6, 7, 8, 9};
 
 int main()
 {
-    int a;
-    a = 1;
+
     {
         int b = 2;
         if (c[2]) {
@@ -15,9 +14,5 @@ int main()
             putint(c[b][0][2]);
         }
     }
-    putch(10);
-
-    putint(b); putch(10);
-    putint(c[0]); putint(c[1]); putint(c[2]); putint(c[3]); putch(10);
     return 0;
 }
