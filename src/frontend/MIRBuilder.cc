@@ -97,6 +97,8 @@ ReturnOfRelated* MIRBuilder::relatedIR(std::vector<Instruction*> ir){
 }
 
 BasicBlock* MIRBuilder::frontOfNextBB(BasicBlock* bb){
+    if (!bb)
+        return NULL;
     if(typeid(*bb) == typeid(SelectBlock)){
         return dynamic_cast<SelectBlock*>(bb)->cond.front();
     }else if(typeid(*bb) == typeid(IterationBlock)){
@@ -304,15 +306,32 @@ void MIRBuilder::removeDuplicate(){
             if(nowNB->getPre().size() == 1){
                 NormalBlock* preNB = dynamic_cast<NormalBlock*>(*nowNB->getPre().begin());
                 if(preNB->getSucc().size() == 1){
-//                    std::string name1 =
-//                    if(){
-//
-//                }
                     preNB->setSucc(nowNB->getSucc());
+                    if (typeid(*preNB->ir.back()) == typeid(BranchIR)) {
+                        preNB->ir.clear();
+                    } else {
+                        preNB->ir.pop_back();
+                    }
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
                     bbs[j] = preNB;
                     bbs.erase(bbs.begin()+j);
+                }
+            }
+        }
+        for (size_t j = 0;j < bbs.size() - 1;j++) {
+            NormalBlock* nowNB = dynamic_cast<NormalBlock*>(bbs[j]);
+            if (nowNB->ir.empty()) continue;
+            if (typeid(*(nowNB->ir.back())) == typeid(BranchIR)) {
+                BranchIR* branchIr = dynamic_cast<BranchIR*>(nowNB->ir.back());
+                if (branchIr->trueTarget == branchIr->falseTarget) {
+                    nowNB->ir.pop_back();
+                    nowNB->ir.push_back(new JumpIR(branchIr->trueTarget));
+                }
+            }
+            if (typeid(*(nowNB->ir.back())) == typeid(JumpIR)) {
+                if (dynamic_cast<JumpIR*>(nowNB->ir.back())->target->name == bbs[j+1]->name){
+                    nowNB->ir.pop_back();
                 }
             }
         }

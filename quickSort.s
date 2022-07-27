@@ -2,7 +2,13 @@
 .arm
 .section .bss
 .align
-n:
+a:
+	.space 4
+.align
+b:
+	.space 4
+.align
+d:
 	.space 4
 .global main
 .section .text
@@ -10,286 +16,291 @@ n:
 .L0:
 	bx lr
 main:
-	push {lr}
-	sub sp,sp,#52
+	push {r4,lr}
+	sub sp,sp,#20
 	bl .init
 .L1:
-	mov r1,#10
-	movw r0,#:lower16:n
-	movt r0,#:upper16:n
+	mov r1,#2
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
 	str r1,[r0,#0]
-	mov r0,#4
-	str r0,[sp,#0]
-	mov r0,#3
-	str r0,[sp,#4]
-	mov r0,#9
-	str r0,[sp,#8]
-	mov r0,#2
-	str r0,[sp,#12]
 	mov r0,#0
-	str r0,[sp,#16]
-	mov r0,#1
-	str r0,[sp,#20]
-	mov r0,#6
-	str r0,[sp,#24]
-	mov r0,#5
-	str r0,[sp,#28]
-	mov r0,#7
-	str r0,[sp,#32]
-	mov r0,#8
-	str r0,[sp,#36]
-	mov r0,#0
-	str r0,[sp,#40]
-	mov r0,#9
-	str r0,[sp,#44]
-	ldr r1,[sp,#40]
-	ldr r2,[sp,#44]
-	add r0,sp, #0
-	bl QuickSort
-	str r0,[sp,#40]
-	b .L2
-.L2:
-	ldr r1,[sp,#40]
-	movw r0,#:lower16:n
-	movt r0,#:upper16:n
-	ldr r0,[r0,#0]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
+	bl set_a
 	cmp r0,#0
-	bne .L3
-	beq .L4
-.L3:
-	ldr r1,[sp,#40]
+	bne .L2
+	beq .L3
+.L2:
 	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r2,r1,r0
-	mov r1,#4
-	add r0,sp, #0
-	mla r0,r1,r2,r0
+	bl set_b
+.L3:
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
 	ldr r0,[r0,#0]
-	str r0,[sp,#48]
-	ldr r0,[sp,#48]
+	bl putint
+	mov r0,#32
+	bl putch
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	ldr r0,[r0,#0]
+	bl putint
+	mov r0,#32
+	bl putch
+	mov r1,#2
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
+	str r1,[r0,#0]
+	mov r0,#0
+	bl set_a
+	cmp r0,#0
+	bne .L4
+	beq .L5
+.L4:
+	mov r0,#1
+	bl set_b
+.L5:
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
+	ldr r0,[r0,#0]
+	bl putint
+	mov r0,#32
+	bl putch
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	ldr r0,[r0,#0]
 	bl putint
 	mov r0,#10
-	str r0,[sp,#48]
-	ldr r0,[sp,#48]
 	bl putch
-	ldr r1,[sp,#40]
-	mov r0,#1
-	add r0,r1,r0
-	str r0,[sp,#40]
-	b .L2
-.L4:
-	mov r0,#0
-	add sp,sp, #52
-	pop {pc}
-QuickSort:
-	push {lr}
-	sub sp,sp,#28
-.L5:
-	str r0,[sp,#0]
-	str r1,[sp,#4]
-	str r2,[sp,#8]
-	ldr r1,[sp,#4]
-	ldr r0,[sp,#8]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L6
-	beq .L19
 .L6:
-	ldr r0,[sp,#4]
-	str r0,[sp,#12]
-	ldr r0,[sp,#8]
-	str r0,[sp,#16]
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#4]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r0,[r0,#0]
-	str r0,[sp,#20]
-	b .L7
+	mov r0,#3
+	bl set_d
 .L7:
-	ldr r1,[sp,#12]
-	ldr r0,[sp,#16]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L8
-	beq .L18
+	movw r0,#:lower16:d
+	movt r0,#:upper16:d
+	ldr r0,[r0,#0]
+	bl putint
+	b .L9
 .L8:
-	ldr r1,[sp,#12]
-	ldr r0,[sp,#16]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L9
-	beq .L11
+	mov r0,#4
+	bl set_d
 .L9:
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#16]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r2,[r0,#0]
-	ldr r1,[sp,#20]
-	mov r0,#1
-	sub r0,r1,r0
-	cmp r2,r0
-	mov r0,#0
-	movgt r0,#1
-	cmp r0,#0
-	bne .L10
-	beq .L11
+	movw r0,#:lower16:d
+	movt r0,#:upper16:d
+	ldr r0,[r0,#0]
+	bl putint
 .L10:
-	ldr r1,[sp,#16]
-	mov r0,#1
-	sub r0,r1,r0
-	str r0,[sp,#16]
-	b .L8
+	mov r0,#65
+	bl putch
 .L11:
-	ldr r1,[sp,#12]
-	ldr r0,[sp,#16]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L12
-	beq .L13
+	b .L13
 .L12:
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r3,r0,r1,r2
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#16]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r0,[r0,#0]
-	str r0,[r3,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	add r0,r1,r0
-	str r0,[sp,#12]
-	b .L13
+	mov r0,#66
+	bl putch
 .L13:
-	ldr r1,[sp,#12]
-	ldr r0,[sp,#16]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L14
-	beq .L16
+	b .L15
 .L14:
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	mul r1,r1,r0
+	mov r0,#67
+	bl putch
+.L15:
+.L16:
+	mov r0,#68
+	bl putch
+.L17:
+	b .L19
+.L18:
+	mov r0,#69
+	bl putch
+.L19:
+.L20:
+	mov r0,#70
+	bl putch
+.L21:
+	mov r0,#10
+	bl putch
 	mov r0,#0
-	add r1,r1,r0
+	str r0,[sp,#0]
+	mov r0,#1
+	str r0,[sp,#4]
+	mov r0,#2
+	str r0,[sp,#8]
+	mov r0,#3
+	str r0,[sp,#12]
 	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r1,[r0,#0]
-	ldr r0,[sp,#20]
+	str r0,[sp,#16]
+.L22:
+	ldr r0,[sp,#0]
+	cmp r0,#0
+	bne .L23
+	beq .L24
+.L23:
+	ldr r4,[sp,#4]
+	mov r0,#32
+	bl putch
+	cmp r4,#0
+	bne .L22
+	beq .L24
+.L24:
+	ldr r0,[sp,#0]
+	cmp r0,#0
+	bne .L26
+	beq .L25
+.L25:
+	ldr r0,[sp,#4]
+	cmp r0,#0
+	bne .L26
+	beq .L27
+.L26:
+	mov r0,#67
+	bl putch
+.L27:
+	ldr r1,[sp,#0]
+	ldr r0,[sp,#4]
+	cmp r1,r0
+	mov r0,#0
+	movge r0,#1
+	cmp r0,#0
+	bne .L29
+	beq .L28
+.L28:
+	ldr r1,[sp,#4]
+	ldr r0,[sp,#0]
+	cmp r1,r0
+	mov r0,#0
+	movle r0,#1
+	cmp r0,#0
+	bne .L29
+	beq .L30
+.L29:
+	mov r0,#72
+	bl putch
+.L30:
+	ldr r1,[sp,#8]
+	ldr r0,[sp,#4]
+	cmp r1,r0
+	mov r0,#0
+	movge r0,#1
+	cmp r0,#0
+	bne .L31
+	beq .L33
+.L31:
+	ldr r1,[sp,#16]
+	ldr r0,[sp,#12]
+	cmp r1,r0
+	mov r0,#0
+	movne r0,#1
+	cmp r0,#0
+	bne .L32
+	beq .L33
+.L32:
+	mov r0,#73
+	bl putch
+.L33:
+	ldr r1,[sp,#0]
+	ldr r0,[sp,#4]
+	cmp r0,#0
+	mov r0,#0
+	moveq r0,#1
+	cmp r1,r0
+	mov r0,#0
+	moveq r0,#1
+	cmp r0,#0
+	bne .L34
+	beq .L35
+.L34:
+	ldr r1,[sp,#12]
+	ldr r0,[sp,#12]
 	cmp r1,r0
 	mov r0,#0
 	movlt r0,#1
 	cmp r0,#0
-	bne .L15
-	beq .L16
-.L15:
-	ldr r1,[sp,#12]
-	mov r0,#1
-	add r0,r1,r0
-	str r0,[sp,#12]
-	b .L13
-.L16:
-	ldr r1,[sp,#12]
+	bne .L36
+	beq .L35
+.L35:
+	ldr r1,[sp,#16]
 	ldr r0,[sp,#16]
 	cmp r1,r0
 	mov r0,#0
+	movge r0,#1
+	cmp r0,#0
+	bne .L36
+	beq .L37
+.L36:
+	mov r0,#74
+	bl putch
+.L37:
+	ldr r1,[sp,#0]
+	ldr r0,[sp,#4]
+	cmp r0,#0
+	mov r0,#0
+	moveq r0,#1
+	cmp r1,r0
+	mov r0,#0
+	moveq r0,#1
+	cmp r0,#0
+	bne .L40
+	beq .L38
+.L38:
+	ldr r1,[sp,#12]
+	ldr r0,[sp,#12]
+	cmp r1,r0
+	mov r0,#0
 	movlt r0,#1
 	cmp r0,#0
-	bne .L17
-	beq .L7
-.L17:
-	ldr r2,[sp,#0]
+	bne .L39
+	beq .L41
+.L39:
 	ldr r1,[sp,#16]
-	mov r0,#1
-	mul r1,r1,r0
+	ldr r0,[sp,#16]
+	cmp r1,r0
 	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r3,r0,r1,r2
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	mul r1,r1,r0
+	movge r0,#1
+	cmp r0,#0
+	bne .L40
+	beq .L41
+.L40:
+	mov r0,#75
+	bl putch
+.L41:
+	mov r0,#10
+	bl putch
 	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
+	add sp,sp, #20
+	pop {r4,pc}
+set_d:
+	push {lr}
+	sub sp,sp,#4
+.L42:
+	ldr r1,[sp,#0]
+	movw r0,#:lower16:d
+	movt r0,#:upper16:d
+	str r1,[r0,#0]
+	movw r0,#:lower16:d
+	movt r0,#:upper16:d
 	ldr r0,[r0,#0]
-	str r0,[r3,#0]
-	ldr r1,[sp,#16]
-	mov r0,#1
-	sub r0,r1,r0
-	str r0,[sp,#16]
-	b .L7
-.L18:
-	ldr r2,[sp,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r1,r0,r1,r2
-	ldr r0,[sp,#20]
-	str r0,[r1,#0]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	sub r0,r1,r0
-	str r0,[sp,#24]
-	ldr r0,[sp,#0]
-	add r0,r0, #0
-	ldr r1,[sp,#4]
-	ldr r2,[sp,#24]
-	bl QuickSort
-	str r0,[sp,#24]
-	ldr r1,[sp,#12]
-	mov r0,#1
-	add r0,r1,r0
-	str r0,[sp,#24]
-	ldr r0,[sp,#0]
-	add r0,r0, #0
-	ldr r1,[sp,#24]
-	ldr r2,[sp,#8]
-	bl QuickSort
-	str r0,[sp,#24]
-	b .L19
-.L19:
-	mov r0,#0
-	add sp,sp, #28
+	add sp,sp, #4
+	pop {pc}
+set_b:
+	push {lr}
+	sub sp,sp,#4
+.L43:
+	ldr r1,[sp,#0]
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	str r1,[r0,#0]
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	ldr r0,[r0,#0]
+	add sp,sp, #4
+	pop {pc}
+set_a:
+	push {lr}
+	sub sp,sp,#4
+.L44:
+	ldr r1,[sp,#0]
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
+	str r1,[r0,#0]
+	movw r0,#:lower16:a
+	movt r0,#:upper16:a
+	ldr r0,[r0,#0]
+	add sp,sp, #4
 	pop {pc}
