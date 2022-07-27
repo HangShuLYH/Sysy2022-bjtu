@@ -491,18 +491,22 @@ void IrVisitor::visit(FuncFParam *funcFParam) {
             tempVal.setVal(new VarValue(funcFParam->identifier, new Type(TypeID::POINTER, typeInt), isGlobal(),
                                         cur_func->varCnt++));
             tempVal.getVal()->pushDim(0);
+            TempVal t = tempVal;
             for (auto width: funcFParam->expList) {
                 width->accept(*this);
-                tempVal.getVal()->pushDim(tempVal.getInt());
+                t.getVal()->pushDim(tempVal.getInt());
             }
+            tempVal = t;
         } else if (funcFParam->defType->type == type_specifier::TYPE_FLOAT) {
             tempVal.setVal(new VarValue(funcFParam->identifier, new Type(TypeID::POINTER, typeFloat), isGlobal(),
                                         cur_func->varCnt++));
             tempVal.getVal()->pushDim(0);
+            TempVal t = tempVal;
             for (auto width: funcFParam->expList) {
                 width->accept(*this);
-                tempVal.getVal()->pushDim(tempVal.getInt());
+                t.getVal()->pushDim(tempVal.getInt());
             }
+            tempVal = t;
         }
     }
     addParam(cur_func, tempVal.getVal());
