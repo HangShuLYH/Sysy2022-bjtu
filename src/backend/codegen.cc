@@ -116,13 +116,13 @@ void Codegen::generateProgramCode() {
                 if (typeid(*instr) == typeid(Load)) {
                     Load* load = dynamic_cast<Load*>(instr);
                     if (load->offset < 0) {
-                        load->offset = -load->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        load->offset = -load->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4 + 4;
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
                     Store* store = dynamic_cast<Store*>(instr);
                     if (store->offset < 0) {
-                        store->offset = -store->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        store->offset = -store->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4 + 4;
                     }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
