@@ -171,6 +171,7 @@ void Codegen::generateProgramCode() {
                     block->getInstrs().erase(it);
                     block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), function->stackSize));
                     std::set<GR> setGR = usedGRMapping[function];
+                    setGR.erase(GR(14));
                     setGR.insert(GR(15));
                     if (!usedFRMapping[function].empty()) {
                         block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
