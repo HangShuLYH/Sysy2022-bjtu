@@ -169,7 +169,15 @@ void Codegen::generateProgramCode() {
                 }
                 if (typeid(*instr) == typeid(Ret)) {
                     block->getInstrs().erase(it);
-                    block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), function->stackSize));
+                    if (is_legal_immediate(function->stackSize)) {
+                        block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add,GR(13),GR(13),function->stackSize));
+                    } else{
+                        std::vector<Instr*> vec = setIntValue(GR(12),function->stackSize);
+                        for (int i = 0;i < vec.size();i++) {
+                            block->getInstrs().push_back(vec[i]);
+                        }
+                        block->getInstrs().push_back(new GRegRegInstr(GRegRegInstr::Add,GR(13),GR(13),GR(12)));
+                    }
                     std::set<GR> setGR = usedGRMapping[function];
                     setGR.erase(GR(14));
                     setGR.insert(GR(15));
