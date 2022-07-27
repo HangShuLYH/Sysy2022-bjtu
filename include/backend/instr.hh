@@ -923,6 +923,37 @@ public:
         return {};
     }
 };
+class Vpush: public Instr {
+public:
+    std::set<FR> regs;
+    Vpush(std::set<FR> regs):regs(regs){}
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+    void print(std::ostream& out) override final{
+        out << "vpush {";
+        bool first = true;
+        for (FR fr: regs) {
+            if (first) {
+                first = false;
+            } else {
+                out << ",";
+            }
+            out << fr.getName();
+        }
+        out << "}\n";
+    }
+    std::vector<GR> getUseG() override final{
+        return {};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {};
+    }
+    std::vector<FR> getDefF() override final{
+        return {};
+    }
+};
 class Pop: public Instr {
 public:
     std::set<GR> regs;
@@ -972,6 +1003,26 @@ public:
             out << fr.getName();
         }
         out << "}\n";
+    }
+    std::vector<GR> getUseG() override final{
+        return {};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {};
+    }
+    std::vector<FR> getDefF() override final{
+        return {};
+    }
+};
+class Bx: public Instr {
+public:
+    Bx(){}
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {}
+    void print(std::ostream& out) override final{
+        out << "bx lr\n";
     }
     std::vector<GR> getUseG() override final{
         return {};

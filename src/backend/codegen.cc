@@ -14,6 +14,15 @@ int bbNameCnt = 0;
 std::map<std::string, std::string> bbNameMapping;
 std::map<std::string, std::string> stringConstMapping;
 int stringConstCnt = 0;
+constexpr bool is_legal_immediate(int32_t value) {
+    uint32_t u = static_cast<uint32_t>(value);
+    if (u <= 0xffu) return true;
+    for (int i = 1; i < 16; ++i) {
+        uint32_t cur = (u << (2 * i)) | (u >> (32 - 2 * i));
+        if (cur <= 0xffu) return true;
+    }
+    return false;
+}
 std::string getBBName(std::string name) {
     if (bbNameMapping.count(name) == 0) {
         bbNameMapping[name] = ".L" + std::to_string(bbNameCnt++);
@@ -64,7 +73,7 @@ void Codegen::generateProgramCode() {
         stackSizeMapping[function] = function->stackSize;
         ColoringAlloc coloringAlloc(function);
         coloringAlloc.run();
-        std::set<GR> allUsedRegsGR;
+        std::set<GR> allUsedRegsGR{GR(14)};
         std::set<FR> allUsedRegsFR;
         std::set<GR> callerSave;
         for (BasicBlock *block: function->basicBlocks) {
@@ -110,19 +119,40 @@ void Codegen::generateProgramCode() {
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
+        if(function->basicBlocks.empty()) continue;
+        if (function->name != ".init") {
+            if (function->name == "main") {
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Bl(".init"));
+            }
+            if (is_legal_immediate(function->stackSize)) {
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new GRegImmInstr(GRegImmInstr::Sub,GR(13),GR(13),function->stackSize));
+            } else{
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new GRegRegInstr(GRegRegInstr::Sub,GR(13),GR(13),GR(12)));
+                std::vector<Instr*> vec = setIntValue(GR(12),function->stackSize);
+                for (int i = vec.size() - 1; i >= 0; --i) {
+                    function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),vec[i]);
+                }
+                usedGRMapping[function].insert(GR(12));
+            }
+            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Vpush(usedFRMapping[function]));
+            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Push(usedGRMapping[function]));
+            //simple way
+        } else {
+            function->basicBlocks[0]->getInstrs().push_back(new Bx());
+        }
         for (BasicBlock *block: function->basicBlocks) {
             for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
                 Instr *instr = *it;
                 if (typeid(*instr) == typeid(Load)) {
                     Load* load = dynamic_cast<Load*>(instr);
                     if (load->offset < 0) {
-                        load->offset = -load->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4 + 4;
+                        load->offset = -load->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
                     Store* store = dynamic_cast<Store*>(instr);
                     if (store->offset < 0) {
-                        store->offset = -store->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4 + 4;
+                        store->offset = -store->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
@@ -163,6 +193,20 @@ void Codegen::generateProgramCode() {
                     } else {
                         it++;
                     }
+                }else if (typeid(*instr) == typeid(Vpop)) {
+                    Vpop *pushInstr = dynamic_cast<Vpop *>(instr);
+                    if (pushInstr->regs.empty()) {
+                        block->getInstrs().erase(it);
+                    } else {
+                        it++;
+                    }
+                }else if (typeid(*instr) == typeid(Vpush)){
+                    Vpush* pushInstr = dynamic_cast<Vpush*>(instr);
+                    if (pushInstr->regs.empty()) {
+                        block->getInstrs().erase(it);
+                    } else {
+                        it++;
+                    }
                 }else {
                     it++;
                 }
@@ -173,43 +217,6 @@ void Codegen::generateProgramCode() {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
         out << function->name << ":\n";
-        if (itt != irVisitor.functions.rbegin()) {
-            //simple way
-            out << "\tpush {";
-            bool first = true;
-            for (GR gr: usedGRMapping[function]) {
-                if (first) {
-                    first = false;
-                } else {
-                    out << ",";
-                }
-                out << gr.getName();
-            }
-            if (!usedGRMapping[function].empty()) {
-                out << ",";
-            }
-            out << "lr}\n";
-
-            //push s regs;
-            if (!usedFRMapping[function].empty()) {
-                out << "\tvpush {";
-                first = true;
-                for (FR fr: usedFRMapping[function]) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        out << ",";
-                    }
-                    out << fr.getName();
-                }
-                out << "}\n";
-            }
-            //push s regs
-            out << "\tsub sp,sp,#" << stackSizeMapping[function] << "\n";
-            if (function->name == "main") {
-                out << "\tbl .init\n";
-            }
-        }
         for (BasicBlock *block: function->basicBlocks) {
             out << getBBName(block->name) << ":\n";
             for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
@@ -218,9 +225,6 @@ void Codegen::generateProgramCode() {
                 out << "\t";
                 instr->print(out);
             }
-        }
-        if (itt == irVisitor.functions.rbegin()) {
-            out << "\tbx lr\n";
         }
     }
 }
