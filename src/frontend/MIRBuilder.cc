@@ -307,11 +307,6 @@ void MIRBuilder::removeDuplicate(){
                 NormalBlock* preNB = dynamic_cast<NormalBlock*>(*nowNB->getPre().begin());
                 if(preNB->getSucc().size() == 1){
                     preNB->setSucc(nowNB->getSucc());
-                    if (typeid(*preNB->ir.back()) == typeid(BranchIR)) {
-                        preNB->ir.clear();
-                    } else {
-                        preNB->ir.pop_back();
-                    }
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
                     bbs[j] = preNB;

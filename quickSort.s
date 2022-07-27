@@ -24,6 +24,10 @@ main:
 	movw r0,#:lower16:a
 	movt r0,#:upper16:a
 	str r1,[r0,#0]
+	mov r1,#3
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	str r1,[r0,#0]
 	mov r0,#0
 	bl set_a
 	cmp r0,#0
@@ -49,6 +53,10 @@ main:
 	movw r0,#:lower16:a
 	movt r0,#:upper16:a
 	str r1,[r0,#0]
+	mov r1,#3
+	movw r0,#:lower16:b
+	movt r0,#:upper16:b
+	str r1,[r0,#0]
 	mov r0,#0
 	bl set_a
 	cmp r0,#0
@@ -70,6 +78,10 @@ main:
 	bl putint
 	mov r0,#10
 	bl putch
+	mov r1,#2
+	movw r0,#:lower16:d
+	movt r0,#:upper16:d
+	str r1,[r0,#0]
 .L6:
 	mov r0,#3
 	bl set_d
@@ -78,6 +90,8 @@ main:
 	movt r0,#:upper16:d
 	ldr r0,[r0,#0]
 	bl putint
+	mov r0,#32
+	bl putch
 	b .L9
 .L8:
 	mov r0,#4
@@ -87,6 +101,8 @@ main:
 	movt r0,#:upper16:d
 	ldr r0,[r0,#0]
 	bl putint
+	mov r0,#10
+	bl putch
 .L10:
 	mov r0,#65
 	bl putch
@@ -269,6 +285,7 @@ set_d:
 	push {lr}
 	sub sp,sp,#4
 .L42:
+	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	movw r0,#:lower16:d
 	movt r0,#:upper16:d
@@ -282,6 +299,7 @@ set_b:
 	push {lr}
 	sub sp,sp,#4
 .L43:
+	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	movw r0,#:lower16:b
 	movt r0,#:upper16:b
@@ -295,6 +313,7 @@ set_a:
 	push {lr}
 	sub sp,sp,#4
 .L44:
+	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	movw r0,#:lower16:a
 	movt r0,#:upper16:a
