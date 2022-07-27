@@ -605,7 +605,7 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
             selectStmt->ifStmt->breakStmt ||
             selectStmt->ifStmt->assignStmt ||
             selectStmt->ifStmt->continueStmt ||
-            selectStmt->ifStmt->assignStmt) {
+            selectStmt->ifStmt->exp) {
         }
         temp = isIF;
         isIF = true;
@@ -622,7 +622,7 @@ void IrVisitor::visit(SelectStmt *selectStmt) {
             selectStmt->elseStmt->breakStmt ||
             selectStmt->elseStmt->assignStmt ||
             selectStmt->elseStmt->continueStmt ||
-            selectStmt->elseStmt->assignStmt) {
+            selectStmt->elseStmt->exp) {
         }
         temp = isIF;
         isIF = false;
@@ -646,7 +646,7 @@ void IrVisitor::visit(IterationStmt *iterationStmt) {
             iterationStmt->stmt->breakStmt ||
             iterationStmt->stmt->assignStmt ||
             iterationStmt->stmt->continueStmt ||
-            iterationStmt->stmt->assignStmt) {
+            iterationStmt->stmt->exp) {
             cur_bb = new NormalBlock(cur_bb, cur_func->name, cur_func->bbCnt++);
             pushBB();
         }
