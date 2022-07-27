@@ -237,8 +237,8 @@ void Codegen::generateProgramCode() {
                     }
                 } else if (typeid(*instr) == typeid(GRegImmInstr)) {
                     GRegImmInstr *g = dynamic_cast<GRegImmInstr *>(instr);
-                    if (g->op == GRegRegInstr::Add && g->src2 == 0 ||
-                        g->op == GRegRegInstr::Sub && g->src2 == 0) {
+                    if ((g->op == GRegRegInstr::Add && g->src2 == 0 ||
+                        g->op == GRegRegInstr::Sub && g->src2 == 0) && (g->dst == g->src1)) {
                         block->getInstrs().erase(it);
                     } else {
                         it++;
