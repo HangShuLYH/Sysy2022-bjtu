@@ -19,7 +19,7 @@ public:
     void getIdom(Function* function);
     void getDomFront(Function* function);
     void getPostOrder(BasicBlock* bb, std::set<BasicBlock*>& visited);
-    // void genDominateTree(Function* function);
+    void genDominateTree(Function* function);
     // void genBBDom(BasicBlock* bb);
     BasicBlock* intersect(BasicBlock* bb1, BasicBlock* bb2);
 };
@@ -35,6 +35,7 @@ void DominateTree::execute() {
 
         getIdom(function);
         getDomFront(function);
+        genDominateTree(function);
     }
 }
 
@@ -126,12 +127,15 @@ void DominateTree::getDomFront(Function* function) {
     }
 }
 
-// // 获得支配树
-// void genDominateTree(Function* function) {
-//     for(auto bb : function->getBB()) {
-//         getBBDominateTree(bb);
-//     }
-// }
+// 获得支配树
+void DominateTree::genDominateTree(Function* function) {
+    for(auto bb : function->getBB()) {
+        BasicBlock* idom = bb->getIdom();
+        if(idom && idom != bb) {
+            idom->pushDomTreeSuccNode(bb);
+        }
+    }
+}
 
 // void genBBDom(BasicBlock* bb) {
 //     if(!bb) return;

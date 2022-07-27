@@ -191,6 +191,8 @@ Instruction.hh
 ../include/optimize/Instruction.hh
 map
 -
+stack
+-
 
 /mnt/e/Sysy2022-bjtu/main.cpp
 iostream

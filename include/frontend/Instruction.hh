@@ -14,9 +14,11 @@ enum class OP{
 
 class Instruction : public User{
 public:
+    bool deleted = false;
     Instruction() {}
     virtual void print(std::ostream& out) = 0;
     virtual ~Instruction() {}
+    void deleteIR() { deleted = true; }
 };
 
 class AllocIIR:public Instruction{
@@ -41,11 +43,13 @@ public:
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        Operands[0]->getVal()->print(out);
-        out << " = AllocaI";
-        if(isArray)
-            out << "(" << arrayLen << ")";
-        out << std::endl;
+        if(!deleted) {
+            Operands[0]->getVal()->print(out);
+            out << " = AllocaI";
+            if(isArray)
+                out << "(" << arrayLen << ")";
+            out << std::endl;
+        }
     }
 };
 class AllocFIR:public Instruction{
@@ -70,11 +74,13 @@ public:
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        Operands[0]->getVal()->print(out);
-        out << " = AllocaF";
-        if(isArray)
-            out << "(" << arrayLen << ")";
-        out << std::endl;
+        if(!deleted) {
+            Operands[0]->getVal()->print(out);
+            out << " = AllocaF";
+            if(isArray)
+                out << "(" << arrayLen << ")";
+            out << std::endl;
+        }
     }
 };
 
@@ -132,19 +138,23 @@ public:
             this->src.setInt(src.getFloat());
         }
 
-        Use* use1 = new Use(dst, this, 0);
-        Use* use2 = new Use(&this->src, this, 1);
-        dst->addUse(use1);
-        this->src.addUse(use2);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(dst, this, 1);
+        Use* use3 = new Use(&this->src, this, 2);
+        dst->addUse(use2);
+        this->src.addUse(use3);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
     }
     void print(std::ostream& out) override final{
-        out << "StoreI ";
-        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
-        out << " ";
-        Operands[0]->getVal()->print(out);
-        out << std::endl;
+        if(!deleted) {
+            out << "StoreI ";
+            dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
+            out << " ";
+            Operands[1]->getVal()->print(out);
+            out << std::endl;
+        }
     }
 };
 class StoreFIR:public Instruction{
@@ -157,19 +167,23 @@ public:
             src.setType(dst->getType()->getContained());
             src.setFloat(src.getFloat());
         }
-        Use* use1 = new Use(dst, this, 0);
-        Use* use2 = new Use(&this->src, this, 1);
-        dst->addUse(use1);
-        this->src.addUse(use2);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(dst, this, 1);
+        Use* use3 = new Use(&this->src, this, 2);
+        dst->addUse(use2);
+        this->src.addUse(use3);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
     }
     void print(std::ostream& out) override final{
-        out << "StoreF ";
-        dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
-        out << " ";
-        Operands[0]->getVal()->print(out);
-        out << std::endl;
+        if(!deleted) {
+            out << "StoreF ";
+            dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
+            out << " ";
+            Operands[1]->getVal()->print(out);
+            out << std::endl;
+        }
     }
 };
 class CastInt2FloatIR:public Instruction{
@@ -536,28 +550,34 @@ public:
     ReturnIR(Value* v){
         this->v = v;
 
-        Use* use = new Use(v, this, 0);
-        v->addUse(use);
-        this->Operands.push_back(use);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        v->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     ReturnIR(int val) {
         retInt = val;
         useInt = true;
 
-        Use* use = new Use(v, this, 0);
-        this->Operands.push_back(use);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     ReturnIR(float val){
         retFloat = val;
         useFloat = true;
 
-        Use* use = new Use(v, this, 0);
-        this->Operands.push_back(use);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         out << "ret ";
-        if (Operands[0]->getVal()) {
-            Operands[0]->getVal()->print(out);
+        if (Operands[1]->getVal()) {
+            Operands[1]->getVal()->print(out);
         }else if (useInt) {
             out << "int " << retInt;
         }else if (useFloat){
@@ -583,13 +603,15 @@ public:
     BasicBlock* falseTarget;
     Value* cond;
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) : trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {
-        Use* use = new Use(cond, this, 0);
-        cond->addUse(use);
-        this->Operands.push_back(use);
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(cond, this, 0);
+        cond->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         out << "goto ";
-        Operands[0]->getVal()->print(out);
+        Operands[1]->getVal()->print(out);
         out << " ？ ";
         if(trueTarget) {
             out << trueTarget->name;
@@ -653,44 +675,43 @@ public:
 class CallIR:public Instruction{
 public:
     Function* func;
-    std::vector<TempVal> args;
     Value* returnVal = nullptr;
+    std::vector<TempVal> args;
     CallIR(Function* func,std::vector<TempVal> args) {
         this->func = func;
         this->args = args;
 
-        int i(0);
-        for(; i < args.size(); i++) {
-            Use* use = new Use(&this->args[i], this, i);
+        Use* use = new Use(returnVal, this, 0);
+        this->Operands.push_back(use);
+
+        for(int i(0); i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i + 1);
             this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
-
-        Use* use = new Use(returnVal, this, i);
-        this->Operands.push_back(use);
     }
     CallIR(Function* func,std::vector<TempVal> args, Value* v){
         this->func = func;
         this->args = args;
         this->returnVal = v;
 
-        int i(0);
-        for(; i < args.size(); i++) {
-            Use* use = new Use(&this->args[i], this, i);
+        Use* use = new Use(returnVal, this, 0);
+        returnVal->addUse(use);
+        this->Operands.push_back(use);
+
+        for(int i(0); i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i + 1);
             this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
-        Use* use = new Use(returnVal, this, i);
-        returnVal->addUse(use);
-        this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
-        if (Operands[Operands.size() - 1]->getVal()) {
-            Operands[Operands.size() - 1]->getVal()->print(out);
+        if (Operands[0]->getVal()) {
+            Operands[0]->getVal()->print(out);
             out << " = ";
         }
         out << "call " << func->name << "(";
-        for (size_t i = 0; i < Operands.size() - 1; ++i) {
+        for (size_t i = 1; i < Operands.size(); i++) {
             if(dynamic_cast<TempVal*>(Operands[i]->getVal())) {
                 dynamic_cast<TempVal*>(Operands[i]->getVal())->print(out);
             }else {
@@ -700,7 +721,7 @@ public:
                     out << dynamic_cast<TempVal*>(Operands[i]->getVal())->getFloat();
                 }
             }
-            if (i < Operands.size() - 2) {
+            if (i < Operands.size() - 1) {
                 out << " , ";
             }else {
                 out << ")\n";
@@ -713,7 +734,6 @@ class PhiIR : public Instruction {
 public:
     Value* dst;
     std::map<BasicBlock*, Value*> params;
-    bool deleted = false;
     PhiIR(std::vector<BasicBlock*> bbs, Value* var) {
         for(auto& bb : bbs) {
             params[bb] = var;
@@ -741,7 +761,6 @@ public:
         }
         else out << "\r";
     }
-    void deletePhiIR() { deleted = true; }
 };
 
 #endif //SYSY2022_BJTU_INSTRUCTION_HH

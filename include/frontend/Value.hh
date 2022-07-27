@@ -325,6 +325,6 @@ protected:
 public:
     User() {;}
     void addOperand(Use* Operand) { Operands.push_back(Operand); }
-    std::vector<Use*> getOperands() { return this->Operands; }
+    std::vector<Use*>& getOperands() { return this->Operands; }
 };
 #endif

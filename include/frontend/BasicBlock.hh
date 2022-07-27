@@ -19,7 +19,8 @@ public:
     std::vector<Value*> vars;
     std::string name;
     std::map<Value*, std::vector<std::pair<Value*, std::vector<Use*>*>>> defuse;
-    
+    std::set<Value*> originVals;
+
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
@@ -51,12 +52,15 @@ public:
     std::vector<BasicBlock*> getSucc(){return succBBs;}
     void setIdom(BasicBlock* idom) { this->idom = idom; }
     BasicBlock* getIdom() { return idom; }
+    void pushDomTreeSuccNode(BasicBlock* bb) { this->domTreeSuccNode.push_back(bb); }
+    std::vector<BasicBlock*> getDomTreeSuccNode() { return domTreeSuccNode; }
     
 private:
     std::vector<BasicBlock*> preBBs;
     std::vector<BasicBlock*> succBBs;
     std::set<BasicBlock*> domFrontier;
-    BasicBlock* idom;
+    BasicBlock* idom = nullptr;
+    std::vector<BasicBlock*> domTreeSuccNode;
 };
 class NormalBlock:public BasicBlock{
 public:
