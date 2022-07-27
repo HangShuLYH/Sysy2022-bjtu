@@ -322,8 +322,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             }
         } else {
             if (!gepIr->v3) {
-                GR dst = getGR(gepIr->v1);
-                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,dst, getGR(gepIr->v2),gepIr->arrayLen*4));
+                if (gRegMapping.count(gepIr->v2) != 0) {
+                    GR dst = getGR(gepIr->v1);
+                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, dst, getGR(gepIr->v2), gepIr->arrayLen * 4));
+                }else {
+                    stackMapping[gepIr->v1] = stackMapping[gepIr->v2] + 4*gepIr->arrayLen;
+                }
             } else {
                 //v3 * 4 + v2
                 GR dst = getGR(gepIr->v1);

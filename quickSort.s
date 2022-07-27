@@ -18,13 +18,33 @@ main:
 	movw r0,#:lower16:n
 	movt r0,#:upper16:n
 	str r1,[r0,#0]
+	mov r0,#4
+	str r0,[sp,#0]
+	mov r0,#3
+	str r0,[sp,#4]
+	mov r0,#9
+	str r0,[sp,#8]
+	mov r0,#2
+	str r0,[sp,#12]
+	mov r0,#0
+	str r0,[sp,#16]
+	mov r0,#1
+	str r0,[sp,#20]
+	mov r0,#6
+	str r0,[sp,#24]
+	mov r0,#5
+	str r0,[sp,#28]
+	mov r0,#7
+	str r0,[sp,#32]
+	mov r0,#8
+	str r0,[sp,#36]
 	mov r0,#0
 	str r0,[sp,#40]
 	mov r0,#9
 	str r0,[sp,#44]
-	add r0,r4, #0
 	ldr r1,[sp,#40]
 	ldr r2,[sp,#44]
+	add r0,sp, #0
 	bl QuickSort
 	str r0,[sp,#40]
 	b .L2
@@ -44,9 +64,10 @@ main:
 	mov r0,#1
 	mul r1,r1,r0
 	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r4
+	add r2,r1,r0
+	mov r1,#4
+	add r0,sp, #0
+	mla r0,r1,r2,r0
 	ldr r0,[r0,#0]
 	str r0,[sp,#48]
 	ldr r0,[sp,#48]
