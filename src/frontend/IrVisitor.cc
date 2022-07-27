@@ -975,12 +975,14 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
             }
         }
     } else if (unaryExp->identifier != "") {
-        args.clear();
+        args_stack.push({});
         call_func = findFunc(unaryExp->identifier);
         Function *temp = call_func;
         if (unaryExp->funcRParams) {
             unaryExp->funcRParams->accept(*this);
         }
+        args = args_stack.top();
+        args_stack.pop();
         if (call_func->return_type->isVoid()) {
             cur_bb->pushIr(new CallIR(call_func, args));
         } else {
@@ -1004,7 +1006,10 @@ void IrVisitor::visit(FuncRParams *funcRParams) {
     }
     for (size_t i = 0; i < funcRParams->expList.size(); ++i) {
         funcRParams->expList[i]->accept(*this);
-        args.push_back(tempVal);
+        std::vector<TempVal> aa = args_stack.top();
+        aa.push_back(tempVal);
+        args_stack.pop();
+        args_stack.push(aa);
     }
 }
 

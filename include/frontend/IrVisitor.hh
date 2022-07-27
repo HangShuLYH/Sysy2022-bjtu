@@ -27,6 +27,7 @@ private:
     bool isIF = false;
     Type* curDefType;
     std::vector<TempVal> args; //temp args for cur_func
+    std::stack<std::vector<TempVal>> args_stack;
     int loopCnt = 0; //use for breakError and ContinueError
     Type* typeInt = new Type(TypeID::INT);
     Type* typeFloat = new Type(TypeID::FLOAT);
