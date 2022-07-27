@@ -15,7 +15,7 @@ public:
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
-
+    BasicBlock(std::string name):name(name){}
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
@@ -48,6 +48,7 @@ class NormalBlock:public BasicBlock{
 public:
     BasicBlock* nextBB = nullptr;
     NormalBlock(BasicBlock* parent,std::string func_name, int cnt) : BasicBlock(parent,func_name,cnt){}
+    NormalBlock(std::string name): BasicBlock(name){}
     void print(std::ostream& out) override final{
         out << name << std::endl;
         for (size_t i = 0; i < ir.size(); ++i) {

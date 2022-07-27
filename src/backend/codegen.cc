@@ -14,6 +14,7 @@ int bbNameCnt = 0;
 std::map<std::string, std::string> bbNameMapping;
 std::map<std::string, std::string> stringConstMapping;
 int stringConstCnt = 0;
+
 constexpr bool is_legal_immediate(int32_t value) {
     uint32_t u = static_cast<uint32_t>(value);
     if (u <= 0xffu) return true;
@@ -23,6 +24,7 @@ constexpr bool is_legal_immediate(int32_t value) {
     }
     return false;
 }
+
 std::string getBBName(std::string name) {
     if (bbNameMapping.count(name) == 0) {
         bbNameMapping[name] = ".L" + std::to_string(bbNameCnt++);
@@ -42,17 +44,19 @@ std::vector<Instr *> setIntValue(GR target, int value) {
                 new MoveT(target, imm_high)};
     }
 }
+
 std::vector<Instr *> setFloatValue(GR target, float value) {
     union {
         float floatVal;
         int intVal;
-    }data;
+    } data;
     data.floatVal = value;
     int imm_low = data.intVal & ((1 << 16) - 1);
     int imm_high = data.intVal >> 16;
     return {new MoveW(target, imm_low),
             new MoveT(target, imm_high)};
 }
+
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
@@ -94,7 +98,7 @@ void Codegen::generateProgramCode() {
                             callerSave.erase(gr);
                         }
                     }
-                    for (GR gr:instr->getUseG()) {
+                    for (GR gr: instr->getUseG()) {
                         if (caller_save_regs.count(gr) != 0) {
                             callerSave.insert(gr);
                         }
@@ -119,23 +123,32 @@ void Codegen::generateProgramCode() {
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
-        if(function->basicBlocks.empty()) continue;
+        if (function->basicBlocks.empty()) continue;
         if (function->name != ".init") {
+            function->basicBlocks.insert(function->basicBlocks.begin(),new NormalBlock(function->name));
+            bbNameMapping[function->name] = function->name;
             if (function->name == "main") {
-                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Bl(".init"));
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new Bl(".init"));
             }
             if (is_legal_immediate(function->stackSize)) {
-                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new GRegImmInstr(GRegImmInstr::Sub,GR(13),GR(13),function->stackSize));
-            } else{
-                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new GRegRegInstr(GRegRegInstr::Sub,GR(13),GR(13),GR(12)));
-                std::vector<Instr*> vec = setIntValue(GR(12),function->stackSize);
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new GRegImmInstr(GRegImmInstr::Sub, GR(13), GR(13),
+                                                                              function->stackSize));
+            } else {
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new GRegRegInstr(GRegRegInstr::Sub, GR(13), GR(13),
+                                                                              GR(12)));
+                std::vector<Instr *> vec = setIntValue(GR(12), function->stackSize);
                 for (int i = vec.size() - 1; i >= 0; --i) {
-                    function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),vec[i]);
+                    function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(), vec[i]);
                 }
                 usedGRMapping[function].insert(GR(12));
             }
-            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Vpush(usedFRMapping[function]));
-            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),new Push(usedGRMapping[function]));
+            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                         new Vpush(usedFRMapping[function]));
+            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                         new Push(usedGRMapping[function]));
             //simple way
         } else {
             function->basicBlocks[0]->getInstrs().push_back(new Bx());
@@ -144,39 +157,45 @@ void Codegen::generateProgramCode() {
             for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
                 Instr *instr = *it;
                 if (typeid(*instr) == typeid(Load)) {
-                    Load* load = dynamic_cast<Load*>(instr);
+                    Load *load = dynamic_cast<Load *>(instr);
                     if (load->offset < 0) {
-                        load->offset = -load->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        load->offset =
+                                -load->offset + usedGRMapping[function].size() * 4 + usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
-                    Store* store = dynamic_cast<Store*>(instr);
+                    Store *store = dynamic_cast<Store *>(instr);
                     if (store->offset < 0) {
-                        store->offset = -store->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        store->offset = -store->offset + usedGRMapping[function].size() * 4 +
+                                        usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
-                    VLoad* vload = dynamic_cast<VLoad*>(instr);
+                    VLoad *vload = dynamic_cast<VLoad *>(instr);
                     if (vload->offset < 0) {
-                        vload->offset = -vload->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        vload->offset = -vload->offset + usedGRMapping[function].size() * 4 +
+                                        usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(VStore)) {
-                    VStore* vstore = dynamic_cast<VStore*>(instr);
+                    VStore *vstore = dynamic_cast<VStore *>(instr);
                     if (vstore->offset < 0) {
-                        vstore->offset = -vstore->offset + usedGRMapping[function].size() * 4+ usedFRMapping[function].size() * 4;
+                        vstore->offset = -vstore->offset + usedGRMapping[function].size() * 4 +
+                                         usedFRMapping[function].size() * 4;
                     }
                 }
                 if (typeid(*instr) == typeid(Ret)) {
                     block->getInstrs().erase(it);
                     if (is_legal_immediate(function->stackSize)) {
-                        block->getInstrs().push_back(new GRegImmInstr(GRegImmInstr::Add,GR(13),GR(13),function->stackSize));
-                    } else{
-                        std::vector<Instr*> vec = setIntValue(GR(12),function->stackSize);
-                        for (int i = 0;i < vec.size();i++) {
+                        if (function->stackSize != 0)
+                        block->getInstrs().push_back(
+                                new GRegImmInstr(GRegImmInstr::Add, GR(13), GR(13), function->stackSize));
+                    } else {
+                        std::vector<Instr *> vec = setIntValue(GR(12), function->stackSize);
+                        for (int i = 0; i < vec.size(); i++) {
                             block->getInstrs().push_back(vec[i]);
                         }
-                        block->getInstrs().push_back(new GRegRegInstr(GRegRegInstr::Add,GR(13),GR(13),GR(12)));
+                        block->getInstrs().push_back(new GRegRegInstr(GRegRegInstr::Add, GR(13), GR(13), GR(12)));
                     }
                     std::set<GR> setGR = usedGRMapping[function];
                     setGR.erase(GR(14));
@@ -188,35 +207,43 @@ void Codegen::generateProgramCode() {
                         block->getInstrs().push_back(new Pop(setGR));
                     }
                     break;
-                } else if (typeid(*instr) == typeid(Push)){
-                    Push* pushInstr = dynamic_cast<Push*>(instr);
+                } else if (typeid(*instr) == typeid(Push)) {
+                    Push *pushInstr = dynamic_cast<Push *>(instr);
                     if (pushInstr->regs.empty()) {
                         block->getInstrs().erase(it);
                     } else {
                         it++;
                     }
-                } else if (typeid(*instr) == typeid(Pop)){
-                    Pop* pushInstr = dynamic_cast<Pop*>(instr);
+                } else if (typeid(*instr) == typeid(Pop)) {
+                    Pop *pushInstr = dynamic_cast<Pop *>(instr);
                     if (pushInstr->regs.empty()) {
                         block->getInstrs().erase(it);
                     } else {
                         it++;
                     }
-                }else if (typeid(*instr) == typeid(Vpop)) {
+                } else if (typeid(*instr) == typeid(Vpop)) {
                     Vpop *pushInstr = dynamic_cast<Vpop *>(instr);
                     if (pushInstr->regs.empty()) {
                         block->getInstrs().erase(it);
                     } else {
                         it++;
                     }
-                }else if (typeid(*instr) == typeid(Vpush)){
-                    Vpush* pushInstr = dynamic_cast<Vpush*>(instr);
+                } else if (typeid(*instr) == typeid(Vpush)) {
+                    Vpush *pushInstr = dynamic_cast<Vpush *>(instr);
                     if (pushInstr->regs.empty()) {
                         block->getInstrs().erase(it);
                     } else {
                         it++;
                     }
-                }else {
+                } else if (typeid(*instr) == typeid(GRegImmInstr)) {
+                    GRegImmInstr *g = dynamic_cast<GRegImmInstr *>(instr);
+                    if (g->op == GRegRegInstr::Add && g->src2 == 0 ||
+                        g->op == GRegRegInstr::Sub && g->src2 == 0) {
+                        block->getInstrs().erase(it);
+                    } else {
+                        it++;
+                    }
+                } else {
                     it++;
                 }
             }
@@ -225,7 +252,9 @@ void Codegen::generateProgramCode() {
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
-        out << function->name << ":\n";
+        if (function->name == ".init") {
+            out << function->name << ":\n";
+        }
         for (BasicBlock *block: function->basicBlocks) {
             out << getBBName(block->name) << ":\n";
             for (auto it = block->getInstrs().begin(); it != block->getInstrs().end();) {
@@ -289,7 +318,7 @@ int Codegen::translateFunction(Function *function) {
                     //push {}  -> stackSize + cnt * 4 + pushSize
                     // eg :push {r4,r5} int f(int a,int b,int c,int d,int e)
                     // e -> [sp, # (16 + 8)]
-                    stackMapping[function->params[i]] = - (stackSize + cnt * 4);
+                    stackMapping[function->params[i]] = -(stackSize + cnt * 4);
                     cnt++;
                 }
                 gr_cnt++;
@@ -297,7 +326,7 @@ int Codegen::translateFunction(Function *function) {
                 if (fr_cnt < 32) {
                     fRegMapping[function->params[i]] = FR(fr_cnt);
                 } else {
-                    stackMapping[function->params[i]] = - (stackSize + cnt * 4);
+                    stackMapping[function->params[i]] = -(stackSize + cnt * 4);
                     cnt++;
                 }
                 fr_cnt++;
@@ -338,8 +367,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (gRegMapping.count(gepIr->v2) != 0) {
                     GR dst = getGR(gepIr->v1);
                     vec.push_back(new GRegImmInstr(GRegImmInstr::Add, dst, getGR(gepIr->v2), gepIr->arrayLen * 4));
-                }else {
-                    stackMapping[gepIr->v1] = stackMapping[gepIr->v2] + 4*gepIr->arrayLen;
+                } else {
+                    stackMapping[gepIr->v1] = stackMapping[gepIr->v2] + 4 * gepIr->arrayLen;
                 }
             } else {
                 //v3 * 4 + v2
@@ -350,7 +379,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (gRegMapping.count(gepIr->v2) != 0) {
                     vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
                 } else {
-                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
+                    vec.push_back(
+                            new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
                     vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
                 }
             }
@@ -719,8 +749,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         std::vector<Instr *> vec;
         for (TempVal v: callIr->args) {
             if (v.getType()->isString()) {
-                vec.push_back(new MoveWFromSymbol(GR(0),stringConstMapping[v.getString()]));
-                vec.push_back(new MoveTFromSymbol(GR(0),stringConstMapping[v.getString()]));
+                vec.push_back(new MoveWFromSymbol(GR(0), stringConstMapping[v.getString()]));
+                vec.push_back(new MoveTFromSymbol(GR(0), stringConstMapping[v.getString()]));
                 gr_cnt++;
                 continue;
             }
@@ -747,7 +777,8 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                             vec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
                             gRegMapping[v.getVal()] = gr_cnt;
                         } else {
-                            vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13), stackMapping[v.getVal()]));
+                            vec.push_back(
+                                    new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13), stackMapping[v.getVal()]));
                         }
                     }
                 }
@@ -780,9 +811,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
 //        vec.push_back(new Pop({}));
         if (callIr->returnVal) {
             if (callIr->returnVal->getType()->isInt()) {
-                vec.push_back(new MoveReg(getGR(callIr->returnVal),GR(0)));
+                vec.push_back(new MoveReg(getGR(callIr->returnVal), GR(0)));
             } else {
-                vec.push_back(new VMoveReg(getFR(callIr->returnVal),FR(0)));
+                vec.push_back(new VMoveReg(getFR(callIr->returnVal), FR(0)));
             }
         }
         return vec;

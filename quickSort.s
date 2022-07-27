@@ -30,10 +30,10 @@ cur_token:
 	str r1,[r0,#0]
 	bx lr
 main:
-.L1:
 	push {lr}
 	sub sp,sp, #4
 	bl .init
+.L1:
 	bl getint
 	str r0,[sp,#0]
 	bl getch
@@ -58,10 +58,10 @@ main:
 	add sp,sp, #4
 	pop {pc}
 eval:
-.L5:
 	push {r4,r12,lr}
 	mov r12,#2076
 	sub sp,sp,r12
+.L5:
 	mov r0,#0
 	str r0,[sp,#0]
 	mov r0,#0
@@ -1105,7 +1105,6 @@ eval:
 	movw r0,#:lower16:num
 	movt r0,#:upper16:num
 	ldr r1,[r0,#0]
-	add r0,sp, #0
 	bl stack_push
 	bl next_token
 .L8:
@@ -1161,10 +1160,8 @@ eval:
 	add r0,sp, #1024
 	bl stack_pop
 	str r0,[sp,#2052]
-	add r0,sp, #0
 	bl stack_pop
 	str r0,[sp,#2056]
-	add r0,sp, #0
 	bl stack_pop
 	str r0,[sp,#2060]
 	ldr r0,[sp,#2052]
@@ -1197,7 +1194,6 @@ eval:
 	movw r0,#:lower16:num
 	movt r0,#:upper16:num
 	ldr r1,[r0,#0]
-	add r0,sp, #0
 	bl stack_push
 	bl next_token
 	b .L8
@@ -1213,10 +1209,8 @@ eval:
 	add r0,sp, #1024
 	bl stack_pop
 	str r0,[sp,#2064]
-	add r0,sp, #0
 	bl stack_pop
 	str r0,[sp,#2068]
-	add r0,sp, #0
 	bl stack_pop
 	str r0,[sp,#2072]
 	ldr r0,[sp,#2064]
@@ -1227,15 +1221,14 @@ eval:
 	bl stack_push
 	b .L19
 .L21:
-	add r0,sp, #0
 	bl stack_peek
 	mov r12,#2076
 	add sp,sp,r12
 	pop {r4,r12,pc}
 eval_op:
-.L22:
 	push {lr}
 	sub sp,sp, #12
+.L22:
 	str r0,[sp,#0]
 	str r1,[sp,#4]
 	str r2,[sp,#8]
@@ -1320,23 +1313,21 @@ eval_op:
 	add sp,sp, #12
 	pop {pc}
 stack_size:
-.L33:
 	push {lr}
 	sub sp,sp, #4
+.L33:
 	str r0,[sp,#0]
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r0,[r0,#0]
 	add sp,sp, #4
 	pop {pc}
 stack_peek:
-.L34:
 	push {lr}
 	sub sp,sp, #4
+.L34:
 	str r0,[sp,#0]
 	ldr r2,[sp,#0]
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r1,[r0,#0]
 	mov r0,#1
 	mul r1,r1,r0
@@ -1348,13 +1339,12 @@ stack_peek:
 	add sp,sp, #4
 	pop {pc}
 stack_pop:
-.L35:
 	push {lr}
 	sub sp,sp, #8
+.L35:
 	str r0,[sp,#0]
 	ldr r2,[sp,#0]
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r1,[r0,#0]
 	mov r0,#1
 	mul r1,r1,r0
@@ -1365,9 +1355,7 @@ stack_pop:
 	ldr r0,[r0,#0]
 	str r0,[sp,#4]
 	ldr r0,[sp,#0]
-	add r2,r0, #0
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r1,[r0,#0]
 	mov r0,#1
 	sub r0,r1,r0
@@ -1376,22 +1364,19 @@ stack_pop:
 	add sp,sp, #8
 	pop {pc}
 stack_push:
-.L36:
 	push {lr}
 	sub sp,sp, #8
+.L36:
 	str r0,[sp,#0]
 	str r1,[sp,#4]
 	ldr r0,[sp,#0]
-	add r2,r0, #0
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r1,[r0,#0]
 	mov r0,#1
 	add r0,r1,r0
 	str r0,[r2,#0]
 	ldr r2,[sp,#0]
 	ldr r0,[sp,#0]
-	add r0,r0, #0
 	ldr r1,[r0,#0]
 	mov r0,#1
 	mul r1,r1,r0
@@ -1404,9 +1389,9 @@ stack_push:
 	add sp,sp, #8
 	pop {pc}
 get_op_prec:
-.L37:
 	push {lr}
 	sub sp,sp, #4
+.L37:
 	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	mov r0,#43
@@ -1465,9 +1450,8 @@ get_op_prec:
 	add sp,sp, #4
 	pop {pc}
 panic:
-.L45:
 	push {lr}
-	sub sp,sp, #0
+.L45:
 	mov r0,#112
 	bl putch
 	mov r0,#97
@@ -1483,12 +1467,10 @@ panic:
 	mov r0,#10
 	bl putch
 	mov r0,#-1
-	add sp,sp, #0
 	pop {pc}
 next_token:
-.L46:
 	push {r4,lr}
-	sub sp,sp, #0
+.L46:
 	movw r0,#:lower16:last_char
 	movt r0,#:upper16:last_char
 	ldr r0,[r0,#0]
@@ -1559,12 +1541,11 @@ next_token:
 	movw r0,#:lower16:cur_token
 	movt r0,#:upper16:cur_token
 	ldr r0,[r0,#0]
-	add sp,sp, #0
 	pop {r4,pc}
 is_num:
-.L54:
 	push {lr}
 	sub sp,sp, #4
+.L54:
 	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	mov r0,#48
@@ -1592,9 +1573,9 @@ is_num:
 	add sp,sp, #4
 	pop {pc}
 is_space:
-.L58:
 	push {lr}
 	sub sp,sp, #4
+.L58:
 	str r0,[sp,#0]
 	ldr r1,[sp,#0]
 	mov r0,#32
@@ -1622,9 +1603,8 @@ is_space:
 	add sp,sp, #4
 	pop {pc}
 next_char:
-.L62:
 	push {lr}
-	sub sp,sp, #0
+.L62:
 	bl getch
 	movw r1,#:lower16:last_char
 	movt r1,#:upper16:last_char
@@ -1632,5 +1612,4 @@ next_char:
 	movw r0,#:lower16:last_char
 	movt r0,#:upper16:last_char
 	ldr r0,[r0,#0]
-	add sp,sp, #0
 	pop {pc}
