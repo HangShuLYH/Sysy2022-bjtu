@@ -357,7 +357,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new MoveWFromSymbol(dst, gepIr->v2->getName()));
             vec.push_back(new MoveTFromSymbol(dst, gepIr->v2->getName()));
             if (!gepIr->v3) {
-                if (is_legal_load_store_offset(4*gepIr->arrayLen)) {
+                if (is_legal_load_store_offset(4*gepIr->arrayLen) && is_legal_immediate(4*gepIr->arrayLen)) {
                     vec.push_back(new GRegImmInstr(GRegImmInstr::Add, dst, dst, 4 * gepIr->arrayLen));
                 } else {
                     std::vector<Instr*> v = setIntValue(GR(12), 4*gepIr->arrayLen);
@@ -376,7 +376,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             if (!gepIr->v3) {
                 if (stackMapping.count(gepIr->v2) == 0) {
                     GR dst = getGR(gepIr->v1);
-                    if (is_legal_load_store_offset(gepIr->arrayLen * 4)) {
+                    if (is_legal_load_store_offset(gepIr->arrayLen * 4)&& is_legal_immediate(4*gepIr->arrayLen)) {
                         vec.push_back(new GRegImmInstr(GRegImmInstr::Add, dst, getGR(gepIr->v2), gepIr->arrayLen * 4));
                     } else {
                         std::vector<Instr*> v = setIntValue(GR(12), 4*gepIr->arrayLen);
@@ -395,7 +395,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 GR mul1 = getGR(val2);
                 vec.push_back(new MovImm(mul1, 4));
                 if (stackMapping.count(gepIr->v2) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[gepIr->v2])) {
+                    if (is_legal_load_store_offset(stackMapping[gepIr->v2]) && is_legal_immediate(stackMapping[gepIr->v2])) {
                         vec.push_back(
                                 new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
                     } else {
@@ -426,7 +426,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Load(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) && is_legal_immediate(stackMapping[loadIr->v2])) {
                     vec.push_back(new Load(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
@@ -454,7 +454,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new VLoad(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) && is_legal_immediate(stackMapping[loadIr->v2])) {
                     vec.push_back(new VLoad(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
@@ -498,7 +498,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Store(src, base, 0));
         } else {
             if (stackMapping.count(storeIr->dst) != 0) {
-                if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
                     vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                 }else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -534,7 +534,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new Store(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
                         vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
                         std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -558,7 +558,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new VStore(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
                         vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
                         std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -833,7 +833,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         gRegMapping[v.getVal()] = gr_cnt;
                         vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
                     } else if (gRegMapping.count(v.getVal()) == 0) {
-                        if (is_legal_load_store_offset(stackMapping[v.getVal()])) {
+                        if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
                             vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(v.getVal()), GR(13),
                                                            stackMapping[v.getVal()]));
                         } else {
@@ -857,7 +857,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                             vec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
                             gRegMapping[v.getVal()] = gr_cnt;
                         } else {
-                            if (is_legal_load_store_offset(stackMapping[v.getVal()])) {
+                            if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
                                 vec.push_back(
                                         new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13),
                                                          stackMapping[v.getVal()]));
