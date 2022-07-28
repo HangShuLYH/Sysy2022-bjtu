@@ -14,8 +14,10 @@ int bbNameCnt = 0;
 std::map<std::string, std::string> bbNameMapping;
 std::map<std::string, std::string> stringConstMapping;
 int stringConstCnt = 0;
-
-constexpr bool is_legal_immediate(int32_t value) {
+bool is_legal_load_store_offset(int32_t offset) {
+    return offset >= -4095 && offset <= 4095;
+}
+bool is_legal_immediate(int32_t value) {
     uint32_t u = static_cast<uint32_t>(value);
     if (u <= 0xffu) return true;
     for (int i = 1; i < 16; ++i) {
@@ -399,7 +401,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Load(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                vec.push_back(new Load(dst, GR(13), stackMapping[loadIr->v2]));
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
+                    vec.push_back(new Load(dst, GR(13), stackMapping[loadIr->v2]));
+                } else {
+                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[loadIr->v2]));
+                    vec.push_back(new Load(dst, GR(12), 0));
+                }
             } else {
                 vec.push_back(new Load(dst, getGR(loadIr->v2), 0));
             }
@@ -418,7 +425,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new VLoad(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                vec.push_back(new VLoad(dst, GR(13), stackMapping[loadIr->v2]));
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
+                    vec.push_back(new VLoad(dst, GR(13), stackMapping[loadIr->v2]));
+                } else {
+                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[loadIr->v2]));
+                    vec.push_back(new VLoad(dst, GR(12), 0));
+                }
             } else {
                 vec.push_back(new VLoad(dst, getGR(loadIr->v2), 0));
             }
@@ -453,7 +465,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Store(src, base, 0));
         } else {
             if (stackMapping.count(storeIr->dst) != 0) {
-                vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
+                if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                    vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
+                }else {
+                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                    vec.push_back(new Store(src, GR(12), 0));
+                }
             } else {
                 vec.push_back(new Store(src, getGR(storeIr->dst), 0));
             }
@@ -480,7 +497,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new Store(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                        vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
+                    }else {
+                        vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                        vec.push_back(new Store(src, GR(12), 0));
+                    }
                 } else {
                     vec.push_back(new Store(src, getGR(storeIr->dst), 0));
                 }
@@ -495,7 +517,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new VStore(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
+                        vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
+                    }else {
+                        vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                        vec.push_back(new VStore(src, GR(12), 0));
+                    }
                 } else {
                     vec.push_back(new VStore(src, getGR(storeIr->dst), 0));
                 }
