@@ -171,6 +171,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
+                        it = it + 2 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
@@ -187,6 +188,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
+                        it = it + 2 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
@@ -203,6 +205,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
+                        it = it + 2 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(VStore)) {
@@ -219,6 +222,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
+                        it = it + 2 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(Ret)) {

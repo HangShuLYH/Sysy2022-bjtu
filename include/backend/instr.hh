@@ -24,12 +24,22 @@ public:
     virtual std::vector<FR> getDefF() = 0;
     virtual void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) = 0;
     virtual void replaceBBName(std::map<std::string, std::string> mapping) {}
+    virtual void setNewGR(GR old_gr, GR new_gr, bool use) {}
+    virtual void setNewFR(FR old_fr, FR new_fr, bool use) {}
 };
 class GRegRegInstr: public Instr {
 public:
     enum Type {Add,Sub,Mul,Div} op;
     GR dst, src1, src2;
     GRegRegInstr(Type op,GR dst, GR src1,GR src2): dst(dst),src1(src1),src2(src2),op(op){}
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src1 == old_gr) src1 = new_gr;
+            if (src2 == old_gr) src2 = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src1 = GR(grMapping[src1]);
@@ -78,6 +88,14 @@ public:
         src1 = FR(frMapping[src1]);
         src2 = FR(frMapping[src2]);
     }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src1 == old_fr) src1 = new_fr;
+            if (src2 == old_fr) src2 = new_fr;
+        } else {
+            if (dst == old_fr) dst = new_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         switch (op) {
             case VAdd:
@@ -117,6 +135,13 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src1 = GR(grMapping[src1]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src1 == old_gr) src1 = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         switch (op) {
@@ -166,6 +191,13 @@ public:
         dst = GR(grMapping[dst]);
         base = GR(grMapping[base]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (base == old_gr) base = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "ldr " << dst.getName() << ",["<<base.getName() << ",#"<<offset << "]\n";
     }
@@ -195,6 +227,16 @@ public:
     void print(std::ostream& out) override final{
         out << "vldr.32 " << dst.getName() << ",["<<base.getName() << ",#"<<offset << "]\n";
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (base == old_gr) base = new_gr;
+        }
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (!use) {
+            if (dst == old_fr) dst = new_fr;
+        }
+    }
     std::vector<GR> getUseG() override final{
         return {base};
     }
@@ -223,6 +265,12 @@ public:
         src = GR(grMapping[src]);
         base = GR(grMapping[base]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (base == old_gr) base = new_gr;
+            if (src == old_gr) src = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "str " << src.getName() << ",["<<base.getName() << ",#"<<offset << "]\n";
     }
@@ -249,6 +297,16 @@ public:
         src = FR(frMapping[src]);
         base = GR(grMapping[base]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (base == old_gr) base = new_gr;
+        }
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "vstr.32 " << src.getName() << ",["<<base.getName() << ",#"<<offset << "]\n";
     }
@@ -274,6 +332,11 @@ public:
     MovImm(GR dst,int imm,COND cond): dst(dst),imm(imm),cond(cond) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "mov";
@@ -324,6 +387,16 @@ public:
         dst = GR(grMapping[dst]);
         src = FR(frMapping[src]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "vmov " << dst.getName() << ","<< src.getName() << "\n";
     }
@@ -349,6 +422,16 @@ public:
         dst = FR(frMapping[dst]);
         src = GR(grMapping[src]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src == old_gr) src = new_gr;
+        }
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (!use) {
+            if (dst == old_fr) dst = new_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "vmov " << dst.getName() << "," <<src.getName() << "\n";
     }
@@ -372,6 +455,11 @@ public:
     VMovImm(FR dst,float imm): dst(dst),imm(imm) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = FR(frMapping[dst]);
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (!use) {
+            if (dst == old_fr) dst = new_fr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "vmov " << dst.getName() << ",#" << imm << "\n";
@@ -400,6 +488,11 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "movw " << dst.getName() << ",#" << src << "\n";
     }
@@ -426,6 +519,11 @@ public:
     MoveT(GR dst, int src):dst(dst),src(src) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "movt " << dst.getName() << ",#" << src << "\n";
@@ -454,6 +552,11 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "movw " << dst.getName() << ",#:lower16:" << symbol << "\n";
     }
@@ -480,6 +583,11 @@ public:
     MoveTFromSymbol(GR dst, std::string symbol):dst(dst),symbol(symbol) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "movt " << dst.getName() << ",#:upper16:" << symbol << "\n";
@@ -509,6 +617,15 @@ public:
         mul2 = GR(grMapping[mul2]);
         add = GR(grMapping[add]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (mul1 == old_gr) mul1 = new_gr;
+            if (mul2 == old_gr) mul2 = new_gr;
+            if (add == old_gr) add = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "mla " << dst.getName() << "," << mul1.getName() << "," << mul2.getName() << "," << add.getName() << "\n";
     }
@@ -533,6 +650,13 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = FR(frMapping[dst]);
         src = FR(frMapping[src]);
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        } else {
+            if (dst == old_fr) dst = new_fr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "vcvt.s32.f32 " << dst.getName() << "," <<src.getName() << "\n";
@@ -559,6 +683,13 @@ public:
         dst = FR(frMapping[dst]);
         src = FR(frMapping[src]);
     }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        } else {
+            if (dst == old_fr) dst = old_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "vcvt.f32.s32 " << dst.getName() << "," <<src.getName() << "\n";
     }
@@ -584,6 +715,12 @@ public:
         src1 = GR(grMapping[src1]);
         src2 = GR(grMapping[src2]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src1 == old_gr) src1 = new_gr;
+            if (src2 == old_gr) src2 = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "cmp " << src1.getName() << "," << src2.getName() << "\n";
     }
@@ -607,6 +744,11 @@ public:
     CmpImm(GR src1,int imm):src1(src1),imm(imm){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         src1 = GR(grMapping[src1]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src1 == old_gr) src1 = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "cmp " << src1.getName() << ",#" << imm << "\n";
@@ -632,6 +774,12 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         src1 = FR(frMapping[src1]);
         src2 = FR(frMapping[src2]);
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src1 == old_fr) src1 = new_fr;
+            if (src2 == old_fr) src2 = new_fr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "vcmpe " << src1.getName() << "," << src2.getName() << "\n";
@@ -769,7 +917,13 @@ public:
     GR dst;
     GR src;
     MoveReg(GR dst,GR src):dst(dst),src(src){}
-
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src == old_gr) src = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src = GR(grMapping[src]);
@@ -799,6 +953,13 @@ public:
         dst = FR(frMapping[dst]);
         src = FR(frMapping[src]);
     }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        } else {
+            if (dst == old_fr) dst = new_fr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "vmov " << dst.getName() << "," << src.getName() << "\n";
     }
@@ -822,6 +983,11 @@ public:
     MvnImm(GR dst,int imm):dst(dst),imm(imm){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (!use) {
+            if (dst == old_gr) dst = new_gr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "mvn " << dst.getName() << ",#" << imm << "\n";
@@ -850,6 +1016,13 @@ public:
         dst = GR(grMapping[dst]);
         src1 = GR(grMapping[src1]);
     }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src1 == old_gr) src1 = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
     void print(std::ostream& out) override final{
         out << "rsb " << dst.getName() << "," << src1.getName() << ",#" << src2 << "\n";
     }
@@ -874,6 +1047,13 @@ public:
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = FR(frMapping[dst]);
         src = FR(frMapping[src]);
+    }
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (use) {
+            if (src == old_fr) src = new_fr;
+        } else {
+            if (dst == old_fr) dst = old_fr;
+        }
     }
     void print(std::ostream& out) override final{
         out << "vneg.f32 " << dst.getName() << "," << src.getName() << "\n";

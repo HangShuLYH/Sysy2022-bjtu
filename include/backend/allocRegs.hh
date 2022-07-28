@@ -54,10 +54,11 @@ private:
     std::map<FR, FR> aliasFR;
     std::map<GR, int> colorGR;
     std::map<FR, int> colorFR;
-    std::set<GR> spilledNodesGR;
-    std::set<FR> spilledNodesFR;
-    int KGR = 12;
+    int KGR = 11;
     int KFR = 31;
+    int spillCount = 0;
+    std::map<GR, int> spillMappingGR;
+    std::map<FR, int> spillMappingFR;
 public:
     ColoringAlloc(Function* function):function(function){}
     void run();
