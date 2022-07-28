@@ -373,7 +373,6 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), dst));
             }
         } else {
-            gRegMapping.erase(gepIr->v2);
             if (!gepIr->v3) {
                 if (gRegMapping.count(gepIr->v2) != 0) {
                     GR dst = getGR(gepIr->v1);
@@ -395,9 +394,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 Value *val2 = new VarValue();
                 GR mul1 = getGR(val2);
                 vec.push_back(new MovImm(mul1, 4));
-                if (gRegMapping.count(gepIr->v2) != 0) {
-                    vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
-                } else {
+                if (gRegMapping.count(gepIr->v2) == 0) {
                     if (is_legal_load_store_offset(stackMapping[gepIr->v2])) {
                         vec.push_back(
                                 new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
@@ -408,6 +405,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         }
                         vec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(gepIr->v2), GR(13),GR(12)));
                     }
+                    vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
+
+                } else {
                     vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
                 }
             }
