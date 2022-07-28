@@ -4,7 +4,7 @@
 #include "allocRegs.hh"
 #include <deque>
 
-void ColoringAlloc::run() {
+int ColoringAlloc::run() {
     liveAnalysis();
     build();
     makeWorkList();
@@ -57,7 +57,7 @@ void ColoringAlloc::run() {
         }
         run();
     }
-
+    return spillCount;
 }
 
 void ColoringAlloc::liveAnalysis() {

@@ -72,13 +72,15 @@ void Codegen::generateProgramCode() {
     std::map<Function *, std::set<GR>> usedGRMapping;
     std::map<Function *, std::set<FR>> usedFRMapping;
     std::map<Function *, int> stackSizeMapping;
+    std::map<Function*, int> spillCountMapping;
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
         function->stackSize = translateFunction(function);
         stackSizeMapping[function] = function->stackSize;
         ColoringAlloc coloringAlloc(function);
-        coloringAlloc.run();
+        int spill_size = coloringAlloc.run() * 4;
+        spillCountMapping[function] = spill_size;
         std::set<GR> allUsedRegsGR{GR(14)};
         std::set<FR> allUsedRegsFR;
         std::set<GR> callerSave;
@@ -133,6 +135,21 @@ void Codegen::generateProgramCode() {
                 function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
                                                              new Bl(".init"));
             }
+            //sub r11,sp, #size;
+            if (spillCountMapping[function] != 0) {
+                if (is_legal_load_store_offset(spillCountMapping[function]) &&
+                    is_legal_immediate(spillCountMapping[function])) {
+                    function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                                 new GRegImmInstr(GRegImmInstr::Sub,GR(11),GR(13),spillCountMapping[function]));
+                } else {
+                    function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                                 new GRegRegInstr(GRegRegInstr::Sub,GR(11),GR(13),GR(12)));
+                    std::vector<Instr *> vec = setIntValue(GR(12), spillCountMapping[function]);
+                    for (int i = vec.size() - 1; i >= 0; --i) {
+                        function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(), vec[i]);
+                    }
+                }
+            }
             if (is_legal_immediate(function->stackSize) && is_legal_load_store_offset(function->stackSize)) {
                 function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
                                                              new GRegImmInstr(GRegImmInstr::Sub, GR(13), GR(13),
@@ -171,7 +188,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
-                        it = it + 2 + vv.size();
+                        it = it + 1 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
@@ -188,7 +205,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
-                        it = it + 2 + vv.size();
+                        it = it + 1 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
@@ -205,7 +222,47 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
-                        it = it + 2 + vv.size();
+                        it = it + 1 + vv.size();
+                    }
+                }
+                if (typeid(*instr) == typeid(MoveReg)) {
+                    MoveReg* moveReg = dynamic_cast<MoveReg*>(instr);
+                    //mov sp,r11;
+                    if (moveReg->getUseG()[0] == GR(11)) {
+                        block->getInstrs().erase(it);
+                        int cnt = 0;
+                        if (spillCountMapping[function] != 0) {
+                            if (is_legal_immediate(spillCountMapping[function]) && is_legal_load_store_offset(spillCountMapping[function])) {
+                                block->getInstrs().insert(it,new GRegImmInstr(GRegImmInstr::Sub, GR(13),GR(13),spillCountMapping[function]));
+                                cnt++;
+                            } else {
+                                block->getInstrs().insert(it,new GRegRegInstr(GRegRegInstr::Sub,GR(13),GR(13),GR(12)));
+                                std::vector<Instr*> vv = setIntValue(GR(12), spillCountMapping[function]);
+                                for (auto item = vv.rbegin();item != vv.rend();it++) {
+                                    block->getInstrs().insert(it,*item);
+                                }
+                                cnt = cnt + 1 + vv.size();
+                            }
+                        }
+                        it = it + cnt - 1;
+                    }
+                    if (moveReg->getDefG()[0] == GR(11)) {
+                        block->getInstrs().erase(it);
+                        int cnt = 0;
+                        if (spillCountMapping[function] != 0) {
+                            if (is_legal_immediate(spillCountMapping[function]) && is_legal_load_store_offset(spillCountMapping[function])) {
+                                block->getInstrs().insert(it,new GRegImmInstr(GRegImmInstr::Add, GR(13),GR(13),spillCountMapping[function]));
+                                cnt++;
+                            } else {
+                                block->getInstrs().insert(it,new GRegRegInstr(GRegRegInstr::Add,GR(13),GR(13),GR(12)));
+                                std::vector<Instr*> vv = setIntValue(GR(12), spillCountMapping[function]);
+                                for (auto item = vv.rbegin();item != vv.rend();it++) {
+                                    block->getInstrs().insert(it,*item);
+                                }
+                                cnt = cnt + 1 + vv.size();
+                            }
+                        }
+                        it = it + cnt - 1;
                     }
                 }
                 if (typeid(*instr) == typeid(VStore)) {
@@ -222,7 +279,7 @@ void Codegen::generateProgramCode() {
                         for (auto item = vv.rbegin();item != vv.rend();it++) {
                             block->getInstrs().insert(it,*item);
                         }
-                        it = it + 2 + vv.size();
+                        it = it + 1 + vv.size();
                     }
                 }
                 if (typeid(*instr) == typeid(Ret)) {
@@ -944,7 +1001,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             }
         }
 //        vec.push_back(new Push({}));
+        vec.push_back(new MoveReg(GR(13),GR(11)));
         vec.push_back(new Bl(callIr->func->name));
+        vec.push_back(new MoveReg(GR(11),GR(13)));
 //        vec.push_back(new Pop({}));
         if (callIr->returnVal) {
             if (callIr->returnVal->getType()->isInt()) {

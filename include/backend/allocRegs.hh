@@ -61,7 +61,7 @@ private:
     std::map<FR, int> spillMappingFR;
 public:
     ColoringAlloc(Function* function):function(function){}
-    void run();
+    int run();
     void liveAnalysis();
     void build();
     void addEdgeGR(GR lhs,GR rhs);

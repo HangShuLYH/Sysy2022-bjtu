@@ -6,58 +6,91 @@
 .L0:
 	bx lr
 main:
-	push {r4,r5,r6,lr}
+	push {r4,r5,r6,r11,lr}
 	sub sp,sp, #372
+	sub r11,sp, #60
 	bl .init
 .L1:
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#0]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#4]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#8]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#12]
+	sub sp,sp, #60
 	bl getint
-	str r0,[r11,#36]
-	bl getint
-	mov r6,r0
-	bl getint
-	mov r5,r0
-	bl getint
-	mov r4,r0
-	bl getint
-	str r0,[r11,#40]
-	bl getint
-	str r0,[r11,#44]
-	bl getint
-	str r0,[r11,#48]
-	bl getint
+	add sp,sp, #60
 	str r0,[r11,#16]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
+	str r0,[r11,#40]
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	mov r6,r0
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	mov r5,r0
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	mov r4,r0
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	str r0,[r11,#44]
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	str r0,[r11,#48]
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
+	str r0,[r11,#52]
+	sub sp,sp, #60
+	bl getint
+	add sp,sp, #60
 	str r0,[r11,#20]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#24]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#28]
+	sub sp,sp, #60
 	bl getint
+	add sp,sp, #60
 	str r0,[r11,#32]
 	ldr r0,[r11,#0]
 	ldr r1,[r11,#4]
 	ldr r2,[r11,#8]
 	ldr r3,[r11,#12]
-	ldr r0,[r11,#36]
+	ldr r0,[r11,#16]
 	str r0,[sp,#0]
-	str r6,[sp,#4]
-	str r5,[sp,#8]
-	str r4,[sp,#12]
 	ldr r0,[r11,#40]
-	str r0,[sp,#16]
+	str r0,[sp,#4]
+	str r6,[sp,#8]
+	str r5,[sp,#12]
+	str r4,[sp,#16]
 	ldr r0,[r11,#44]
 	str r0,[sp,#20]
 	ldr r0,[r11,#48]
 	str r0,[sp,#24]
-	ldr r0,[r11,#16]
+	ldr r0,[r11,#52]
 	str r0,[sp,#28]
 	ldr r0,[r11,#20]
 	str r0,[sp,#32]
@@ -67,7 +100,9 @@ main:
 	str r0,[sp,#40]
 	ldr r0,[r11,#32]
 	str r0,[sp,#44]
+	sub sp,sp, #60
 	bl param16
+	add sp,sp, #60
 	str r0,[sp,#112]
 	mov r0,#8848
 	str r0,[sp,#116]
@@ -317,16 +352,23 @@ main:
 	str r0,[sp,#104]
 	add r0,sp, #360
 	str r0,[sp,#108]
+	sub sp,sp, #60
 	bl param32_arr
+	add sp,sp, #60
+	sub sp,sp, #60
 	bl putint
+	add sp,sp, #60
 	mov r0,#10
+	sub sp,sp, #60
 	bl putch
+	add sp,sp, #60
 	mov r0,#0
 	add sp,sp, #372
-	pop {r4,r5,r6,pc}
+	pop {r4,r5,r6,r11,pc}
 param16:
-	push {r4,lr}
+	push {r4,r11,lr}
 	sub sp,sp, #240
+	sub r11,sp, #168
 .L5:
 	str r0,[sp,#112]
 	str r1,[sp,#116]
@@ -340,33 +382,35 @@ param16:
 	str r0,[sp,#184]
 	ldr r0,[sp,#124]
 	str r0,[sp,#188]
-	ldr r0,[sp,#248]
-	str r0,[sp,#192]
 	ldr r0,[sp,#252]
-	str r0,[sp,#196]
+	str r0,[sp,#192]
 	ldr r0,[sp,#256]
-	str r0,[sp,#200]
+	str r0,[sp,#196]
 	ldr r0,[sp,#260]
-	str r0,[sp,#204]
+	str r0,[sp,#200]
 	ldr r0,[sp,#264]
-	str r0,[sp,#208]
+	str r0,[sp,#204]
 	ldr r0,[sp,#268]
-	str r0,[sp,#212]
+	str r0,[sp,#208]
 	ldr r0,[sp,#272]
-	str r0,[sp,#216]
+	str r0,[sp,#212]
 	ldr r0,[sp,#276]
-	str r0,[sp,#220]
+	str r0,[sp,#216]
 	ldr r0,[sp,#280]
-	str r0,[sp,#224]
+	str r0,[sp,#220]
 	ldr r0,[sp,#284]
-	str r0,[sp,#228]
+	str r0,[sp,#224]
 	ldr r0,[sp,#288]
-	str r0,[sp,#232]
+	str r0,[sp,#228]
 	ldr r0,[sp,#292]
+	str r0,[sp,#232]
+	ldr r0,[sp,#296]
 	str r0,[sp,#236]
 	add r0,sp, #176
 	mov r1,#16
+	sub sp,sp, #168
 	bl sort
+	add sp,sp, #168
 	ldr r0,[sp,#176]
 	ldr r1,[sp,#180]
 	ldr r2,[sp,#184]
@@ -403,29 +447,29 @@ param16:
 	str r4,[r11,#56]
 	ldr r4,[sp,#124]
 	str r4,[r11,#60]
-	ldr r4,[sp,#248]
-	str r4,[r11,#64]
 	ldr r4,[sp,#252]
-	str r4,[r11,#68]
+	str r4,[r11,#64]
 	ldr r4,[sp,#256]
-	str r4,[r11,#72]
+	str r4,[r11,#68]
 	ldr r4,[sp,#260]
-	str r4,[r11,#76]
+	str r4,[r11,#72]
 	ldr r4,[sp,#264]
-	str r4,[r11,#80]
+	str r4,[r11,#76]
 	ldr r4,[sp,#268]
-	str r4,[r11,#140]
+	str r4,[r11,#80]
 	ldr r4,[sp,#272]
-	str r4,[r11,#144]
+	str r4,[r11,#140]
 	ldr r4,[sp,#276]
-	str r4,[r11,#148]
+	str r4,[r11,#144]
 	ldr r4,[sp,#280]
-	str r4,[r11,#152]
+	str r4,[r11,#148]
 	ldr r4,[sp,#284]
-	str r4,[r11,#156]
+	str r4,[r11,#152]
 	ldr r4,[sp,#288]
-	str r4,[r11,#160]
+	str r4,[r11,#156]
 	ldr r4,[sp,#292]
+	str r4,[r11,#160]
+	ldr r4,[sp,#296]
 	str r4,[r11,#164]
 	ldr r0,[r11,#0]
 	str r0,[sp,#0]
@@ -483,9 +527,11 @@ param16:
 	str r0,[sp,#104]
 	ldr r0,[r11,#164]
 	str r0,[sp,#108]
+	sub sp,sp, #168
 	bl param32_rec
+	add sp,sp, #168
 	add sp,sp, #240
-	pop {r4,pc}
+	pop {r4,r11,pc}
 param32_arr:
 	push {lr}
 	sub sp,sp, #132
@@ -784,8 +830,9 @@ param32_arr:
 	add sp,sp, #132
 	pop {pc}
 param32_rec:
-	push {r4,lr}
+	push {r4,r11,lr}
 	sub sp,sp, #240
+	sub r11,sp, #160
 .L7:
 	str r0,[sp,#112]
 	str r1,[sp,#116]
@@ -802,7 +849,7 @@ param32_rec:
 .L8:
 	ldr r0,[sp,#116]
 	add sp,sp, #240
-	pop {r4,pc}
+	pop {r4,r11,pc}
 .L9:
 	ldr r1,[sp,#112]
 	mov r0,#1
@@ -816,60 +863,60 @@ param32_rec:
 	mul r1,r1,r2
 	sub r1,r3,r1
 	ldr r2,[sp,#124]
-	ldr r3,[sp,#248]
-	ldr r4,[sp,#252]
-	str r4,[r11,#0]
+	ldr r3,[sp,#252]
 	ldr r4,[sp,#256]
-	str r4,[r11,#4]
+	str r4,[r11,#0]
 	ldr r4,[sp,#260]
-	str r4,[r11,#8]
+	str r4,[r11,#4]
 	ldr r4,[sp,#264]
-	str r4,[r11,#12]
+	str r4,[r11,#8]
 	ldr r4,[sp,#268]
-	str r4,[r11,#16]
+	str r4,[r11,#12]
 	ldr r4,[sp,#272]
-	str r4,[r11,#20]
+	str r4,[r11,#16]
 	ldr r4,[sp,#276]
-	str r4,[r11,#24]
+	str r4,[r11,#20]
 	ldr r4,[sp,#280]
-	str r4,[r11,#28]
+	str r4,[r11,#24]
 	ldr r4,[sp,#284]
-	str r4,[r11,#32]
+	str r4,[r11,#28]
 	ldr r4,[sp,#288]
-	str r4,[r11,#36]
+	str r4,[r11,#32]
 	ldr r4,[sp,#292]
-	str r4,[r11,#40]
+	str r4,[r11,#36]
 	ldr r4,[sp,#296]
-	str r4,[r11,#44]
+	str r4,[r11,#40]
 	ldr r4,[sp,#300]
-	str r4,[r11,#48]
+	str r4,[r11,#44]
 	ldr r4,[sp,#304]
-	str r4,[r11,#52]
+	str r4,[r11,#48]
 	ldr r4,[sp,#308]
-	str r4,[r11,#56]
+	str r4,[r11,#52]
 	ldr r4,[sp,#312]
-	str r4,[r11,#60]
+	str r4,[r11,#56]
 	ldr r4,[sp,#316]
-	str r4,[r11,#64]
+	str r4,[r11,#60]
 	ldr r4,[sp,#320]
-	str r4,[r11,#68]
+	str r4,[r11,#64]
 	ldr r4,[sp,#324]
-	str r4,[r11,#72]
+	str r4,[r11,#68]
 	ldr r4,[sp,#328]
-	str r4,[r11,#76]
+	str r4,[r11,#72]
 	ldr r4,[sp,#332]
-	str r4,[r11,#132]
+	str r4,[r11,#76]
 	ldr r4,[sp,#336]
-	str r4,[r11,#136]
+	str r4,[r11,#132]
 	ldr r4,[sp,#340]
-	str r4,[r11,#140]
+	str r4,[r11,#136]
 	ldr r4,[sp,#344]
-	str r4,[r11,#144]
+	str r4,[r11,#140]
 	ldr r4,[sp,#348]
-	str r4,[r11,#148]
+	str r4,[r11,#144]
 	ldr r4,[sp,#352]
-	str r4,[r11,#152]
+	str r4,[r11,#148]
 	ldr r4,[sp,#356]
+	str r4,[r11,#152]
+	ldr r4,[sp,#360]
 	str r4,[r11,#156]
 	ldr r0,[r11,#0]
 	str r0,[sp,#0]
@@ -929,9 +976,11 @@ param32_rec:
 	str r0,[r11,#4]
 	ldr r0,[r11,#4]
 	str r0,[sp,#108]
+	sub sp,sp, #160
 	bl param32_rec
+	add sp,sp, #160
 	add sp,sp, #240
-	pop {r4,pc}
+	pop {r4,r11,pc}
 sort:
 	push {lr}
 	sub sp,sp, #20
