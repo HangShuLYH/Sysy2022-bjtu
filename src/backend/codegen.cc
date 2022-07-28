@@ -404,7 +404,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
                     vec.push_back(new Load(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
-                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[loadIr->v2]));
+                    std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
+                    for (Instr* instr:v) {
+                        vec.push_back(instr);
+                    }
+                    vec.push_back(new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),GR(13)));
                     vec.push_back(new Load(dst, GR(12), 0));
                 }
             } else {
@@ -428,7 +432,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (is_legal_load_store_offset(stackMapping[loadIr->v2])) {
                     vec.push_back(new VLoad(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
-                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[loadIr->v2]));
+                    std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
+                    for (Instr* instr:v) {
+                        vec.push_back(instr);
+                    }
+                    vec.push_back(new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),GR(13)));
                     vec.push_back(new VLoad(dst, GR(12), 0));
                 }
             } else {
@@ -468,7 +476,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
                     vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                 }else {
-                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                    std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
+                    for (Instr* instr:v) {
+                        vec.push_back(instr);
+                    }
+                    vec.push_back(new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),GR(13)));
                     vec.push_back(new Store(src, GR(12), 0));
                 }
             } else {
@@ -500,7 +512,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
                         vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
-                        vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                        std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
+                        for (Instr* instr:v) {
+                            vec.push_back(instr);
+                        }
+                        vec.push_back(new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),GR(13)));
                         vec.push_back(new Store(src, GR(12), 0));
                     }
                 } else {
@@ -520,7 +536,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (is_legal_load_store_offset(stackMapping[storeIr->dst])) {
                         vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
-                        vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(12), GR(13), stackMapping[storeIr->dst]));
+                        std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
+                        for (Instr* instr:v) {
+                            vec.push_back(instr);
+                        }
+                        vec.push_back(new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),GR(13)));
                         vec.push_back(new VStore(src, GR(12), 0));
                     }
                 } else {
