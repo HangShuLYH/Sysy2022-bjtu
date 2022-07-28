@@ -1,201 +1,69 @@
-int __HELLO [
-
-
-100
-		]
-= {
-87, 101, 108, 99,
-111, 109, 101,
-32, 116, 111,	32,
-116,	 104,
-101, 32, 	74,
-97,
-
-112, 97,
-
-	114, 	105,	32,	80, 97,
-
-
-
-
-114, 107,	 33, 10 }; /* Names of
-kemono
-friends */ int	N4__mE___[6][50]		= { { 83, 97,	97, 98,
-97,
-114,
-117  }, 	{	75, 97, 98,
-
-97,  110
-
-}, {
-
-
-72,
-
-	  97,
-115, 104, 105,
-98, 105, 114, 111,
-
-
-
-
-
-
-107,
-	 111,
-
-
-117
-
-}, { 65, 114,
-
-97,
-
-105,
-103,
-
-117,
-109,
-
-
-			97 },
-	{ 72, 117,
-110, 98, 111, 114,
-117,
-
-116, 111,	  32, 80,
-101, 110,
-
-	103, 105, 	110
-},
-  {	84, 97, 105, 114, 105, 107, 117, 32, 79,
-
-
-111, 107,
-97,
-109,
-
-
-
-
-
-
- 105	} };
-	int
-
-saY_HeI10_To[40] = { 32,
-115, 97,  121,
-
-		115,
-
-32,
-104,
-
- 101, 108, 108,	111,
-
- 32,
-
-
-116, 111,
-32 };	int
-		RET[5]
-=
-{10}; int putstr(
-int str[	] )  {
-  int
-
- iNd__1X ;	iNd__1X		= 0 ; while ( str
-		[	iNd__1X
-	] ) {
-
- putch (
-
-str[ iNd__1X
-]
-	) ; iNd__1X
-=
-iNd__1X
-
- + 1
-
-;	} return	iNd__1X
- ; } int main( /* no param */ )	{
-putstr(
-__HELLO	)  ;	int i =
- 0 ; /* say
-
-
-	hello to
- kemono friends
-~ */ while (
-
- 1 ) {
-
-int _
- = i
-
-/ 6
-
-; int __
-=
-i % 6
-
-;
-
-	if
-(
-
-_
-
-!=
-
-
-	__ )
-	{ putstr(
-
-N4__mE___
-
-	[ 	_
- ] )
-; putstr(
-saY_HeI10_To	) ;
-putstr(
-N4__mE___ [
-
-
-
-__ ]	 )
-
-
-;
-
-		putstr(
-RET
-) ;
+const int maxn = 18;
+const int mod = 1000000007;
+int dp[maxn][maxn][maxn][maxn][maxn][7];
+int list[200];
+
+int equal(int a, int b) {
+    if (a == b)
+        return 1;
+    return 0;
 }
-/*
-	 do
 
-	linear
-modulo
-to find 	the 	 next pair of friends  */ i = ( i
-*
+int dfs(int a, int b, int c, int d, int e, int last){
+    if(dp[a][b][c][d][e][last] != -1)
+        return dp[a][b][c][d][e][last];
+    if(a + b + c + d + e == 0)
+        return 1;
+    int ans = 0;
+    if (a) ans = (ans + (a - equal(last, 2)) * dfs(a - 1, b, c, d, e, 1)) % mod;
+    if (b) ans = (ans + (b - equal(last, 3)) * dfs(a + 1, b - 1, c, d, e, 2)) % mod;
+    if (c) ans = (ans + (c - equal(last, 4)) * dfs(a, b + 1, c - 1, d, e, 3)) % mod;
+    if (d) ans = (ans + (d - equal(last, 5)) * dfs(a, b, c + 1, d - 1, e, 4)) % mod;
+    if (e) ans = (ans + e * dfs(a, b, c, d + 1, e - 1, 5)) % mod;
+    dp[a][b][c][d][e][last] = ans % mod;
+    return dp[a][b][c][d][e][last];
+}
 
+int cns[20];
 
-17
+int main(){
+    int n = getint();
+    int i = 0;
+    while (i < maxn) {
+        int j = 0;
+        while(j < maxn) {
+            int k = 0;
+            while(k < maxn) {
+                int l = 0;
+                while (l < maxn) {
+                    int m = 0;
+                    while (m < maxn) {
+                        int h = 0;
+                        while (h < 7) {
+                            dp[i][j][k][l][m][h] = -1;
+                            h = h + 1;
+                        }
+                        m = m + 1;
+                    }
+                    l = l + 1;
+                }
+                k = k + 1;
+            }
+            j = j + 1;
+        }
+        i = i + 1;
+    }
 
-+	 23
-)
-%
+    i = 0;
+    while (i < n) {
+        list[i] = getint();
+        cns[list[i]] = cns[list[i]] + 1;
+        i = i + 1;
+    }
 
+    int ans = dfs(cns[1], cns[2], cns[3], cns[4], cns[5], 0);
 
-32
+    putint(ans);
 
-
- ;
-if ( i
-==
-	0	) { break ;		}
-
-
- } return 0; }
+    return ans;
+}

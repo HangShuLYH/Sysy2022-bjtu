@@ -161,8 +161,16 @@ void Codegen::generateProgramCode() {
                 if (typeid(*instr) == typeid(Load)) {
                     Load *load = dynamic_cast<Load *>(instr);
                     if (load->offset < 0) {
-                        load->offset =
-                                -load->offset + usedGRMapping[function].size() * 4 + usedFRMapping[function].size() * 4;
+                        load->offset = -load->offset + usedGRMapping[function].size() * 4 + usedFRMapping[function].size() * 4;
+                    }
+                    if (!is_legal_immediate(load->offset) || !is_legal_load_store_offset(load->offset)) {
+                        block->getInstrs().erase(it);
+                        block->getInstrs().insert(it, new Load(load->dst,GR(12),0));
+                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),load->base));
+                        std::vector<Instr*> vv = setIntValue(GR(12), load->offset);
+                        for (auto item = vv.rbegin();item != vv.rend();it++) {
+                            block->getInstrs().insert(it,*item);
+                        }
                     }
                 }
                 if (typeid(*instr) == typeid(Store)) {
@@ -171,6 +179,15 @@ void Codegen::generateProgramCode() {
                         store->offset = -store->offset + usedGRMapping[function].size() * 4 +
                                         usedFRMapping[function].size() * 4;
                     }
+                    if (!is_legal_immediate(store->offset) || !is_legal_load_store_offset(store->offset)) {
+                        block->getInstrs().erase(it);
+                        block->getInstrs().insert(it, new Store(store->src,GR(12),0));
+                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),store->base));
+                        std::vector<Instr*> vv = setIntValue(GR(12), store->offset);
+                        for (auto item = vv.rbegin();item != vv.rend();it++) {
+                            block->getInstrs().insert(it,*item);
+                        }
+                    }
                 }
                 if (typeid(*instr) == typeid(VLoad)) {
                     VLoad *vload = dynamic_cast<VLoad *>(instr);
@@ -178,12 +195,30 @@ void Codegen::generateProgramCode() {
                         vload->offset = -vload->offset + usedGRMapping[function].size() * 4 +
                                         usedFRMapping[function].size() * 4;
                     }
+                    if (!is_legal_immediate(vload->offset) || !is_legal_load_store_offset(vload->offset)) {
+                        block->getInstrs().erase(it);
+                        block->getInstrs().insert(it, new VLoad(vload->dst,GR(12),0));
+                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),vload->base));
+                        std::vector<Instr*> vv = setIntValue(GR(12), vload->offset);
+                        for (auto item = vv.rbegin();item != vv.rend();it++) {
+                            block->getInstrs().insert(it,*item);
+                        }
+                    }
                 }
                 if (typeid(*instr) == typeid(VStore)) {
                     VStore *vstore = dynamic_cast<VStore *>(instr);
                     if (vstore->offset < 0) {
                         vstore->offset = -vstore->offset + usedGRMapping[function].size() * 4 +
                                          usedFRMapping[function].size() * 4;
+                    }
+                    if (!is_legal_immediate(vstore->offset) || !is_legal_load_store_offset(vstore->offset)) {
+                        block->getInstrs().erase(it);
+                        block->getInstrs().insert(it, new VStore(vstore->src,GR(12),0));
+                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add,GR(12),GR(12),vstore->base));
+                        std::vector<Instr*> vv = setIntValue(GR(12), vstore->offset);
+                        for (auto item = vv.rbegin();item != vv.rend();it++) {
+                            block->getInstrs().insert(it,*item);
+                        }
                     }
                 }
                 if (typeid(*instr) == typeid(Ret)) {
@@ -426,7 +461,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Load(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) && is_legal_immediate(stackMapping[loadIr->v2])) {
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) &&
+                is_legal_immediate(stackMapping[loadIr->v2])
+                || stackMapping[loadIr->v2] < 0) {
                     vec.push_back(new Load(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
@@ -454,7 +491,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new VLoad(dst, base, 0));
         } else {
             if (stackMapping.count(loadIr->v2) != 0) {
-                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) && is_legal_immediate(stackMapping[loadIr->v2])) {
+                if (is_legal_load_store_offset(stackMapping[loadIr->v2]) &&
+                is_legal_immediate(stackMapping[loadIr->v2])
+                || stackMapping[loadIr->v2] < 0) {
                     vec.push_back(new VLoad(dst, GR(13), stackMapping[loadIr->v2]));
                 } else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[loadIr->v2]);
@@ -498,7 +537,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             vec.push_back(new Store(src, base, 0));
         } else {
             if (stackMapping.count(storeIr->dst) != 0) {
-                if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
+                if (is_legal_load_store_offset(stackMapping[storeIr->dst]) &&
+                is_legal_immediate(stackMapping[storeIr->dst])
+                || stackMapping[storeIr->dst] < 0) {
                     vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                 }else {
                     std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -534,7 +575,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new Store(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) &&
+                    is_legal_immediate(stackMapping[storeIr->dst])
+                    || stackMapping[storeIr->dst] < 0) {
                         vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
                         std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -558,7 +601,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new VStore(src, base, 0));
             } else {
                 if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) && is_legal_immediate(stackMapping[storeIr->dst])) {
+                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])
+                    && is_legal_immediate(stackMapping[storeIr->dst])
+                    || stackMapping[storeIr->dst] < 0) {
                         vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
                     }else {
                         std::vector<Instr*> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
@@ -858,8 +903,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                             gRegMapping[v.getVal()] = gr_cnt;
                         } else {
                             if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
-                                vec.push_back(
-                                        new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13),
+                                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13),
                                                          stackMapping[v.getVal()]));
                             } else {
                                 std::vector<Instr*> vv = setIntValue(GR(12), stackMapping[v.getVal()]);
