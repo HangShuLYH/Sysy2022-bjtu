@@ -397,7 +397,6 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (gRegMapping.count(gepIr->v2) != 0 && false) {
                     vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
                 } else {
-                    gRegMapping.erase(gepIr->v2);
                     if (is_legal_load_store_offset(stackMapping[gepIr->v2])) {
                         vec.push_back(
                                 new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
@@ -409,6 +408,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         vec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(gepIr->v2), GR(13),GR(12)));
                     }
                     vec.push_back(new MLA(dst, mul1, getGR(gepIr->v3), getGR(gepIr->v2)));
+                    gRegMapping.erase(gepIr->v2);
                 }
             }
         }
