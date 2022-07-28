@@ -122,6 +122,9 @@ void Codegen::generateProgramCode() {
                 }
             }
         }
+        if (spill_size == 0) {
+            allUsedRegsGR.erase(GR(11));
+        }
         usedGRMapping[function] = allUsedRegsGR;
         usedFRMapping[function] = allUsedRegsFR;
     }
