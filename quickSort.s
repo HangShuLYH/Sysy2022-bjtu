@@ -805,13 +805,12 @@ max_sum_nonadjacent:
 	mov r0,#0
 	str r0,[sp,#68]
 	ldr r0,[sp,#0]
-	ldr r0,[r0,#0]
+	ldr r0,[sp,#0]
 	str r0,[sp,#8]
 	ldr r0,[sp,#0]
-	ldr r0,[r0,#0]
+	ldr r0,[sp,#0]
 	ldr r1,[sp,#0]
-	add r1,r1, #4
-	ldr r1,[r1,#0]
+	ldr r1,[sp,#4]
 	bl MAX
 	str r0,[sp,#12]
 	mov r0,#2
