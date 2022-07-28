@@ -374,7 +374,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             }
         } else {
             if (!gepIr->v3) {
-                if (gRegMapping.count(gepIr->v2) != 0) {
+                if (stackMapping.count(gepIr->v2) == 0) {
                     GR dst = getGR(gepIr->v1);
                     if (is_legal_load_store_offset(gepIr->arrayLen * 4)) {
                         vec.push_back(new GRegImmInstr(GRegImmInstr::Add, dst, getGR(gepIr->v2), gepIr->arrayLen * 4));
@@ -394,7 +394,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 Value *val2 = new VarValue();
                 GR mul1 = getGR(val2);
                 vec.push_back(new MovImm(mul1, 4));
-                if (gRegMapping.count(gepIr->v2) == 0) {
+                if (stackMapping.count(gepIr->v2) != 0) {
                     if (is_legal_load_store_offset(stackMapping[gepIr->v2])) {
                         vec.push_back(
                                 new GRegImmInstr(GRegImmInstr::Add, getGR(gepIr->v2), GR(13), stackMapping[gepIr->v2]));
