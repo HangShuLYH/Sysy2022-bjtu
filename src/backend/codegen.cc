@@ -928,9 +928,6 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         int fr_cnt = 0;
         int cnt = 0;
         std::vector<Instr *> vec;
-        if (callIr->args.size() == 32) {
-            std::cout << "\n";
-        }
         for (TempVal v: callIr->args) {
             std::vector<Instr *> tempVec;
             if (v.getType()->isString()) {
@@ -943,8 +940,10 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (gr_cnt >= 4) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
-                        gRegMapping[v.getVal()] = gr_cnt;
-                        tempVec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                        std::vector<Instr*> vv = setIntValue(getGR(v.getVal()),v.getInt());
+                        for (Instr* instr:vv) {
+                            tempVec.push_back(instr);
+                        }
                     } else if (gRegMapping.count(v.getVal()) == 0) {
                         if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
                             tempVec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(v.getVal()), GR(13),
@@ -988,7 +987,6 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (fr_cnt >= 32) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
-                        fRegMapping[v.getVal()] = fr_cnt;
                         tempVec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
