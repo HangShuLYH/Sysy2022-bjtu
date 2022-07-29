@@ -9,22 +9,22 @@
 driver ddriver;
 CompUnit *root;
 int main(int argc, char *argv[]) {
-    std::vector<int> v{1,2,5,6,7};
-    for (auto it = v.begin();it != v.end();it++) {
-        int x = *it;
-        if (x == 2) {
-            v.erase(it);
-//            it = v.insert(it,3);
-//            it = v.insert(it, 4);
-//            it = v.insert(it,9);
-//            it = v.insert(it,10);
-            it = it - 1;
-        }
-        std::cout << x << "\n";
-    }
-    for (int x:v) {
-        std::cout << x << "\n";
-    }
+//    std::vector<int> v{1,2,5,6,7};
+//    for (auto it = v.begin();it != v.end();it++) {
+//        int x = *it;
+//        if (x == 2) {
+//            v.erase(it);
+////            it = v.insert(it,3);
+////            it = v.insert(it, 4);
+////            it = v.insert(it,9);
+////            it = v.insert(it,10);
+//            it = it - 1;
+//        }
+//        std::cout << x << "\n";
+//    }
+//    for (int x:v) {
+//        std::cout << x << "\n";
+//    }
     std::string inputFileName;
     std::string outputFileName = "a.s";
     bool printAST = false;

@@ -1006,6 +1006,11 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 fr_cnt++;
             }
         }
+        std::vector<Instr*> v;
+        for (Instr* instr:vec) {
+            v.insert(v.begin(),instr);
+        }
+        vec = v;
 //        vec.push_back(new Push({}));
 //        vec.push_back(new MoveReg(GR(13),GR(11)));
         vec.push_back(new Bl(callIr->func->name));
