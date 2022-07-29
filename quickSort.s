@@ -22,6 +22,8 @@ cns:
 .init:
 .L0:
 	bx lr
+@ spilled Size: 0
+@ stack Size: 40
 main:
 	push {r4,r5,lr}
 	sub sp,sp, #40
@@ -268,6 +270,8 @@ main:
 	ldr r0,[sp,#36]
 	add sp,sp, #40
 	pop {r4,r5,pc}
+@ spilled Size: 0
+@ stack Size: 36
 dfs:
 	push {r4,r5,r6,r7,lr}
 	sub sp,sp, #36
@@ -601,6 +605,8 @@ dfs:
 	ldr r0,[r1,#0]
 	add sp,sp, #36
 	pop {r4,r5,r6,r7,pc}
+@ spilled Size: 0
+@ stack Size: 8
 equal:
 	push {lr}
 	sub sp,sp, #8

@@ -716,7 +716,7 @@ void ColoringAlloc::assignColorsFR() {
 
 void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
     for (GR gr: spilledNodes) {
-        spillMappingGR[gr] = spillCount*4;
+        spillMappingGR[gr] = spillCount*4 + function->stackSize;
         spillCount++;
     }
     std::set<GR> newTemps;
@@ -731,7 +731,7 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
                 if (spilledNodes.count(gr) != 0) {
                     GR new_gr = GR::allocateReg();
                     newTemps.insert(new_gr);
-                    it = block->getInstrs().insert(it, new Load(new_gr, GR(11), spillMappingGR[gr]));
+                    it = block->getInstrs().insert(it, new Load(new_gr, GR(13), spillMappingGR[gr]));
                     instr->setNewGR(gr, new_gr,true);
                     new_load_cnt++;
                     load++;
@@ -743,7 +743,7 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
                 if (spilledNodes.count(gr) != 0) {
                     GR new_gr = GR::allocateReg();
                     newTemps.insert(new_gr);
-                    it = block->getInstrs().insert(it+1, new Store(new_gr, GR(11), spillMappingGR[gr]));
+                    it = block->getInstrs().insert(it+1, new Store(new_gr, GR(13), spillMappingGR[gr]));
                     instr->setNewGR(gr, new_gr, false);
                     new_store_cnt++;
                     store++;
@@ -771,7 +771,7 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
 
 void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
     for (FR fr: spilledNodes) {
-        spillMappingFR[fr] = spillCount*4;
+        spillMappingFR[fr] = spillCount*4 + function->stackSize;
         spillCount++;
     }
     std::set<FR> newTemps;
@@ -786,7 +786,7 @@ void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
                 if (spilledNodes.count(fr) != 0) {
                     FR new_fr = FR::allocateReg();
                     newTemps.insert(new_fr);
-                    it = block->getInstrs().insert(it, new VLoad(new_fr, GR(11), spillMappingFR[fr]));
+                    it = block->getInstrs().insert(it, new VLoad(new_fr, GR(13), spillMappingFR[fr]));
                     instr->setNewFR(fr, new_fr,true);
                     new_load_cnt++;
                     load++;
@@ -798,7 +798,7 @@ void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
                 if (spilledNodes.count(fr) != 0) {
                     FR new_fr = FR::allocateReg();
                     newTemps.insert(new_fr);
-                    it = block->getInstrs().insert(it+1, new VStore(new_fr, GR(11), spillMappingFR[fr]));
+                    it = block->getInstrs().insert(it+1, new VStore(new_fr, GR(13), spillMappingFR[fr]));
                     instr->setNewFR(fr, new_fr, false);
                     new_store_cnt++;
                     store++;
