@@ -101,7 +101,7 @@ public:
     void assignColorsFR();
     std::map<GR, int> getColorGR(){return colorGR;}
     std::map<FR, int> getColorFR(){return colorFR;}
-    void rewriteProgramGR(std::set<GR> spilledNodes);
-    void rewriteProgramFR(std::set<FR> spilledNodes);
+    void rewriteProgramGR();
+    void rewriteProgramFR();
 };
 #endif //SYSY2022_BJTU_ALLOCREGS_HH

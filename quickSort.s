@@ -5,15 +5,19 @@
 .init:
 .L0:
 	bx lr
-@ spilled Size: 32
-@ stack Size: 404
+@ spilled Size: 28
+@ stack Size: 400
 main:
-	push {r4,r5,r6,r8,r9,r10,r11,lr}
-	sub sp,sp, #404
+	push {r4,r5,r6,r7,r8,r9,r10,r11,lr}
+	sub sp,sp, #400
 	bl .init
 .L1:
 	bl getint
 	str r0,[sp,#372]
+	bl getint
+	mov r5,r0
+	bl getint
+	mov r4,r0
 	bl getint
 	mov r11,r0
 	bl getint
@@ -23,13 +27,9 @@ main:
 	bl getint
 	mov r8,r0
 	bl getint
-	str r0,[sp,#400]
+	mov r7,r0
 	bl getint
 	mov r6,r0
-	bl getint
-	mov r5,r0
-	bl getint
-	mov r4,r0
 	bl getint
 	str r0,[sp,#376]
 	bl getint
@@ -56,15 +56,14 @@ main:
 	str r0,[sp,#24]
 	ldr r0,[sp,#376]
 	str r0,[sp,#20]
-	str r4,[sp,#16]
-	str r5,[sp,#12]
-	str r6,[sp,#8]
-	ldr r0,[sp,#400]
-	str r0,[sp,#4]
-	str r8,[sp,#0]
-	mov r3,r9
-	mov r2,r10
-	mov r1,r11
+	str r6,[sp,#16]
+	str r7,[sp,#12]
+	str r8,[sp,#8]
+	str r9,[sp,#4]
+	str r10,[sp,#0]
+	mov r3,r11
+	mov r2,r4
+	mov r1,r5
 	ldr r0,[sp,#372]
 	bl param16
 	str r0,[sp,#112]
@@ -321,13 +320,13 @@ main:
 	mov r0,#10
 	bl putch
 	mov r0,#0
-	add sp,sp, #404
-	pop {r4,r5,r6,r8,r9,r10,r11,pc}
-@ spilled Size: 92
-@ stack Size: 332
+	add sp,sp, #400
+	pop {r4,r5,r6,r7,r8,r9,r10,r11,pc}
+@ spilled Size: 80
+@ stack Size: 320
 param16:
-	push {r4,r5,r6,r7,r8,lr}
-	sub sp,sp, #332
+	push {r4,r5,r6,r7,r8,r9,r10,r11,lr}
+	sub sp,sp, #320
 .L5:
 	str r0,[sp,#112]
 	str r1,[sp,#116]
@@ -408,12 +407,9 @@ param16:
 	str r0,[sp,#312]
 	ldr r0,[sp,#124]
 	str r0,[sp,#316]
-	ldr r0,[sp,#356]
-	str r0,[sp,#320]
-	ldr r0,[sp,#360]
-	str r0,[sp,#324]
-	ldr r0,[sp,#364]
-	str r0,[sp,#328]
+	ldr r11,[sp,#356]
+	ldr r10,[sp,#360]
+	ldr r9,[sp,#364]
 	ldr r8,[sp,#368]
 	ldr r7,[sp,#372]
 	ldr r6,[sp,#376]
@@ -432,12 +428,9 @@ param16:
 	str r6,[sp,#84]
 	str r7,[sp,#80]
 	str r8,[sp,#76]
-	ldr r0,[sp,#328]
-	str r0,[sp,#72]
-	ldr r0,[sp,#324]
-	str r0,[sp,#68]
-	ldr r0,[sp,#320]
-	str r0,[sp,#64]
+	str r9,[sp,#72]
+	str r10,[sp,#68]
+	str r11,[sp,#64]
 	ldr r0,[sp,#316]
 	str r0,[sp,#60]
 	ldr r0,[sp,#312]
@@ -475,8 +468,8 @@ param16:
 	ldr r1,[sp,#244]
 	ldr r0,[sp,#240]
 	bl param32_rec
-	add sp,sp, #332
-	pop {r4,r5,r6,r7,r8,pc}
+	add sp,sp, #320
+	pop {r4,r5,r6,r7,r8,r9,r10,r11,pc}
 @ spilled Size: 0
 @ stack Size: 132
 param32_arr:
@@ -776,11 +769,11 @@ param32_arr:
 	ldr r0,[sp,#128]
 	add sp,sp, #132
 	pop {pc}
-@ spilled Size: 88
-@ stack Size: 328
+@ spilled Size: 80
+@ stack Size: 320
 param32_rec:
-	push {r4,r5,r6,r7,r8,r9,lr}
-	sub sp,sp, #328
+	push {r4,r5,r6,r7,r8,r9,r10,r11,lr}
+	sub sp,sp, #320
 .L7:
 	str r0,[sp,#112]
 	str r1,[sp,#116]
@@ -796,8 +789,8 @@ param32_rec:
 	beq .L9
 .L8:
 	ldr r0,[sp,#116]
-	add sp,sp, #328
-	pop {r4,r5,r6,r7,r8,r9,pc}
+	add sp,sp, #320
+	pop {r4,r5,r6,r7,r8,r9,r10,r11,pc}
 .L9:
 	ldr r1,[sp,#112]
 	mov r0,#1
@@ -852,36 +845,32 @@ param32_rec:
 	str r0,[sp,#312]
 	ldr r0,[sp,#420]
 	str r0,[sp,#316]
-	ldr r0,[sp,#424]
-	str r0,[sp,#320]
-	ldr r0,[sp,#428]
-	str r0,[sp,#324]
-	ldr r9,[sp,#432]
-	ldr r8,[sp,#436]
-	ldr r7,[sp,#440]
-	ldr r6,[sp,#444]
-	ldr r5,[sp,#448]
-	ldr r4,[sp,#452]
-	ldr r3,[sp,#456]
-	ldr r2,[sp,#460]
-	ldr r1,[sp,#464]
-	mov r0,#0
-	str r0,[sp,#260]
-	ldr r0,[sp,#260]
-	str r0,[sp,#108]
-	str r1,[sp,#104]
-	str r2,[sp,#100]
-	str r3,[sp,#96]
-	str r4,[sp,#92]
-	str r5,[sp,#88]
-	str r6,[sp,#84]
-	str r7,[sp,#80]
-	str r8,[sp,#76]
-	str r9,[sp,#72]
-	ldr r0,[sp,#324]
-	str r0,[sp,#68]
-	ldr r0,[sp,#320]
-	str r0,[sp,#64]
+	ldr r11,[sp,#424]
+	ldr r9,[sp,#428]
+	ldr r8,[sp,#432]
+	ldr r7,[sp,#436]
+	ldr r6,[sp,#440]
+	ldr r5,[sp,#444]
+	ldr r4,[sp,#448]
+	ldr r3,[sp,#452]
+	ldr r2,[sp,#456]
+	ldr r1,[sp,#460]
+	ldr r0,[sp,#464]
+	mov r10,#0
+	str r10,[sp,#260]
+	ldr r10,[sp,#260]
+	str r10,[sp,#108]
+	str r0,[sp,#104]
+	str r1,[sp,#100]
+	str r2,[sp,#96]
+	str r3,[sp,#92]
+	str r4,[sp,#88]
+	str r5,[sp,#84]
+	str r6,[sp,#80]
+	str r7,[sp,#76]
+	str r8,[sp,#72]
+	str r9,[sp,#68]
+	str r11,[sp,#64]
 	ldr r0,[sp,#316]
 	str r0,[sp,#60]
 	ldr r0,[sp,#312]
@@ -919,8 +908,8 @@ param32_rec:
 	ldr r1,[sp,#244]
 	ldr r0,[sp,#240]
 	bl param32_rec
-	add sp,sp, #328
-	pop {r4,r5,r6,r7,r8,r9,pc}
+	add sp,sp, #320
+	pop {r4,r5,r6,r7,r8,r9,r10,r11,pc}
 @ spilled Size: 0
 @ stack Size: 20
 sort:

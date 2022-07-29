@@ -31,7 +31,7 @@ int ColoringAlloc::run() {
     assignColorsGR();
     if (!spillWorkListGR.empty()) {
         //std::cerr << "spillGR " << spillWorkListGR.size() << "\n";
-        rewriteProgramGR(spillWorkListGR);
+        rewriteProgramGR();
         run();
     }
     while (true) {
@@ -51,7 +51,7 @@ int ColoringAlloc::run() {
     }
     assignColorsFR();
     if (!spillWorkListFR.empty()) {
-        rewriteProgramFR(spillWorkListFR);
+        rewriteProgramFR();
         run();
     }
     return spillCount;
@@ -711,8 +711,8 @@ void ColoringAlloc::assignColorsFR() {
     }
 }
 
-void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
-    for (GR gr: spilledNodes) {
+void ColoringAlloc::rewriteProgramGR() {
+    for (GR gr: spillWorkListGR) {
         if (spillMappingGR.count(gr) == 0) {
             spillMappingGR[gr] = spillCount * 4 + function->stackSize;
             spillCount++;
@@ -727,7 +727,7 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
             Instr* instr = *it;
             int new_load_cnt = 0;
             for (GR gr:instr->getUseG()) {
-                if (spilledNodes.count(gr) != 0) {
+                if (spillWorkListGR.count(gr) != 0) {
                     GR new_gr = GR::allocateReg();
                     newTemps.insert(new_gr);
                     it = block->getInstrs().insert(it, new Load(new_gr, GR(13), spillMappingGR[gr]));
@@ -739,7 +739,7 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
             it = it + new_load_cnt;
             int new_store_cnt = 0;
             for (GR gr:instr->getDefG()) {
-                if (spilledNodes.count(gr) != 0) {
+                if (spillWorkListGR.count(gr) != 0) {
                     GR new_gr = GR::allocateReg();
                     newTemps.insert(new_gr);
                     it = block->getInstrs().insert(it+1, new Store(new_gr, GR(13), spillMappingGR[gr]));
@@ -750,26 +750,64 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
             }
         }
     }
+//    for (BasicBlock* block:function->basicBlocks) {
+//        for (auto it = block->getInstrs().begin();it != block->getInstrs().end();it++) {
+//            Instr* instr = *it;
+//            for (GR gr:instr->getUseG()) {
+//                if (spillWorkListGR.count(gr) != 0) {
+//                    std::cerr << "error!\n";
+//                }
+//            }
+//            for (GR gr:instr->getDefG()) {
+//                if (spillWorkListGR.count(gr) != 0) {
+//                    std::cerr << "error!\n";
+//                }
+//            }
+//        }
+//    }
 //    std::cerr << "new load: " << load << "\n";
 //    std::cerr << "new store " << store << "\n";
 //    std::cerr << "exit rewrite\n";
+
+//    for (GR gr:coloredNodesGR) {
+//        grs.insert(gr);
+//    }
+//    for (GR gr:coalescedNodesGR) {
+//        grs.insert(gr);
+//    }
+//    for (GR gr:newTemps) {
+//        grs.insert(gr);
+//    }
     grs.clear();
-    for (GR gr:coloredNodesGR) {
-        grs.insert(gr);
-    }
-    for (GR gr:coalescedNodesGR) {
-        grs.insert(gr);
-    }
-    for (GR gr:newTemps) {
-        grs.insert(gr);
-    }
+    grIG.clear();
+    liveInI.clear();
+    liveOutI.clear();
+    defI.clear();
+    useI.clear();
+    preColoredGR.clear();
+    simplifyWorkListGR.clear();
+    workListMovesGR.clear();
+    freezeWorkListGR.clear();
     spillWorkListGR.clear();
+    moveListGR.clear();
+    activeMovesGR.clear();
+    coalescedMovesGR.clear();
+    constrainedMovesGR.clear();
+    frozenMovesGR.clear();
+    adjSetGR.clear();
+    adjListGR.clear();
+    degreeGR.clear();
+    while(!stackGR.empty()) {
+        stackGR.pop();
+    }
     coloredNodesGR.clear();
     coalescedNodesGR.clear();
+    aliasGR.clear();
+    colorGR.clear();
 }
 
-void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
-    for (FR fr: spilledNodes) {
+void ColoringAlloc::rewriteProgramFR() {
+    for (FR fr: spillWorkListFR) {
         if (spillMappingFR.count(fr) == 0) {
             spillMappingFR[fr] = spillCount * 4 + function->stackSize;
             spillCount++;
@@ -784,7 +822,7 @@ void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
             Instr* instr = *it;
             int new_load_cnt = 0;
             for (FR fr:instr->getUseF()) {
-                if (spilledNodes.count(fr) != 0) {
+                if (spillWorkListFR.count(fr) != 0) {
                     FR new_fr = FR::allocateReg();
                     newTemps.insert(new_fr);
                     it = block->getInstrs().insert(it, new VLoad(new_fr, GR(13), spillMappingFR[fr]));
@@ -796,7 +834,7 @@ void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
             it = it + new_load_cnt;
             int new_store_cnt = 0;
             for (FR fr:instr->getDefF()) {
-                if (spilledNodes.count(fr) != 0) {
+                if (spillWorkListFR.count(fr) != 0) {
                     FR new_fr = FR::allocateReg();
                     newTemps.insert(new_fr);
                     it = block->getInstrs().insert(it+1, new VStore(new_fr, GR(13), spillMappingFR[fr]));
@@ -820,7 +858,30 @@ void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
     for (FR fr:newTemps) {
         frs.insert(fr);
     }
+    frs.clear();
+    frIG.clear();
+    liveInF.clear();
+    liveOutF.clear();
+    defF.clear();
+    useF.clear();
+    preColoredFR.clear();
+    simplifyWorkListFR.clear();
+    workListMovesFR.clear();
+    freezeWorkListFR.clear();
     spillWorkListFR.clear();
+    moveListFR.clear();
+    activeMovesFR.clear();
+    coalescedMovesFR.clear();
+    constrainedMovesFR.clear();
+    frozenMovesFR.clear();
+    adjSetFR.clear();
+    adjListFR.clear();
+    degreeFR.clear();
+    while(!stackFR.empty()) {
+        stackFR.pop();
+    }
     coloredNodesFR.clear();
     coalescedNodesFR.clear();
+    aliasFR.clear();
+    colorFR.clear();
 }
