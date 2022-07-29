@@ -54,7 +54,7 @@ private:
     std::map<FR, FR> aliasFR;
     std::map<GR, int> colorGR;
     std::map<FR, int> colorFR;
-    int KGR = 11;
+    int KGR = 12;
     int KFR = 31;
     int spillCount = 0;
     std::map<GR, int> spillMappingGR;
