@@ -121,9 +121,6 @@ void Codegen::generateProgramCode() {
                 }
             }
         }
-        if (spill_size == 0) {
-            allUsedRegsGR.erase(GR(11));
-        }
         usedGRMapping[function] = allUsedRegsGR;
         usedFRMapping[function] = allUsedRegsFR;
     }
@@ -931,7 +928,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         int fr_cnt = 0;
         int cnt = 0;
         std::vector<Instr *> vec;
-
+        if (callIr->args.size() == 32) {
+            std::cout << "\n";
+        }
         for (TempVal v: callIr->args) {
             std::vector<Instr *> tempVec;
             if (v.getType()->isString()) {

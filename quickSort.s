@@ -6,14 +6,14 @@
 .L0:
 	bx lr
 @ spilled Size: 32
-@ stack Size: 404
+@ stack Size: 340
 main:
 	push {r4,r5,r6,r8,r9,r10,r11,lr}
-	sub sp,sp, #404
+	sub sp,sp, #340
 	bl .init
 .L1:
 	bl getint
-	str r0,[sp,#372]
+	str r0,[sp,#308]
 	bl getint
 	mov r11,r0
 	bl getint
@@ -23,7 +23,7 @@ main:
 	bl getint
 	mov r8,r0
 	bl getint
-	str r0,[sp,#400]
+	str r0,[sp,#336]
 	bl getint
 	mov r6,r0
 	bl getint
@@ -31,44 +31,76 @@ main:
 	bl getint
 	mov r4,r0
 	bl getint
-	str r0,[sp,#376]
+	str r0,[sp,#312]
 	bl getint
-	str r0,[sp,#380]
+	str r0,[sp,#316]
 	bl getint
-	str r0,[sp,#384]
+	str r0,[sp,#320]
 	bl getint
-	str r0,[sp,#388]
+	str r0,[sp,#324]
 	bl getint
-	str r0,[sp,#392]
+	str r0,[sp,#328]
 	bl getint
-	str r0,[sp,#396]
+	str r0,[sp,#332]
 	bl getint
 	str r0,[sp,#44]
-	ldr r0,[sp,#396]
+	ldr r0,[sp,#332]
 	str r0,[sp,#40]
-	ldr r0,[sp,#392]
+	ldr r0,[sp,#328]
 	str r0,[sp,#36]
-	ldr r0,[sp,#388]
+	ldr r0,[sp,#324]
 	str r0,[sp,#32]
-	ldr r0,[sp,#384]
+	ldr r0,[sp,#320]
 	str r0,[sp,#28]
-	ldr r0,[sp,#380]
+	ldr r0,[sp,#316]
 	str r0,[sp,#24]
-	ldr r0,[sp,#376]
+	ldr r0,[sp,#312]
 	str r0,[sp,#20]
 	str r4,[sp,#16]
 	str r5,[sp,#12]
 	str r6,[sp,#8]
-	ldr r0,[sp,#400]
+	ldr r0,[sp,#336]
 	str r0,[sp,#4]
 	str r8,[sp,#0]
 	mov r3,r9
 	mov r2,r10
 	mov r1,r11
-	ldr r0,[sp,#372]
+	ldr r0,[sp,#308]
 	bl param16
-	str r0,[sp,#112]
+	str r0,[sp,#48]
 	mov r0,#8848
+	str r0,[sp,#52]
+	mov r0,#0
+	str r0,[sp,#56]
+	mov r0,#0
+	str r0,[sp,#60]
+	mov r0,#0
+	str r0,[sp,#64]
+	mov r0,#0
+	str r0,[sp,#68]
+	mov r0,#0
+	str r0,[sp,#72]
+	mov r0,#0
+	str r0,[sp,#76]
+	mov r0,#0
+	str r0,[sp,#80]
+	mov r0,#0
+	str r0,[sp,#84]
+	mov r0,#0
+	str r0,[sp,#88]
+	mov r0,#0
+	str r0,[sp,#92]
+	mov r0,#0
+	str r0,[sp,#96]
+	mov r0,#0
+	str r0,[sp,#100]
+	mov r0,#0
+	str r0,[sp,#104]
+	mov r0,#0
+	str r0,[sp,#108]
+	mov r0,#0
+	str r0,[sp,#112]
+	mov r0,#0
 	str r0,[sp,#116]
 	mov r0,#0
 	str r0,[sp,#120]
@@ -162,42 +194,10 @@ main:
 	str r0,[sp,#296]
 	mov r0,#0
 	str r0,[sp,#300]
-	mov r0,#0
-	str r0,[sp,#304]
-	mov r0,#0
-	str r0,[sp,#308]
-	mov r0,#0
-	str r0,[sp,#312]
-	mov r0,#0
-	str r0,[sp,#316]
-	mov r0,#0
-	str r0,[sp,#320]
-	mov r0,#0
-	str r0,[sp,#324]
-	mov r0,#0
-	str r0,[sp,#328]
-	mov r0,#0
-	str r0,[sp,#332]
-	mov r0,#0
-	str r0,[sp,#336]
-	mov r0,#0
-	str r0,[sp,#340]
-	mov r0,#0
-	str r0,[sp,#344]
-	mov r0,#0
-	str r0,[sp,#348]
-	mov r0,#0
-	str r0,[sp,#352]
-	mov r0,#0
-	str r0,[sp,#356]
-	mov r0,#0
-	str r0,[sp,#360]
-	mov r0,#0
-	str r0,[sp,#364]
 	mov r0,#1
-	str r0,[sp,#368]
+	str r0,[sp,#304]
 .L2:
-	ldr r1,[sp,#368]
+	ldr r1,[sp,#304]
 	mov r0,#32
 	cmp r1,r0
 	mov r0,#0
@@ -206,15 +206,15 @@ main:
 	bne .L3
 	beq .L4
 .L3:
-	ldr r1,[sp,#368]
+	ldr r1,[sp,#304]
 	mov r0,#2
 	mul r1,r1,r0
 	mov r0,#0
 	add r1,r1,r0
 	mov r0,#4
-	add r3,sp, #112
+	add r3,sp, #48
 	mla r0,r0,r1,r3
-	ldr r2,[sp,#368]
+	ldr r2,[sp,#304]
 	mov r1,#1
 	sub r2,r2,r1
 	mov r1,#2
@@ -222,21 +222,21 @@ main:
 	mov r1,#1
 	add r2,r2,r1
 	mov r1,#4
-	add r3,sp, #112
+	add r3,sp, #48
 	mla r1,r1,r2,r3
 	ldr r2,[r1,#0]
 	mov r1,#1
 	sub r1,r2,r1
 	str r1,[r0,#0]
-	ldr r1,[sp,#368]
+	ldr r1,[sp,#304]
 	mov r0,#2
 	mul r1,r1,r0
 	mov r0,#1
 	add r1,r1,r0
 	mov r0,#4
-	add r3,sp, #112
+	add r3,sp, #48
 	mla r0,r0,r1,r3
-	ldr r2,[sp,#368]
+	ldr r2,[sp,#304]
 	mov r1,#1
 	sub r2,r2,r1
 	mov r1,#2
@@ -244,84 +244,22 @@ main:
 	mov r1,#0
 	add r2,r2,r1
 	mov r1,#4
-	add r3,sp, #112
+	add r3,sp, #48
 	mla r1,r1,r2,r3
 	ldr r2,[r1,#0]
 	mov r1,#2
 	sub r1,r2,r1
 	str r1,[r0,#0]
-	ldr r1,[sp,#368]
+	ldr r1,[sp,#304]
 	mov r0,#1
 	add r0,r1,r0
-	str r0,[sp,#368]
+	str r0,[sp,#304]
 	b .L2
 .L4:
-	add r0,sp, #360
-	str r0,[sp,#108]
-	add r0,sp, #352
-	str r0,[sp,#104]
-	add r0,sp, #344
-	str r0,[sp,#100]
-	add r0,sp, #336
-	str r0,[sp,#96]
-	add r0,sp, #328
-	str r0,[sp,#92]
-	add r0,sp, #320
-	str r0,[sp,#88]
-	add r0,sp, #312
-	str r0,[sp,#84]
-	add r0,sp, #304
-	str r0,[sp,#80]
-	add r0,sp, #296
-	str r0,[sp,#76]
-	add r0,sp, #288
-	str r0,[sp,#72]
-	add r0,sp, #280
-	str r0,[sp,#68]
-	add r0,sp, #272
-	str r0,[sp,#64]
-	add r0,sp, #264
-	str r0,[sp,#60]
-	add r0,sp, #256
-	str r0,[sp,#56]
-	add r0,sp, #248
-	str r0,[sp,#52]
-	add r0,sp, #240
-	str r0,[sp,#48]
-	add r0,sp, #232
-	str r0,[sp,#44]
-	add r0,sp, #224
-	str r0,[sp,#40]
-	add r0,sp, #216
-	str r0,[sp,#36]
-	add r0,sp, #208
-	str r0,[sp,#32]
-	add r0,sp, #200
-	str r0,[sp,#28]
-	add r0,sp, #192
-	str r0,[sp,#24]
-	add r0,sp, #184
-	str r0,[sp,#20]
-	add r0,sp, #176
-	str r0,[sp,#16]
-	add r0,sp, #168
-	str r0,[sp,#12]
-	add r0,sp, #160
-	str r0,[sp,#8]
-	add r0,sp, #152
-	str r0,[sp,#4]
-	add r0,sp, #144
-	str r0,[sp,#0]
-	add r3,sp, #136
-	add r2,sp, #128
-	add r1,sp, #120
-	add r0,sp, #112
-	bl param32_arr
-	bl putint
 	mov r0,#10
 	bl putch
 	mov r0,#0
-	add sp,sp, #404
+	add sp,sp, #340
 	pop {r4,r5,r6,r8,r9,r10,r11,pc}
 @ spilled Size: 164
 @ stack Size: 404
