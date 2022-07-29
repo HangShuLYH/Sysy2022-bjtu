@@ -29,7 +29,11 @@ int ColoringAlloc::run() {
         }
     }
     assignColorsGR();
-
+    if (!spillWorkListGR.empty()) {
+        //std::cerr << "spillGR " << spillWorkListGR.size() << "\n";
+        rewriteProgramGR(spillWorkListGR);
+        run();
+    }
     while (true) {
         if (!simplifyWorkListFR.empty()) {
             simplifyFR();
@@ -46,15 +50,8 @@ int ColoringAlloc::run() {
         }
     }
     assignColorsFR();
-    if (!spillWorkListGR.empty() || !spillWorkListFR.empty()) {
-        if (!spillWorkListGR.empty()) {
-            //std::cerr << "spillGR " << spillWorkListGR.size() << "\n";
-            rewriteProgramGR(spillWorkListGR);
-        }
-        if (!spillWorkListFR.empty()) {
-            //std::cerr << "spillFR " << spillWorkListGR.size()  << "\n";
-            rewriteProgramFR(spillWorkListFR);
-        }
+    if (!spillWorkListFR.empty()) {
+        rewriteProgramFR(spillWorkListFR);
         run();
     }
     return spillCount;
@@ -716,8 +713,10 @@ void ColoringAlloc::assignColorsFR() {
 
 void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
     for (GR gr: spilledNodes) {
-        spillMappingGR[gr] = spillCount*4 + function->stackSize;
-        spillCount++;
+        if (spillMappingGR.count(gr) == 0) {
+            spillMappingGR[gr] = spillCount * 4 + function->stackSize;
+            spillCount++;
+        }
     }
     std::set<GR> newTemps;
 //    std::cerr << "enter rewrite\n";
@@ -771,8 +770,10 @@ void ColoringAlloc::rewriteProgramGR(std::set<GR> spilledNodes) {
 
 void ColoringAlloc::rewriteProgramFR(std::set<FR> spilledNodes) {
     for (FR fr: spilledNodes) {
-        spillMappingFR[fr] = spillCount*4 + function->stackSize;
-        spillCount++;
+        if (spillMappingFR.count(fr) == 0) {
+            spillMappingFR[fr] = spillCount * 4 + function->stackSize;
+            spillCount++;
+        }
     }
     std::set<FR> newTemps;
 //    std::cerr << "enter rewrite\n";
