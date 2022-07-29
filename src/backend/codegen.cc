@@ -931,10 +931,12 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         int fr_cnt = 0;
         int cnt = 0;
         std::vector<Instr *> vec;
+
         for (TempVal v: callIr->args) {
+            std::vector<Instr *> tempVec;
             if (v.getType()->isString()) {
-                vec.push_back(new MoveWFromSymbol(GR(0), stringConstMapping[v.getString()]));
-                vec.push_back(new MoveTFromSymbol(GR(0), stringConstMapping[v.getString()]));
+                tempVec.push_back(new MoveWFromSymbol(GR(0), stringConstMapping[v.getString()]));
+                tempVec.push_back(new MoveTFromSymbol(GR(0), stringConstMapping[v.getString()]));
                 gr_cnt++;
                 continue;
             }
@@ -943,41 +945,41 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         gRegMapping[v.getVal()] = gr_cnt;
-                        vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                        tempVec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
                     } else if (gRegMapping.count(v.getVal()) == 0) {
                         if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
-                            vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(v.getVal()), GR(13),
+                            tempVec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(v.getVal()), GR(13),
                                                            stackMapping[v.getVal()]));
                         } else {
                             std::vector<Instr*> vv = setIntValue(GR(12), stackMapping[v.getVal()]);
                             for (Instr* instr:vv) {
-                                vec.push_back(instr);
+                                tempVec.push_back(instr);
                             }
-                            vec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(v.getVal()), GR(13),GR(12)));
+                            tempVec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(v.getVal()), GR(13),GR(12)));
                         }
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
-                    vec.push_back(new Store(getGR(v.getVal()), GR(13), stackMapping[v.getVal()]));
+                    tempVec.push_back(new Store(getGR(v.getVal()), GR(13), stackMapping[v.getVal()]));
                 } else {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         gRegMapping[v.getVal()] = gr_cnt;
-                        vec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                        tempVec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
                     } else {
                         if (gRegMapping.count(v.getVal()) != 0) {
-                            vec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
+                            tempVec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
                             gRegMapping[v.getVal()] = gr_cnt;
                         } else {
                             if (is_legal_load_store_offset(stackMapping[v.getVal()]) && is_legal_immediate(stackMapping[v.getVal()])) {
-                                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13),
+                                tempVec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(gr_cnt), GR(13),
                                                          stackMapping[v.getVal()]));
                             } else {
                                 std::vector<Instr*> vv = setIntValue(GR(12), stackMapping[v.getVal()]);
                                 for (Instr* instr:vv) {
-                                    vec.push_back(instr);
+                                    tempVec.push_back(instr);
                                 }
-                                vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(gr_cnt),GR(13),GR(12)));
+                                tempVec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(gr_cnt),GR(13),GR(12)));
                             }
                         }
                     }
@@ -988,29 +990,28 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         fRegMapping[v.getVal()] = fr_cnt;
-                        vec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
+                        tempVec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
-                    vec.push_back(new VStore(getFR(v.getVal()), GR(13), stackMapping[v.getVal()]));
+                    tempVec.push_back(new VStore(getFR(v.getVal()), GR(13), stackMapping[v.getVal()]));
                 } else {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         fRegMapping[v.getVal()] = fr_cnt;
-                        vec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
+                        tempVec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
                     } else {
-                        vec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
+                        tempVec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
                         fRegMapping[v.getVal()] = fr_cnt;
                     }
                 }
                 fr_cnt++;
             }
+            for (auto it = tempVec.rbegin();it != tempVec.rend();it++) {
+                vec.insert(vec.begin(),*it);
+            }
         }
-        std::vector<Instr*> v;
-        for (Instr* instr:vec) {
-            v.insert(v.begin(),instr);
-        }
-        vec = v;
+
 //        vec.push_back(new Push({}));
 //        vec.push_back(new MoveReg(GR(13),GR(11)));
         vec.push_back(new Bl(callIr->func->name));
