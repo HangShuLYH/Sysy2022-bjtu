@@ -20,6 +20,7 @@ enum TypeID {
     FLOAT,
     VOID,
     POINTER,
+    STRING
 };
 
 class Type{
@@ -31,6 +32,9 @@ public:
     }
     bool isFloat() {
         return tid == FLOAT;
+    }
+    bool isString() {
+        return tid == STRING;
     }
     bool isVoid(){
         return tid == VOID;
@@ -58,6 +62,9 @@ public:
             case VOID:
                 out << "void";
                 break;
+            case STRING:
+                out << "string";
+                break;
             case POINTER:
                 contained->print(out);
                 out << "*";
@@ -68,17 +75,21 @@ private:
     Type* contained;
 };
 
+class BasicBlock;
 class Use {
 private:
     Value* Val;
     User *U;
     int arg;
+    BasicBlock* bb;
 public:
     Value* getVal() { return Val; }
     User* getUser() { return U; }
     int getArg() { return arg; }
+    BasicBlock* getBB() { return bb; }
     void setVal(Value* Val) { this->Val = Val; }
     Use(Value* Val, User* U, int arg);
+    Use(Value* Val, User* U, BasicBlock* bb);
     Use();
 };
 
@@ -102,6 +113,7 @@ public:
         this->Uses.insert(U);
     }
     void killUse(Use* U) { this->Uses.erase(U); }
+    void clearUses() { this->Uses.clear(); }
     std::set<Use*> getUses() { return Uses; }
     void setNum(int num) { this->num = num; }
 protected:
@@ -149,17 +161,21 @@ private:
     float valFloat;
     Value* val;
     Type* type;
+    std::string stringConst;
 public:
     TempVal() {
         this->valInt = 0;
         this->valFloat = 0.0;
         this->val = nullptr;
         this->type = nullptr;
+        this->stringConst = "";
     }
     void print(std::ostream& out) {
         if (val) {
             val->print(out);
-        } else {
+        } else if (type->isString()) {
+            out << stringConst;
+        }else {
             out << getConst();
         }
     }
@@ -181,11 +197,13 @@ public:
             setFloat(val);
         }
     }
+    std::string getString() {return stringConst;}
     Type* getType() {return type;}
     void setInt(int x) {valInt = x;}
     void setFloat(float x) {valFloat = x;}
     void setVal(Value* v) {val = v;}
     void setType(Type* t) {type = t;}
+    void setString(std::string s) {stringConst = s;}
     Value* getVal() {return val;}
     static TempVal calConstArithmetic(TempVal v1, TempVal v2, char op) {
         TempVal res;

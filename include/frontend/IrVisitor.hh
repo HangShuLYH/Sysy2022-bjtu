@@ -28,10 +28,12 @@ private:
     bool isIF = false;
     Type* curDefType;
     std::vector<TempVal> args; //temp args for cur_func
+    std::stack<std::vector<TempVal>> args_stack;
     int loopCnt = 0; //use for breakError and ContinueError
     Type* typeInt = new Type(TypeID::INT);
     Type* typeFloat = new Type(TypeID::FLOAT);
     Type* typeVoid = new Type(TypeID::VOID);
+    Type* typeString = new Type(TypeID::STRING);
     Function* call_func;
     bool useArgs = false;
 public:
@@ -39,6 +41,36 @@ public:
     std::vector<Value*> globalVars;
     BasicBlock *entry = nullptr;
     IrVisitor() {
+        functions.push_back(new Function("getint",typeInt,{}));
+        functions.push_back(new Function("getch",typeInt,{}));
+        functions.push_back(new Function("getfloat",typeFloat,{}));
+        functions.push_back(new Function("getarray",typeInt,
+                                         {new VarValue("",new Type(TypeID::POINTER,typeInt), false,0)}));
+        functions.push_back(new Function("getfarray",typeInt,
+                                         {new VarValue("",new Type(TypeID::POINTER,typeFloat), false,0)}));
+        functions.push_back(new Function("putint",typeVoid,{
+            new VarValue("",typeInt,false,0)
+        }));
+        functions.push_back(new Function("putch",typeVoid,{
+                new VarValue("",typeInt,false,0)
+        }));
+        functions.push_back(new Function("putfloat",typeVoid,{
+                new VarValue("",typeFloat,false,0)
+        }));
+        functions.push_back(new Function("putarray",typeVoid,{
+            new VarValue("",typeInt, false,0),
+            new VarValue("",new Type(TypeID::POINTER,typeInt), false,1)
+        }));
+        functions.push_back(new Function("putfarray",typeVoid,{
+                new VarValue("",typeInt, false,0),
+                new VarValue("",new Type(TypeID::POINTER,typeFloat), false,1)
+        }));
+        functions.push_back(new Function("putf",typeVoid,{
+                new VarValue("",typeString, false,0)
+        }));
+        functions[functions.size() - 1]->variant_params = true;
+        functions.push_back(new Function("_sysy_starttime",typeVoid,{new VarValue("",typeInt, false,0)}));
+        functions.push_back(new Function("_sysy_stoptime",typeVoid,{new VarValue("",typeInt, false,0)}));
         entry = new NormalBlock(nullptr,"entry",0);
         cur_bb = entry;
     }

@@ -19,6 +19,7 @@ public:
     virtual void print(std::ostream& out) = 0;
     virtual ~Instruction() {}
     void deleteIR() { deleted = true; }
+    bool isDeleted() { return deleted; }
 };
 
 class AllocIIR:public Instruction{
@@ -30,7 +31,7 @@ public:
         this->v = v;
 
         Use* use = new Use(v, this, 0);
-        v->addUse(use);
+        // v->addUse(use);
         this->Operands.push_back(use);
     }
     AllocIIR(Value* v, int arrayLen) {
@@ -39,7 +40,7 @@ public:
         this->v = v;
 
         Use* use = new Use(v, this, 0);
-        v->addUse(use);
+        // v->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
@@ -61,7 +62,7 @@ public:
         this->v = v;
 
         Use* use = new Use(v, this, 0);
-        v->addUse(use);
+        // v->addUse(use);
         this->Operands.push_back(use);
     }
     AllocFIR(Value* v, int arrayLen) {
@@ -70,7 +71,7 @@ public:
         this->v = v;
 
         Use* use = new Use(v, this, 0);
-        v->addUse(use);
+        // v->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{
@@ -94,16 +95,18 @@ public:
 
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
-        v1->addUse(use1);
-        v2->addUse(use2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        Operands[0]->getVal()->print(out);
-        out << " = LoadI ";
-        Operands[1]->getVal()->print(out);
-        out << std::endl;
+        if(!deleted) {
+            Operands[0]->getVal()->print(out);
+            out << " = LoadI ";
+            Operands[1]->getVal()->print(out);
+            out << std::endl;
+        }
     }
 };
 class LoadFIR:public Instruction{
@@ -115,16 +118,18 @@ public:
         this->v2 = v2;
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
-        v1->addUse(use1);
-        v2->addUse(use2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        Operands[0]->getVal()->print(out);
-        out << " = LoadI ";
-        Operands[1]->getVal()->print(out);
-        out << std::endl;
+        if(!deleted) {
+            Operands[0]->getVal()->print(out);
+            out << " = LoadI ";
+            Operands[1]->getVal()->print(out);
+            out << std::endl;
+        }
     }
 };
 class StoreIIR:public Instruction{
@@ -138,21 +143,21 @@ public:
             this->src.setInt(src.getFloat());
         }
 
-        Use* use1 = new Use(nullptr, this, 0);
-        Use* use2 = new Use(dst, this, 1);
-        Use* use3 = new Use(&this->src, this, 2);
-        dst->addUse(use2);
-        this->src.addUse(use3);
-        this->Operands.push_back(use1);
+        // Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(dst, this, 0);
+        Use* use3 = new Use(&this->src, this, 1);
+        // dst->addUse(use2);
+        // this->src.addUse(use3);
+        // this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
     }
     void print(std::ostream& out) override final{
         if(!deleted) {
             out << "StoreI ";
-            dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
+            dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
             out << " ";
-            Operands[1]->getVal()->print(out);
+            Operands[0]->getVal()->print(out);
             out << std::endl;
         }
     }
@@ -167,21 +172,21 @@ public:
             src.setType(dst->getType()->getContained());
             src.setFloat(src.getFloat());
         }
-        Use* use1 = new Use(nullptr, this, 0);
-        Use* use2 = new Use(dst, this, 1);
-        Use* use3 = new Use(&this->src, this, 2);
-        dst->addUse(use2);
-        this->src.addUse(use3);
-        this->Operands.push_back(use1);
+        // Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(dst, this, 0);
+        Use* use3 = new Use(&this->src, this, 1);
+        // dst->addUse(use2);
+        // this->src.addUse(use3);
+        // this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
     }
     void print(std::ostream& out) override final{
         if(!deleted) {
             out << "StoreF ";
-            dynamic_cast<TempVal*>(Operands[2]->getVal())->print(out);
+            dynamic_cast<TempVal*>(Operands[1]->getVal())->print(out);
             out << " ";
-            Operands[1]->getVal()->print(out);
+            Operands[0]->getVal()->print(out);
             out << std::endl;
         }
     }
@@ -195,8 +200,8 @@ public:
         this->v2 = v2;
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
-        v1->addUse(use1);
-        v2->addUse(use2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
@@ -216,8 +221,8 @@ public:
         this->v2 = v2;
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
-        v1->addUse(use1);
-        v2->addUse(use2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
@@ -237,9 +242,9 @@ public:
         Use* use1 = new Use(&this->res, this, 0);
         Use* use2 = new Use(&this->left, this, 1);
         Use* use3 = new Use(&this->right, this, 2);
-        this->res.addUse(use1);
-        this->left.addUse(use2);
-        this->right.addUse(use2);
+        // this->res.addUse(use1);
+        // this->left.addUse(use2);
+        // this->right.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
@@ -364,8 +369,8 @@ public:
     UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op) {
         Use* use1 = new Use(&this->res, this, 0);
         Use* use2 = new Use(&this->v, this, 1);
-        this->res.addUse(use1);
-        this->v.addUse(use2);
+        // this->res.addUse(use1);
+        // this->v.addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
@@ -552,7 +557,7 @@ public:
 
         Use* use1 = new Use(nullptr, this, 0);
         Use* use2 = new Use(v, this, 0);
-        v->addUse(use2);
+        // v->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
@@ -575,15 +580,17 @@ public:
         this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
-        out << "ret ";
-        if (Operands[1]->getVal()) {
-            Operands[1]->getVal()->print(out);
-        }else if (useInt) {
-            out << "int " << retInt;
-        }else if (useFloat){
-            out << "float " << retFloat;
+        if(!deleted) {
+            out << "ret ";
+            if (Operands[1]->getVal()) {
+                Operands[1]->getVal()->print(out);
+            }else if (useInt) {
+                out << "int " << retInt;
+            }else if (useFloat){
+                out << "float " << retFloat;
+            }
+            out << "\n";
         }
-        out << "\n";
     }
 };
 #include "BasicBlock.hh"
@@ -605,7 +612,7 @@ public:
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) : trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {
         Use* use1 = new Use(nullptr, this, 0);
         Use* use2 = new Use(cond, this, 0);
-        cond->addUse(use2);
+        // cond->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
     }
@@ -637,9 +644,9 @@ public:
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
         Use* use3 = new Use(v3, this, 2);
-        v1->addUse(use1);
-        v2->addUse(use2);
-        v3->addUse(use3);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        // v3->addUse(use3);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
@@ -652,8 +659,8 @@ public:
         Use* use1 = new Use(v1, this, 0);
         Use* use2 = new Use(v2, this, 1);
         Use* use3 = new Use(v3, this, 2);
-        v1->addUse(use1);
-        v2->addUse(use2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
         this->Operands.push_back(use1);
         this->Operands.push_back(use2);
         this->Operands.push_back(use3);
@@ -686,7 +693,7 @@ public:
 
         for(int i(0); i < args.size(); i++) {
             Use* use = new Use(&this->args[i], this, i + 1);
-            this->args[i].addUse(use);
+            // this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
     }
@@ -696,12 +703,12 @@ public:
         this->returnVal = v;
 
         Use* use = new Use(returnVal, this, 0);
-        returnVal->addUse(use);
+        // returnVal->addUse(use);
         this->Operands.push_back(use);
 
         for(int i(0); i < args.size(); i++) {
             Use* use = new Use(&this->args[i], this, i + 1);
-            this->args[i].addUse(use);
+            // this->args[i].addUse(use);
             this->Operands.push_back(use);
         }
     }
@@ -741,7 +748,7 @@ public:
         dst = var;
         
         Use* use = new Use(dst, this, 0);
-        dst->addUse(use);
+        // dst->addUse(use);
         this->Operands.push_back(use);
     }
     void print(std::ostream& out) override final{

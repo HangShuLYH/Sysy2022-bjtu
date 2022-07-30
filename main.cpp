@@ -16,7 +16,7 @@ int main (int argc, char *argv[])
     //     std::cout << "please enter a file: ./main test.sy" <<std::endl;
     //     exit(0);
     // }
-    root = ddriver.parse("../test/94_matrix_mul.sy");
+    root = ddriver.parse("../test/test1.sy");
     //root->visit(0);
     IrVisitor irVisitor;
     try {
@@ -25,14 +25,14 @@ int main (int argc, char *argv[])
         std::cerr << "error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
-    MIRBuilder mirBuilder(&irVisitor);
+    MIRBuilder mirBuilder(irVisitor);
     mirBuilder.getPreAndSucc();
 
     DominateTree dominateTree(&irVisitor);
     dominateTree.execute();
     
-    Mem2reg mem2reg(&irVisitor);
-    mem2reg.execute();
+    // Mem2reg mem2reg(&irVisitor);
+    // mem2reg.execute();
 
     irVisitor.print(std::cout);
 

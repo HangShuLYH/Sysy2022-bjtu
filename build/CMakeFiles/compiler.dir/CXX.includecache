@@ -64,6 +64,10 @@ Value.hh
 iostream
 -
 
+../include/frontend/IRManager.hh
+Instruction.hh
+../include/frontend/Instruction.hh
+
 ../include/frontend/Instruction.hh
 string
 -
@@ -189,9 +193,13 @@ IrVisitor.hh
 ../include/optimize/IrVisitor.hh
 Instruction.hh
 ../include/optimize/Instruction.hh
+IRManager.hh
+../include/optimize/IRManager.hh
 map
 -
 stack
+-
+algorithm
 -
 
 /mnt/e/Sysy2022-bjtu/main.cpp
@@ -211,4 +219,10 @@ optimize/DominateTree.hh
 /mnt/e/Sysy2022-bjtu/optimize/DominateTree.hh
 optimize/Mem2reg.hh
 /mnt/e/Sysy2022-bjtu/optimize/Mem2reg.hh
+
+/mnt/e/Sysy2022-bjtu/src/frontend/MIRBuilder.cc
+MIRBuilder.hh
+/mnt/e/Sysy2022-bjtu/src/frontend/MIRBuilder.hh
+Function.hh
+/mnt/e/Sysy2022-bjtu/src/frontend/Function.hh
 

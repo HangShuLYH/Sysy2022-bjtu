@@ -6,7 +6,7 @@ int N;
 int mul(int a0[],int a1[], int a2[],int b0[],int b1[],int b2[],int c0[],int c1[],int c2[])
 {
     int i;
-    i=0;
+    i=M;
     c0[0]=a0[0]*b0[0]+a0[1]*b1[0]+a0[2]*b2[0];
     c0[1]=a0[0]*b0[1]+a0[1]*b1[1]+a0[2]*b2[1];
     c0[2]=a0[0]*b0[2]+a0[1]*b1[2]+a0[2]*b2[2];

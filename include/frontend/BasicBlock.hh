@@ -18,13 +18,11 @@ public:
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
-    std::map<Value*, std::vector<std::pair<Value*, std::vector<Use*>*>>> defuse;
     std::set<Value*> originVals;
 
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
         name = func_name + "::BB" +  std::to_string(cnt);
-        this->defuse.clear();
     }
     void pushIr(Instruction* instruction) {
         ir.push_back(instruction);
@@ -80,7 +78,7 @@ class CondBlock:public BasicBlock{
 public:
     BasicBlock* trueBB = nullptr;
     BasicBlock* falseBB = nullptr;
-    Value* val = nullptr;
+    TempVal val;
     bool isAnd = false;
     CondBlock(BasicBlock* parent,std::string func_name,int cnt): BasicBlock(parent,func_name,cnt){}
     void print(std::ostream& out) override final{
@@ -113,8 +111,7 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty() &&
-                !dynamic_cast<CondBlock*>(*iter)->val) {
+            if ((*iter)->ir.empty() && !dynamic_cast<CondBlock*>(*iter)->val.getType()) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;
@@ -166,8 +163,7 @@ public:
     void clear() override final{
         auto iter = cond.begin();
         while (iter != cond.end()){
-            if ((*iter)->ir.empty() &&
-            !dynamic_cast<CondBlock*>(*iter)->val) {
+            if ((*iter)->ir.empty() && !dynamic_cast<CondBlock*>(*iter)->val.getType()) {
                 iter = cond.erase(iter);
             }else {
                 ++iter;

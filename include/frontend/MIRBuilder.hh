@@ -21,7 +21,7 @@ public:
 
 class MIRBuilder{
 public:
-    MIRBuilder(IrVisitor* iv){irVisitor = iv;}
+    MIRBuilder(IrVisitor& iv){irVisitor = iv;}
     NormalBlock* toNormal(BasicBlock* bb);
     std::vector<BasicBlock*> refresh(std::vector<BasicBlock*> bbs, BasicBlock* nextAB);
     void getPreAndSucc();
@@ -34,7 +34,7 @@ public:
     void putCondToNormal(CondBlock* cb, NormalBlock* nb);
     void removeDuplicate();
 private:
-    IrVisitor* irVisitor;
+    IrVisitor irVisitor;
     std::map<CondBlock*, NormalBlock*> condToNormal;
     std::map<CondBlock*, std::vector<NormalBlock*>> reversedSucc;
 };

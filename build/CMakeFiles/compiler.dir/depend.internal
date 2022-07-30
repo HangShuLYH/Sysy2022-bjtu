@@ -8,6 +8,7 @@ CMakeFiles/compiler.dir/main.cpp.o
  ../include/frontend/FlexLexer.h
  ../include/frontend/FlexLexer.hh
  ../include/frontend/Function.hh
+ ../include/frontend/IRManager.hh
  ../include/frontend/Instruction.hh
  ../include/frontend/IrVisitor.hh
  ../include/frontend/MIRBuilder.hh
