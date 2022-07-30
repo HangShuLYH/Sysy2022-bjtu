@@ -374,6 +374,7 @@ void Codegen::generateProgramCode() {
             }
         }
     }
+    generateFloatConst();
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
@@ -393,7 +394,6 @@ void Codegen::generateProgramCode() {
             }
         }
     }
-    generateFloatConst();
 }
 
 int Codegen::translateFunction(Function *function) {

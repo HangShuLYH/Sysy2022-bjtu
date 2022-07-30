@@ -16,6 +16,42 @@ FIVE:
 	.4byte 5
 .global main
 .section .text
+.align
+FACT:
+	.4byte 3338725376
+.align
+.f2:
+	.4byte 0
+.align
+EPS:
+	.4byte 897988541
+.align
+HEX2:
+	.4byte 1033895936
+.align
+.f1:
+	.4byte 1073741824
+.align
+PI_HEX:
+	.4byte 1078530011
+.align
+RADIUS:
+	.4byte 1085276160
+.align
+.f0:
+	.4byte 1092616192
+.align
+EVAL3:
+	.4byte 1107966695
+.align
+EVAL1:
+	.4byte 1119752446
+.align
+CONV1:
+	.4byte 1130954752
+.align
+CONV2:
+	.4byte 1166012416
 .init:
 .L0:
 	bx lr
@@ -333,39 +369,3 @@ float_abs:
 	add sp,sp, #4
 	vpop {s1}
 	pop {pc}
-.align
-FACT:
-	.4byte 3338725376
-.align
-.f2:
-	.4byte 0
-.align
-EPS:
-	.4byte 897988541
-.align
-HEX2:
-	.4byte 1033895936
-.align
-.f1:
-	.4byte 1073741824
-.align
-PI_HEX:
-	.4byte 1078530011
-.align
-RADIUS:
-	.4byte 1085276160
-.align
-.f0:
-	.4byte 1092616192
-.align
-EVAL3:
-	.4byte 1107966695
-.align
-EVAL1:
-	.4byte 1119752446
-.align
-CONV1:
-	.4byte 1130954752
-.align
-CONV2:
-	.4byte 1166012416
