@@ -3,39 +3,6 @@
 .fpu neon
 .section .data
 .align
-RADIUS:
-	.4byte 1085276160
-.align
-PI:
-	.4byte 1078530011
-.align
-EPS:
-	.4byte 897988541
-.align
-PI_HEX:
-	.4byte 1078530011
-.align
-HEX2:
-	.4byte 1033895936
-.align
-FACT:
-	.4byte 3338725376
-.align
-EVAL1:
-	.4byte 1119752446
-.align
-EVAL2:
-	.4byte 1107966695
-.align
-EVAL3:
-	.4byte 1107966695
-.align
-CONV1:
-	.4byte 1130954752
-.align
-CONV2:
-	.4byte 1166012416
-.align
 MAX:
 	.4byte 1000000000
 .align
@@ -60,16 +27,8 @@ main:
 	sub sp,sp, #64
 	bl .init
 .L1:
-	vmov.f32 s1,#-33000
-	vmov.f32 s0,#0.078125
-	bl float_eq
-	bl assert_not
-	vmov.f32 s1,#34.5575
-	vmov.f32 s0,#95.0332
-	bl float_eq
-	bl assert_not
-	vmov.f32 s1,#34.5575
-	vmov.f32 s0,#34.5575
+	vldr.32 s1, EVAL3
+	vldr.32 s0, EVAL3
 	bl float_eq
 	bl assert
 	mov r0,#5
@@ -81,8 +40,8 @@ main:
 	vcvt.s32.f32 s0,s0
 	vmov r0,s0
 	bl assert
-	vmov.f32 s1,#4095
-	vmov.f32 s0,#233
+	vldr.32 s1, CONV2
+	vldr.32 s0, CONV1
 	bl float_eq
 	bl assert_not
 .L2:
@@ -143,7 +102,7 @@ main:
 	bl getfloat
 	vstr.32 s0,[sp,#52]
 	vldr.32 s2,[sp,#52]
-	vmov.f32 s1,#3.14159
+	vldr.32 s1, PI_HEX
 	vmul.f32 s2,s1,s2
 	vldr.32 s1,[sp,#52]
 	vmul.f32 s1,s2,s1
@@ -186,7 +145,7 @@ main:
 	ldr r0,[sp,#0]
 	vmov s2,r0
 	vcvt.f32.s32 s2,s2
-	vmov.f32 s1,#10
+	vldr.32 s1, .f0
 	vmul.f32 s1,s2,s1
 	vcvt.s32.f32 s1,s1
 	vmov r0,s1
@@ -288,8 +247,8 @@ float_eq:
 	vldr.32 s0,[sp,#4]
 	vsub.f32 s0,s1,s0
 	bl float_abs
-	vmov.f32 s1,#1e-06
-	vcmpe s0,s1
+	vldr.32 s1, EPS
+	vcmpe.f32 s0,s1
 	vmrs APSR_nzcv, FPSCR
 	mov r0,#0
 	movlt r0,#1
@@ -317,7 +276,7 @@ circle_area:
 	ldr r0,[sp,#0]
 	vmov s2,r0
 	vcvt.f32.s32 s2,s2
-	vmov.f32 s1,#3.14159
+	vldr.32 s1, PI_HEX
 	vmul.f32 s2,s1,s2
 	ldr r0,[sp,#0]
 	vmov s1,r0
@@ -328,7 +287,7 @@ circle_area:
 	mul r0,r1,r0
 	vmov s2,r0
 	vcvt.f32.s32 s2,s2
-	vmov.f32 s1,#3.14159
+	vldr.32 s1, PI_HEX
 	vmul.f32 s1,s2,s1
 	vadd.f32 s1,s3,s1
 	mov r0,#2
@@ -346,7 +305,7 @@ float_abs:
 	vstr.32 s0,[sp,#0]
 	vldr.32 s1,[sp,#0]
 	mov r0,#0
-	vcmpe s1,s0
+	vcmpe.f32 s1,s0
 	vmrs APSR_nzcv, FPSCR
 	mov r0,#0
 	movlt r0,#1
@@ -364,3 +323,33 @@ float_abs:
 	add sp,sp, #4
 	vpop {s0,s1}
 	pop {pc}
+.align
+FACT:
+	.4byte 3338725376
+.align
+EPS:
+	.4byte 897988541
+.align
+HEX2:
+	.4byte 1033895936
+.align
+PI_HEX:
+	.4byte 1078530011
+.align
+RADIUS:
+	.4byte 1085276160
+.align
+.f0:
+	.4byte 1092616192
+.align
+EVAL3:
+	.4byte 1107966695
+.align
+EVAL1:
+	.4byte 1119752446
+.align
+CONV1:
+	.4byte 1130954752
+.align
+CONV2:
+	.4byte 1166012416

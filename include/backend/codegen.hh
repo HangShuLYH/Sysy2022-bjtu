@@ -15,6 +15,8 @@ const std::set<GR> callee_save_regs = {GR(4),GR(5),GR(6),GR(7),GR(8),GR(9),GR(10
 class Codegen {
 private:
     IrVisitor irVisitor;
+    std::map<float, std::string> floatConstMapping;
+    int floatConstCnt = 0;
     std::map<Value *, GR> gRegMapping;
     std::map<Value *, FR> fRegMapping;
     std::map<Value*, int> stackMapping;
@@ -27,6 +29,8 @@ private:
     GR getGR(Value* src);
     FR getFR(Value* src);
     void comment(std::string s);
+    std::string getFloatAddr(float x);
+    void generateFloatConst();
 public:
     Codegen(IrVisitor &irVisitor, std::ostream& out) : irVisitor(irVisitor),out(out) {}
     void generateProgramCode();

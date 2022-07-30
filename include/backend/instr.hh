@@ -250,6 +250,36 @@ public:
         return {dst};
     }
 };
+class VLoadFromSymbol: public Instr {
+public:
+    FR dst;
+    std::string symbol;
+    VLoadFromSymbol(FR dst,std::string symbol): dst(dst),symbol(symbol){}
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
+        dst = FR(frMapping[dst]);
+    }
+    void print(std::ostream& out) override final{
+        out << "vldr.32 " << dst.getName() << ", " << symbol << "\n";
+    }
+    void setNewGR(GR old_gr, GR new_gr, bool use) {}
+    void setNewFR(FR old_fr, FR new_fr, bool use) {
+        if (!use) {
+            if (dst == old_fr) dst = new_fr;
+        }
+    }
+    std::vector<GR> getUseG() override final{
+        return {};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {};
+    }
+    std::vector<FR> getDefF() override final{
+        return {dst};
+    }
+};
 //class StoreToSymbol: public Instr{
 //public:
 //    GR src;
@@ -782,7 +812,7 @@ public:
         }
     }
     void print(std::ostream& out) override final{
-        out << "vcmpe " << src1.getName() << "," << src2.getName() << "\n";
+        out << "vcmpe.f32 " << src1.getName() << "," << src2.getName() << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {};
