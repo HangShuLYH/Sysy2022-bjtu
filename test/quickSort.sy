@@ -10,7 +10,7 @@ const float FACT = -.33E+5, EVAL1 = PI * RADIUS * RADIUS, EVAL2 = 2 * PI_HEX * R
 // float constant implicit conversion
 const float CONV1 = 233, CONV2 = 0xfff;
 const int MAX = 1e9, TWO = 2.9, THREE = 3.2, FIVE = TWO + THREE;
-const float x[2] = {FACT,EVAL1};
+
 // float -> float function
 float float_abs(float x) {
   if (x < 0) return -x;

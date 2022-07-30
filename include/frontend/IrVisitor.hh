@@ -28,6 +28,7 @@ private:
     Type* curDefType;
     std::vector<TempVal> args; //temp args for cur_func
     std::stack<std::vector<TempVal>> args_stack;
+    std::stack<Function*> call_func_stack;
     int loopCnt = 0; //use for breakError and ContinueError
     Type* typeInt = new Type(TypeID::INT);
     Type* typeFloat = new Type(TypeID::FLOAT);

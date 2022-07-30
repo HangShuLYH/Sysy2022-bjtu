@@ -981,12 +981,14 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
     } else if (unaryExp->identifier != "") {
         args_stack.push({});
         call_func = findFunc(unaryExp->identifier);
+        call_func_stack.push(call_func);
         Function *temp = call_func;
         if (unaryExp->funcRParams) {
             unaryExp->funcRParams->accept(*this);
         }
         args = args_stack.top();
         args_stack.pop();
+        call_func_stack.pop();
         if (call_func->return_type->isVoid()) {
             cur_bb->pushIr(new CallIR(call_func, args));
         } else {
@@ -1010,6 +1012,25 @@ void IrVisitor::visit(FuncRParams *funcRParams) {
     }
     for (size_t i = 0; i < funcRParams->expList.size(); ++i) {
         funcRParams->expList[i]->accept(*this);
+        Function* f = call_func_stack.top();
+        if (f->params[i]->getType()->isInt() && tempVal.getType()->isFloat() ||
+        f->params[i]->getType()->isFloat() && tempVal.getType()->isInt()) {
+            if (tempVal.getVal()) {
+                Value *v = new VarValue("", f->params[i]->getType(), isGlobal(),
+                                        isGlobal() ? cnt++ : cur_func->varCnt++, true);
+                cur_bb->pushIr(CastIRManager::getIR(v, tempVal));
+                tempVal.setVal(v);
+                tempVal.setType(v->getType());
+            } else {
+                if (tempVal.getType()->isInt()) {
+                    tempVal.setType(typeFloat);
+                    tempVal.setFloat(tempVal.getInt());
+                } else {
+                    tempVal.setType(typeInt);
+                    tempVal.setInt(tempVal.getFloat());
+                }
+            }
+        }
         std::vector<TempVal> aa = args_stack.top();
         aa.push_back(tempVal);
         args_stack.pop();

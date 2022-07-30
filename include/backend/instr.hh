@@ -99,16 +99,16 @@ public:
     void print(std::ostream& out) override final{
         switch (op) {
             case VAdd:
-                out << "vadd ";
+                out << "vadd.f32 ";
                 break;
             case VSub:
-                out << "vsub ";
+                out << "vsub.f32 ";
                 break;
             case VMul:
-                out << "vmul ";
+                out << "vmul.f32 ";
                 break;
             case VDiv:
-                out << "vdiv ";
+                out << "vdiv.f32 ";
                 break;
         }
         out << dst.getName() << "," << src1.getName() << "," << src2.getName() << "\n";
@@ -451,7 +451,7 @@ public:
 class VMovImm: public Instr{
 public:
     FR dst;
-    uint32_t imm;
+    float imm;
     VMovImm(FR dst,float imm): dst(dst),imm(imm) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = FR(frMapping[dst]);
@@ -462,7 +462,7 @@ public:
         }
     }
     void print(std::ostream& out) override final{
-        out << "vmov " << dst.getName() << ",#" << imm << "\n";
+        out << "vmov.f32 " << dst.getName() << ",#" << imm << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {};
@@ -961,7 +961,7 @@ public:
         }
     }
     void print(std::ostream& out) override final{
-        out << "vmov " << dst.getName() << "," << src.getName() << "\n";
+        out << "vmov.32 " << dst.getName() << "," << src.getName() << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {};
