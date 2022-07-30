@@ -63,16 +63,28 @@ main:
 	sub sp,sp, #64
 	bl .init
 .L1:
-	vldr.32 s1, FACT
-	vldr.32 s0, HEX2
+	movt r12,#:upper16:FACT
+	movw r12,#:lower16:FACT
+	vldr.32 s1,[r12,#0]
+	movt r12,#:upper16:HEX2
+	movw r12,#:lower16:HEX2
+	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
-	vldr.32 s1, EVAL3
-	vldr.32 s0, EVAL1
+	movt r12,#:upper16:EVAL3
+	movw r12,#:lower16:EVAL3
+	vldr.32 s1,[r12,#0]
+	movt r12,#:upper16:EVAL1
+	movw r12,#:lower16:EVAL1
+	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
-	vldr.32 s1, EVAL3
-	vldr.32 s0, EVAL3
+	movt r12,#:upper16:EVAL3
+	movw r12,#:lower16:EVAL3
+	vldr.32 s1,[r12,#0]
+	movt r12,#:upper16:EVAL3
+	movw r12,#:lower16:EVAL3
+	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert
 	mov r0,#5
@@ -86,8 +98,12 @@ main:
 	vcvt.s32.f32 s0,s0
 	vmov r0,s0
 	bl assert
-	vldr.32 s1, CONV2
-	vldr.32 s0, CONV1
+	movt r12,#:upper16:CONV2
+	movw r12,#:lower16:CONV2
+	vldr.32 s1,[r12,#0]
+	movt r12,#:upper16:CONV1
+	movw r12,#:lower16:CONV1
+	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
 .L2:
@@ -148,7 +164,9 @@ main:
 	bl getfloat
 	vstr.32 s0,[sp,#52]
 	vldr.32 s1,[sp,#52]
-	vldr.32 s0, PI_HEX
+	movt r12,#:upper16:PI_HEX
+	movw r12,#:lower16:PI_HEX
+	vldr.32 s0,[r12,#0]
 	vmul.f32 s1,s0,s1
 	vldr.32 s0,[sp,#52]
 	vmul.f32 s0,s1,s0
@@ -191,7 +209,9 @@ main:
 	ldr r0,[sp,#0]
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	vldr.32 s0, .f0
+	movt r12,#:upper16:.f0
+	movw r12,#:lower16:.f0
+	vldr.32 s0,[r12,#0]
 	vmul.f32 s0,s1,s0
 	vcvt.s32.f32 s0,s0
 	vmov r0,s0
@@ -293,7 +313,9 @@ float_eq:
 	vldr.32 s0,[sp,#4]
 	vsub.f32 s0,s1,s0
 	bl float_abs
-	vldr.32 s1, EPS
+	movt r12,#:upper16:EPS
+	movw r12,#:lower16:EPS
+	vldr.32 s1,[r12,#0]
 	vcmpe.f32 s0,s1
 	vmrs APSR_nzcv, FPSCR
 	mov r0,#0
@@ -322,7 +344,9 @@ circle_area:
 	ldr r0,[sp,#0]
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	vldr.32 s0, PI_HEX
+	movt r12,#:upper16:PI_HEX
+	movw r12,#:lower16:PI_HEX
+	vldr.32 s0,[r12,#0]
 	vmul.f32 s1,s0,s1
 	ldr r0,[sp,#0]
 	vmov s0,r0
@@ -333,10 +357,14 @@ circle_area:
 	mul r0,r1,r0
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	vldr.32 s0, PI_HEX
+	movt r12,#:upper16:PI_HEX
+	movw r12,#:lower16:PI_HEX
+	vldr.32 s0,[r12,#0]
 	vmul.f32 s0,s1,s0
 	vadd.f32 s1,s2,s0
-	vldr.32 s0, .f1
+	movt r12,#:upper16:.f1
+	movw r12,#:lower16:.f1
+	vldr.32 s0,[r12,#0]
 	vdiv.f32 s0,s1,s0
 	add sp,sp, #4
 	vpop {s1,s2}
@@ -350,7 +378,9 @@ float_abs:
 .L29:
 	vstr.32 s0,[sp,#0]
 	vldr.32 s1,[sp,#0]
-	vldr.32 s0, .f2
+	movt r12,#:upper16:.f2
+	movw r12,#:lower16:.f2
+	vldr.32 s0,[r12,#0]
 	vcmpe.f32 s1,s0
 	vmrs APSR_nzcv, FPSCR
 	mov r0,#0

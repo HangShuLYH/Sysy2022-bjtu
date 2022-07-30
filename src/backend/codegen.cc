@@ -791,7 +791,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 }
             } else {
                 FR dst = getFR(ir2->left.getVal());
-                vec.push_back(new VLoadFromSymbol(dst, getFloatAddr(ir2->left.getFloat())));
+                vec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(ir2->left.getFloat())));
+                vec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(ir2->left.getFloat())));
+                vec.push_back(new VLoad(dst, GR(12),0));
             }
         }
         if (!ir2->right.getVal()) {
@@ -805,7 +807,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 }
             } else {
                 FR dst = getFR(ir2->right.getVal());
-                vec.push_back(new VLoadFromSymbol(dst, getFloatAddr(ir2->right.getFloat())));
+                vec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(ir2->right.getFloat())));
+                vec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(ir2->right.getFloat())));
+                vec.push_back(new VLoad(dst, GR(12),0));
             }
         }
         if (ir2->left.getVal() || ir2->right.getVal()) {
@@ -1021,7 +1025,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (fr_cnt >= 32) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
-                        tempVec.push_back(new VLoadFromSymbol(getFR(v.getVal()), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12),0));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
@@ -1030,7 +1036,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         fRegMapping[v.getVal()] = fr_cnt;
-                        tempVec.push_back(new VLoadFromSymbol(getFR(v.getVal()), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(v.getFloat())));
+                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12),0));
                     } else {
                         tempVec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
                         fRegMapping[v.getVal()] = fr_cnt;
@@ -1063,7 +1071,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         if (returnIr->useInt) {
             vec.push_back(new MovImm(GR(0), returnIr->retInt));
         } else if (returnIr->useFloat) {
-            vec.push_back(new VLoadFromSymbol(FR(0), getFloatAddr(returnIr->retFloat)));
+            vec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(returnIr->retFloat)));
+            vec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(returnIr->retFloat)));
+            vec.push_back(new VLoad(FR(0), GR(12),0));
         } else if (returnIr->v) {
             if (returnIr->v->getType()->isInt()) {
                 vec.push_back(new MoveReg(GR(0), getGR(returnIr->v)));
