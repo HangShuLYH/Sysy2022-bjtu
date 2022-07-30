@@ -86,7 +86,7 @@ void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
     out << ".fpu neon\n";
-    generateGlobalCode();
+    out << ".text\n";
     out << ".global main\n";
     out << ".section .text\n";
     int removeCnt = 0;
@@ -374,7 +374,6 @@ void Codegen::generateProgramCode() {
             }
         }
     }
-    generateFloatConst();
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
@@ -394,6 +393,8 @@ void Codegen::generateProgramCode() {
             }
         }
     }
+    generateGlobalCode();
+    generateFloatConst();
 }
 
 int Codegen::translateFunction(Function *function) {
