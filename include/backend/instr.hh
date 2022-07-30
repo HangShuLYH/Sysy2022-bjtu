@@ -451,7 +451,7 @@ public:
 class VMovImm: public Instr{
 public:
     FR dst;
-    float imm;
+    uint32_t imm;
     VMovImm(FR dst,float imm): dst(dst),imm(imm) {}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = FR(frMapping[dst]);

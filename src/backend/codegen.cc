@@ -34,7 +34,7 @@ std::string getBBName(std::string name) {
     return bbNameMapping[name];
 }
 
-std::vector<Instr *> setIntValue(GR target, int value) {
+std::vector<Instr *> setIntValue(GR target, uint32_t value) {
     if (0 <= value && value <= 65535) {
         return {new MovImm(target, value)};
     } else if (-255 <= value && value <= 0) {
@@ -50,18 +50,23 @@ std::vector<Instr *> setIntValue(GR target, int value) {
 std::vector<Instr *> setFloatValue(GR target, float value) {
     union {
         float floatVal;
-        int intVal;
+        uint32_t intVal;
     } data;
     data.floatVal = value;
-    int imm_low = data.intVal & ((1 << 16) - 1);
-    int imm_high = data.intVal >> 16;
-    return {new MoveW(target, imm_low),
-            new MoveT(target, imm_high)};
+    return setIntValue(target, data.intVal);
 }
-
+uint32_t floatToInt(float value) {
+    union {
+        float floatVal;
+        uint32_t intVal;
+    }data;
+    data.floatVal = value;
+    return data.intVal;
+}
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
+    out << ".fpu neon\n";
     generateGlobalCode();
     out << ".global main\n";
     out << ".section .text\n";
@@ -627,6 +632,9 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             Value *val = new VarValue();
             storeIr->src.setVal(val);
             src = getGR(val);
+            if (storeIr->src.isInt()) {
+                storeIr->src.setFloat(storeIr->src.getInt());
+            }
             std::vector<Instr *> vv = setFloatValue(src, storeIr->src.getFloat());
             for (Instr *instr: vv) {
                 vec.push_back(instr);
@@ -759,7 +767,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 }
             } else {
                 FR dst = getFR(ir2->left.getVal());
-                vec.push_back(new VMovImm(dst, ir2->left.getFloat()));
+                vec.push_back(new VMovImm(dst, floatToInt(ir2->left.getFloat())));
             }
         }
         if (!ir2->right.getVal()) {
@@ -773,7 +781,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 }
             } else {
                 FR dst = getFR(ir2->right.getVal());
-                vec.push_back(new VMovImm(dst, ir2->right.getFloat()));
+                vec.push_back(new VMovImm(dst, floatToInt(ir2->right.getFloat())));
             }
         }
         if (ir2->left.getVal() || ir2->right.getVal()) {
@@ -987,7 +995,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 if (fr_cnt >= 32) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
-                        tempVec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
+                        tempVec.push_back(new VMovImm(getFR(v.getVal()), floatToInt(v.getFloat())));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
@@ -996,7 +1004,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         fRegMapping[v.getVal()] = fr_cnt;
-                        tempVec.push_back(new VMovImm(getFR(v.getVal()), v.getFloat()));
+                        tempVec.push_back(new VMovImm(getFR(v.getVal()), floatToInt(v.getFloat())));
                     } else {
                         tempVec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
                         fRegMapping[v.getVal()] = fr_cnt;
@@ -1029,7 +1037,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         if (returnIr->useInt) {
             vec.push_back(new MovImm(GR(0), returnIr->retInt));
         } else if (returnIr->useFloat) {
-            vec.push_back(new VMovImm(FR(0), returnIr->retFloat));
+            vec.push_back(new VMovImm(FR(0), floatToInt(returnIr->retFloat)));
         } else if (returnIr->v) {
             if (returnIr->v->getType()->isInt()) {
                 vec.push_back(new MoveReg(GR(0), getGR(returnIr->v)));
@@ -1087,7 +1095,7 @@ void Codegen::generateGlobalCode() {
                     if (vv->getType()->isInt()) {
                         out << vv->getIntVal();
                     } else {
-                        out << vv->getFloatVal();
+                        out << floatToInt(vv->getFloatVal());
                     }
                 } else {
                     for (int i = 0; i < vv->getArrayLen(); ++i) {
@@ -1097,7 +1105,7 @@ void Codegen::generateGlobalCode() {
                         if (vv->getType()->isIntPointer()) {
                             out << vv->getIntValList()[i];
                         } else {
-                            out << vv->getFloatValList()[i];
+                            out << floatToInt(vv->getFloatValList()[i]);
                         }
                     }
                 }
