@@ -1126,7 +1126,9 @@ void Codegen::generateGlobalCode() {
             if (!v->getType()->isString()) {
                 ConstValue *vv = dynamic_cast<ConstValue *>(v);
                 if (!vv->is_Array() && !vv->getType()->isInt()) {
-                    floatConstMapping[vv->getFloatVal()] = vv->getName();
+                    if (floatConstMapping.count(vv->getFloatVal()) == 0) {
+                        floatConstMapping[vv->getFloatVal()] = vv->getName();
+                    }
                     continue;
                 }
                 out << ".align\n";

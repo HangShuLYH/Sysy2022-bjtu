@@ -365,22 +365,22 @@ THREE:
 FIVE:
 	.4byte 5
 .align
-FACT:
+.f1:
 	.4byte 3338725376
 .align
 .f10:
 	.4byte 0
 .align
-EPS:
+.f8:
 	.4byte 897988541
 .align
-HEX2:
+.f0:
 	.4byte 1033895936
 .align
 .f9:
 	.4byte 1073741824
 .align
-PI_HEX:
+.f6:
 	.4byte 1078530011
 .align
 RADIUS:
@@ -389,14 +389,14 @@ RADIUS:
 .f7:
 	.4byte 1092616192
 .align
-EVAL3:
+.f3:
 	.4byte 1107966695
 .align
-EVAL1:
+.f2:
 	.4byte 1119752446
 .align
-CONV1:
+.f4:
 	.4byte 1130954752
 .align
-CONV2:
+.f5:
 	.4byte 1166012416
