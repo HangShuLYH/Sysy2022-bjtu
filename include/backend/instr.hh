@@ -918,7 +918,7 @@ public:
         return {GR(0),GR(1),GR(2),GR(3),GR(12)};
     }
     std::vector<FR> getDefF() override final{
-        return {};
+        return {FR(0)};
     }
 };
 class Ret: public Instr{

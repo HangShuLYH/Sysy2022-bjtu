@@ -23,7 +23,7 @@ FIVE:
 @ stack Size: 64
 main:
 	push {lr}
-	vpush {s0,s1,s2}
+	vpush {s1,s2}
 	sub sp,sp, #64
 	bl .init
 .L1:
@@ -41,9 +41,11 @@ main:
 	bl assert
 	mov r0,#5
 	bl circle_area
+	vmov.32 s2,s0
 	mov r0,#5
 	bl circle_area
 	vmov.32 s1,s0
+	vmov.32 s0,s2
 	bl float_eq
 	vcvt.s32.f32 s0,s0
 	vmov r0,s0
@@ -109,15 +111,15 @@ main:
 .L13:
 	bl getfloat
 	vstr.32 s0,[sp,#52]
-	vldr.32 s2,[sp,#52]
-	vldr.32 s1, PI_HEX
-	vmul.f32 s2,s1,s2
 	vldr.32 s1,[sp,#52]
-	vmul.f32 s1,s2,s1
-	vstr.32 s1,[sp,#56]
-	vldr.32 s1,[sp,#52]
-	vcvt.s32.f32 s1,s1
-	vmov r0,s1
+	vldr.32 s0, PI_HEX
+	vmul.f32 s1,s0,s1
+	vldr.32 s0,[sp,#52]
+	vmul.f32 s0,s1,s0
+	vstr.32 s0,[sp,#56]
+	vldr.32 s0,[sp,#52]
+	vcvt.s32.f32 s0,s0
+	vmov r0,s0
 	bl circle_area
 	vstr.32 s0,[sp,#60]
 	ldr r1,[sp,#4]
@@ -144,19 +146,19 @@ main:
 	bl putfloat
 	mov r0,#32
 	bl putch
-	vldr.32 s1,[sp,#60]
-	vcvt.s32.f32 s1,s1
-	vmov r0,s1
+	vldr.32 s0,[sp,#60]
+	vcvt.s32.f32 s0,s0
+	vmov r0,s0
 	bl putint
 	mov r0,#10
 	bl putch
 	ldr r0,[sp,#0]
-	vmov s2,r0
-	vcvt.f32.s32 s2,s2
-	vldr.32 s1, .f0
-	vmul.f32 s1,s2,s1
-	vcvt.s32.f32 s1,s1
-	vmov r0,s1
+	vmov s1,r0
+	vcvt.f32.s32 s1,s1
+	vldr.32 s0, .f0
+	vmul.f32 s0,s1,s0
+	vcvt.s32.f32 s0,s0
+	vmov r0,s0
 	str r0,[sp,#0]
 	ldr r1,[sp,#4]
 	mov r0,#1
@@ -169,7 +171,7 @@ main:
 	bl putfarray
 	mov r0,#0
 	add sp,sp, #64
-	vpop {s0,s1,s2}
+	vpop {s1,s2}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
@@ -246,7 +248,7 @@ error:
 @ stack Size: 8
 float_eq:
 	push {lr}
-	vpush {s0,s1}
+	vpush {s1}
 	sub sp,sp, #8
 .L25:
 	vstr.32 s0,[sp,#0]
@@ -266,18 +268,18 @@ float_eq:
 .L26:
 	mov r0,#1
 	add sp,sp, #8
-	vpop {s0,s1}
+	vpop {s1}
 	pop {pc}
 .L27:
 	mov r0,#0
 	add sp,sp, #8
-	vpop {s0,s1}
+	vpop {s1}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
 circle_area:
 	push {lr}
-	vpush {s0,s1,s2}
+	vpush {s1,s2}
 	sub sp,sp, #4
 .L28:
 	str r0,[sp,#0]
@@ -301,13 +303,13 @@ circle_area:
 	vldr.32 s0, .f1
 	vdiv.f32 s0,s1,s0
 	add sp,sp, #4
-	vpop {s0,s1,s2}
+	vpop {s1,s2}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
 float_abs:
 	push {lr}
-	vpush {s0,s1}
+	vpush {s1}
 	sub sp,sp, #4
 .L29:
 	vstr.32 s0,[sp,#0]
@@ -324,12 +326,12 @@ float_abs:
 	vldr.32 s0,[sp,#0]
 	vneg.f32 s0,s0
 	add sp,sp, #4
-	vpop {s0,s1}
+	vpop {s1}
 	pop {pc}
 .L31:
 	vldr.32 s0,[sp,#0]
 	add sp,sp, #4
-	vpop {s0,s1}
+	vpop {s1}
 	pop {pc}
 .align
 FACT:
