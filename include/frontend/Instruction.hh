@@ -172,7 +172,16 @@ public:
 };
 class AddFIR:public ArithmeticIR{
 public:
-    AddFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    AddFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = AddF ";
@@ -197,7 +206,16 @@ public:
 };
 class SubFIR:public ArithmeticIR{
 public:
-    SubFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    SubFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = SubF ";
@@ -221,7 +239,16 @@ public:
 };
 class MulFIR:public ArithmeticIR{
 public:
-    MulFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    MulFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = MulF ";
@@ -245,7 +272,16 @@ public:
 };
 class DivFIR:public ArithmeticIR{
 public:
-    DivFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    DivFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = DivF ";
@@ -313,7 +349,16 @@ public:
 };
 class LTFIR:public ArithmeticIR{
 public:
-    LTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    LTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = LTF ";
@@ -337,7 +382,16 @@ public:
 };
 class LEFIR:public ArithmeticIR{
 public:
-    LEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    LEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = LEF ";
@@ -361,7 +415,16 @@ public:
 };
 class GTFIR:public ArithmeticIR{
 public:
-    GTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    GTFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = GTF ";
@@ -385,7 +448,16 @@ public:
 };
 class GEFIR:public ArithmeticIR{
 public:
-    GEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    GEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = GEF ";
@@ -409,7 +481,16 @@ public:
 };
 class EQUFIR:public ArithmeticIR{
 public:
-    EQUFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    EQUFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = EQUF ";
@@ -433,7 +514,16 @@ public:
 };
 class NEFIR:public ArithmeticIR{
 public:
-    NEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    NEFIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){
+        if (!left.getVal() && left.isInt()) {
+            this->left.setType(new Type(TypeID::FLOAT));
+            this->left.setFloat(left.getInt());
+        }
+        if (!right.getVal() && right.isInt()) {
+            this->right.setType(new Type(TypeID::FLOAT));
+            this->right.setFloat(right.getInt());
+        }
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = NEF ";

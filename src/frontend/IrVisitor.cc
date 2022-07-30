@@ -1151,7 +1151,7 @@ void IrVisitor::visit(RelExp *relExp) {
         }
         //cast
         if (left.getType() != right.getType()) {
-            if (left.isInt() && left.getVal()) {
+            if (left.isInt()) {
                 Value *t = new VarValue("", typeFloat, isGlobal(),
                                         isGlobal() ? cnt++ : cur_func->varCnt++, true);
 

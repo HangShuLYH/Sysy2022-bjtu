@@ -27,6 +27,14 @@ main:
 	sub sp,sp, #64
 	bl .init
 .L1:
+	vldr.32 s1, FACT
+	vldr.32 s0, HEX2
+	bl float_eq
+	bl assert_not
+	vldr.32 s1, EVAL3
+	vldr.32 s0, EVAL1
+	bl float_eq
+	bl assert_not
 	vldr.32 s1, EVAL3
 	vldr.32 s0, EVAL3
 	bl float_eq
@@ -269,31 +277,31 @@ float_eq:
 @ stack Size: 4
 circle_area:
 	push {lr}
-	vpush {s0,s1,s2,s3}
+	vpush {s0,s1,s2}
 	sub sp,sp, #4
 .L28:
 	str r0,[sp,#0]
 	ldr r0,[sp,#0]
-	vmov s2,r0
-	vcvt.f32.s32 s2,s2
-	vldr.32 s1, PI_HEX
-	vmul.f32 s2,s1,s2
-	ldr r0,[sp,#0]
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	vmul.f32 s3,s2,s1
+	vldr.32 s0, PI_HEX
+	vmul.f32 s1,s0,s1
+	ldr r0,[sp,#0]
+	vmov s0,r0
+	vcvt.f32.s32 s0,s0
+	vmul.f32 s2,s1,s0
 	ldr r1,[sp,#0]
 	ldr r0,[sp,#0]
 	mul r0,r1,r0
-	vmov s2,r0
-	vcvt.f32.s32 s2,s2
-	vldr.32 s1, PI_HEX
-	vmul.f32 s1,s2,s1
-	vadd.f32 s1,s3,s1
-	mov r0,#2
+	vmov s1,r0
+	vcvt.f32.s32 s1,s1
+	vldr.32 s0, PI_HEX
+	vmul.f32 s0,s1,s0
+	vadd.f32 s1,s2,s0
+	vldr.32 s0, .f1
 	vdiv.f32 s0,s1,s0
 	add sp,sp, #4
-	vpop {s0,s1,s2,s3}
+	vpop {s0,s1,s2}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
@@ -304,7 +312,7 @@ float_abs:
 .L29:
 	vstr.32 s0,[sp,#0]
 	vldr.32 s1,[sp,#0]
-	mov r0,#0
+	vldr.32 s0, .f2
 	vcmpe.f32 s1,s0
 	vmrs APSR_nzcv, FPSCR
 	mov r0,#0
@@ -327,11 +335,17 @@ float_abs:
 FACT:
 	.4byte 3338725376
 .align
+.f2:
+	.4byte 0
+.align
 EPS:
 	.4byte 897988541
 .align
 HEX2:
 	.4byte 1033895936
+.align
+.f1:
+	.4byte 1073741824
 .align
 PI_HEX:
 	.4byte 1078530011
