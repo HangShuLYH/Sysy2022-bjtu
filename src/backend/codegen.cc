@@ -1061,12 +1061,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
             if (callIr->returnVal->getType()->isInt()) {
                 vec.push_back(new MoveReg(getGR(callIr->returnVal), GR(0)));
             } else {
-                if (callIr->func->name == "getfloat") {
-                    vec.push_back(new VMovFG(getFR(callIr->returnVal), GR(0)));
-                    vec.push_back(new VcvtFS(getFR(callIr->returnVal), getFR(callIr->returnVal)));
-                }else {
-                    vec.push_back(new VMoveReg(getFR(callIr->returnVal), FR(0)));
-                }
+                vec.push_back(new VMoveReg(getFR(callIr->returnVal), FR(0)));
             }
         }
         return vec;

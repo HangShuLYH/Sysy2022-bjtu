@@ -125,8 +125,6 @@ main:
 	beq .L14
 .L13:
 	bl getfloat
-	vmov s0,r0
-	vcvt.f32.s32 s0,s0
 	vstr.32 s0,[sp,#52]
 	vldr.32 s1,[sp,#52]
 	movw r12,#:lower16:PI
