@@ -988,6 +988,7 @@ void IrVisitor::visit(UnaryExp *unaryExp) {
         }
         args = args_stack.top();
         args_stack.pop();
+        call_func = call_func_stack.top();
         call_func_stack.pop();
         if (call_func->return_type->isVoid()) {
             cur_bb->pushIr(new CallIR(call_func, args));

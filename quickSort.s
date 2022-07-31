@@ -60,8 +60,6 @@ main:
 	vmov.32 s1,s0
 	vmov.32 s0,s2
 	bl float_eq
-	vcvt.s32.f32 s0,s0
-	vmov r0,s0
 	bl assert
 	movw r12,#:lower16:CONV2
 	movt r12,#:upper16:CONV2
