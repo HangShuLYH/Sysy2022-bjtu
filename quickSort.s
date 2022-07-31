@@ -3,6 +3,19 @@
 .fpu neon
 .text
 .global main
+.section .data
+.align
+MAX:
+	.4byte 1000000000
+.align
+TWO:
+	.4byte 2
+.align
+THREE:
+	.4byte 3
+.align
+FIVE:
+	.4byte 5
 .section .text
 .init:
 .L0:
@@ -15,27 +28,27 @@ main:
 	sub sp,sp, #64
 	bl .init
 .L1:
-	movt r12,#:upper16:.f1
-	movw r12,#:lower16:.f1
+	movw r12,#:lower16:FACT
+	movt r12,#:upper16:FACT
 	vldr.32 s1,[r12,#0]
-	movt r12,#:upper16:.f0
-	movw r12,#:lower16:.f0
+	movw r12,#:lower16:HEX2
+	movt r12,#:upper16:HEX2
 	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
-	movt r12,#:upper16:.f3
-	movw r12,#:lower16:.f3
+	movw r12,#:lower16:EVAL2
+	movt r12,#:upper16:EVAL2
 	vldr.32 s1,[r12,#0]
-	movt r12,#:upper16:.f2
-	movw r12,#:lower16:.f2
+	movw r12,#:lower16:EVAL1
+	movt r12,#:upper16:EVAL1
 	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
-	movt r12,#:upper16:.f3
-	movw r12,#:lower16:.f3
+	movw r12,#:lower16:EVAL2
+	movt r12,#:upper16:EVAL2
 	vldr.32 s1,[r12,#0]
-	movt r12,#:upper16:.f3
-	movw r12,#:lower16:.f3
+	movw r12,#:lower16:EVAL2
+	movt r12,#:upper16:EVAL2
 	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert
@@ -50,11 +63,11 @@ main:
 	vcvt.s32.f32 s0,s0
 	vmov r0,s0
 	bl assert
-	movt r12,#:upper16:.f5
-	movw r12,#:lower16:.f5
+	movw r12,#:lower16:CONV2
+	movt r12,#:upper16:CONV2
 	vldr.32 s1,[r12,#0]
-	movt r12,#:upper16:.f4
-	movw r12,#:lower16:.f4
+	movw r12,#:lower16:CONV1
+	movt r12,#:upper16:CONV1
 	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
@@ -116,8 +129,8 @@ main:
 	bl getfloat
 	vstr.32 s0,[sp,#52]
 	vldr.32 s1,[sp,#52]
-	movt r12,#:upper16:.f6
-	movw r12,#:lower16:.f6
+	movw r12,#:lower16:PI
+	movt r12,#:upper16:PI
 	vldr.32 s0,[r12,#0]
 	vmul.f32 s1,s0,s1
 	vldr.32 s0,[sp,#52]
@@ -161,8 +174,8 @@ main:
 	ldr r0,[sp,#0]
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	movt r12,#:upper16:.f7
-	movw r12,#:lower16:.f7
+	movw r12,#:lower16:.f0
+	movt r12,#:upper16:.f0
 	vldr.32 s0,[r12,#0]
 	vmul.f32 s0,s1,s0
 	vcvt.s32.f32 s0,s0
@@ -265,8 +278,8 @@ float_eq:
 	vldr.32 s0,[sp,#4]
 	vsub.f32 s0,s1,s0
 	bl float_abs
-	movt r12,#:upper16:.f8
-	movw r12,#:lower16:.f8
+	movw r12,#:lower16:EPS
+	movt r12,#:upper16:EPS
 	vldr.32 s1,[r12,#0]
 	vcmpe.f32 s0,s1
 	vmrs APSR_nzcv, FPSCR
@@ -296,8 +309,8 @@ circle_area:
 	ldr r0,[sp,#0]
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	movt r12,#:upper16:.f6
-	movw r12,#:lower16:.f6
+	movw r12,#:lower16:PI
+	movt r12,#:upper16:PI
 	vldr.32 s0,[r12,#0]
 	vmul.f32 s1,s0,s1
 	ldr r0,[sp,#0]
@@ -309,13 +322,13 @@ circle_area:
 	mul r0,r1,r0
 	vmov s1,r0
 	vcvt.f32.s32 s1,s1
-	movt r12,#:upper16:.f6
-	movw r12,#:lower16:.f6
+	movw r12,#:lower16:PI
+	movt r12,#:upper16:PI
 	vldr.32 s0,[r12,#0]
 	vmul.f32 s0,s1,s0
 	vadd.f32 s1,s2,s0
-	movt r12,#:upper16:.f9
-	movw r12,#:lower16:.f9
+	movw r12,#:lower16:.f1
+	movt r12,#:upper16:.f1
 	vldr.32 s0,[r12,#0]
 	vdiv.f32 s0,s1,s0
 	add sp,sp, #4
@@ -330,8 +343,8 @@ float_abs:
 .L29:
 	vstr.32 s0,[sp,#0]
 	vldr.32 s1,[sp,#0]
-	movt r12,#:upper16:.f10
-	movw r12,#:lower16:.f10
+	movw r12,#:lower16:.f2
+	movt r12,#:upper16:.f2
 	vldr.32 s0,[r12,#0]
 	vcmpe.f32 s1,s0
 	vmrs APSR_nzcv, FPSCR
@@ -351,52 +364,39 @@ float_abs:
 	add sp,sp, #4
 	vpop {s1}
 	pop {pc}
-.section .data
 .align
-MAX:
-	.4byte 1000000000
-.align
-TWO:
-	.4byte 2
-.align
-THREE:
-	.4byte 3
-.align
-FIVE:
-	.4byte 5
-.align
-.f1:
+FACT:
 	.4byte 3338725376
 .align
-.f10:
+.f2:
 	.4byte 0
 .align
-.f8:
+EPS:
 	.4byte 897988541
 .align
-.f0:
+HEX2:
 	.4byte 1033895936
 .align
-.f9:
+.f1:
 	.4byte 1073741824
 .align
-.f6:
+PI:
 	.4byte 1078530011
 .align
 RADIUS:
 	.4byte 1085276160
 .align
-.f7:
+.f0:
 	.4byte 1092616192
 .align
-.f3:
+EVAL2:
 	.4byte 1107966695
 .align
-.f2:
+EVAL1:
 	.4byte 1119752446
 .align
-.f4:
+CONV1:
 	.4byte 1130954752
 .align
-.f5:
+CONV2:
 	.4byte 1166012416
