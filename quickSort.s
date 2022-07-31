@@ -21,11 +21,11 @@ FIVE:
 .L0:
 	bx lr
 @ spilled Size: 0
-@ stack Size: 64
+@ stack Size: 68
 main:
 	push {lr}
-	vpush {s0,s1,s2}
-	sub sp,sp, #64
+	vpush {s1,s2}
+	sub sp,sp, #68
 	bl .init
 .L1:
 	movw r12,#:lower16:FACT
@@ -189,8 +189,8 @@ main:
 	add r1,sp, #8
 	bl putfarray
 	mov r0,#0
-	add sp,sp, #64
-	vpop {s0,s1,s2}
+	add sp,sp, #68
+	vpop {s1,s2}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
@@ -234,9 +234,10 @@ assert:
 	add sp,sp, #4
 	pop {pc}
 @ spilled Size: 0
-@ stack Size: 0
+@ stack Size: 4
 ok:
 	push {lr}
+	sub sp,sp, #4
 .L23:
 	mov r0,#111
 	bl putch
@@ -244,11 +245,13 @@ ok:
 	bl putch
 	mov r0,#10
 	bl putch
+	add sp,sp, #4
 	pop {pc}
 @ spilled Size: 0
-@ stack Size: 0
+@ stack Size: 4
 error:
 	push {lr}
+	sub sp,sp, #4
 .L24:
 	mov r0,#101
 	bl putch
@@ -262,6 +265,7 @@ error:
 	bl putch
 	mov r0,#10
 	bl putch
+	add sp,sp, #4
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 8
@@ -333,11 +337,11 @@ circle_area:
 	vpop {s1,s2}
 	pop {pc}
 @ spilled Size: 0
-@ stack Size: 4
+@ stack Size: 8
 float_abs:
 	push {lr}
 	vpush {s1}
-	sub sp,sp, #4
+	sub sp,sp, #8
 .L29:
 	vstr.32 s0,[sp,#0]
 	vldr.32 s1,[sp,#0]
@@ -354,12 +358,12 @@ float_abs:
 .L30:
 	vldr.32 s0,[sp,#0]
 	vneg.f32 s0,s0
-	add sp,sp, #4
+	add sp,sp, #8
 	vpop {s1}
 	pop {pc}
 .L31:
 	vldr.32 s0,[sp,#0]
-	add sp,sp, #4
+	add sp,sp, #8
 	vpop {s1}
 	pop {pc}
 .align

@@ -147,10 +147,12 @@ void Codegen::generateProgramCode() {
             }
         }
         usedGRMapping[function] = allUsedRegsGR;
-        if (function->name != "main") {
-            allUsedRegsFR.erase(FR(0));
-        }
+        allUsedRegsFR.erase(FR(0));
         usedFRMapping[function] = allUsedRegsFR;
+        //make sp%8 == 0
+        if ((function->stackSize + spill_size + allUsedRegsGR.size() * 4 + allUsedRegsFR.size() * 4) % 8 != 0) {
+            function->stackSize += 4;
+        }
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
