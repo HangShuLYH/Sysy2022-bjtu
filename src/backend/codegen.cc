@@ -147,7 +147,9 @@ void Codegen::generateProgramCode() {
             }
         }
         usedGRMapping[function] = allUsedRegsGR;
-        allUsedRegsFR.erase(FR(0));
+        if (function->name != "main") {
+            allUsedRegsFR.erase(FR(0));
+        }
         usedFRMapping[function] = allUsedRegsFR;
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {

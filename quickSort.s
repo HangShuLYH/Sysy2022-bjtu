@@ -24,7 +24,7 @@ FIVE:
 @ stack Size: 64
 main:
 	push {lr}
-	vpush {s1,s2}
+	vpush {s0,s1,s2}
 	sub sp,sp, #64
 	bl .init
 .L1:
@@ -190,7 +190,7 @@ main:
 	bl putfarray
 	mov r0,#0
 	add sp,sp, #64
-	vpop {s1,s2}
+	vpop {s0,s1,s2}
 	pop {pc}
 @ spilled Size: 0
 @ stack Size: 4
