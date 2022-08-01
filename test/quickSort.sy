@@ -1,39 +1,67 @@
+int set(int a[], int pos, int d){
+    const int bitcount = 30;
+    int x[bitcount + 1] = {};
 
-int foo()
-{
-    int arr[16] = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
+    x[0] = 1;
+    x[1] = x[0] * 2;
+    x[2] = x[1] * 2;
+    x[3] = x[2] * 2;
+    x[4] = x[3] * 2;
+    x[5] = x[4] * 2;
+    x[6] = x[5] * 2;
+    x[7] = x[6] * 2;
+    x[8] = x[7] * 2;
+    x[9] = x[8] * 2;
+    x[10] = x[9] * 2;
 
-    int a = 3, b = 7, c = 5, d = 6, e = 1, f = 0, g = 3, h = 5,
-        i = 4, j = 2, k = 7, l = 9, m = 8, n = 1, o = 4, p = 6;
+    int i = 10;
+    while (i < bitcount){
+        i = i + 1;
+        x[i] = x[i - 1] * 2;
+    }
 
-    int sum1 = a + b + c + d + e + f + g + h;
-    int sum2 = i + j + k + l + m + n + o + p;
+    int v = 0;
 
-    return sum1 + sum2 + arr[a];
+    if (pos / bitcount >= 10000) return 0;
+
+    if (a[pos / bitcount] / (x[pos % bitcount]) % 2 != d){
+        if (a[pos / bitcount] / (x[pos % bitcount]) % 2 == 0)
+            if (d == 1)
+                v = x[pos % bitcount];
+
+        if (a[pos / bitcount] / x[pos % bitcount] % 2 == 1)
+            if (d == 0)
+                v = v - x[pos % bitcount];
+    }
+
+    a[pos / bitcount] = a[pos / bitcount] + v;
+    return 0;
 }
 
-int main()
-{
-    int a = 3, b = 7, c = 5, d = 6, e = 1, f = 0, g = 3, h = 5,
-        i = 4, j = 2, k = 7, l = 9, m = 8, n = 1, o = 4, p = 6;
+int seed[3] = {19971231, 19981013, 1000000000 + 7};
+int staticvalue = 0;
 
-    int sum1 = a + b + c + d + e + f + g + h;
-    int sum2 = i + j + k + l + m + n + o + p;
+int rand(){
+    staticvalue = staticvalue * seed[0] + seed[1];
+    staticvalue = staticvalue % seed[2];
+    if (staticvalue < 0) staticvalue = seed[2] + staticvalue;
+    return staticvalue;
+}
 
-    sum1 = sum1 + foo();
+int a[10000] = {};
+int main(){
 
-    int q = 4, r = 7, s = 2, t = 5, u = 8, v = 0, w = 6, x = 3;
-
-    sum2 = sum2 + foo();
-
-    a = i; b = j; c = k; d = l;
-    e = m; f = n; g = o; h = p;
-
-    int sum3 = q + r + s + t + u + v + w + x;
-
-    int sum = sum1 + sum2 + sum3;
-
-    putint(sum);
-    putch(10);
+    int n = getint();
+    staticvalue = getint();
+    starttime();
+    int x, y;
+    while (n > 0){
+        n = n - 1;
+        x = rand() % 300000;
+        y = rand() % 2;
+        set(a, x, y);
+    }
+    stoptime();
+    putarray(10000, a);
     return 0;
 }

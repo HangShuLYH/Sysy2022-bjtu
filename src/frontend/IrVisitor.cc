@@ -289,7 +289,6 @@ void IrVisitor::visit(VarDef *varDef) {
         VarValue *var(nullptr);
         std::vector<int> arrayDims;
         int arrayLen(1);
-
         for (size_t i(0); i < varDef->constExpList.size(); i++) {
             varDef->constExpList[i]->accept(*this);
             arrayDims.push_back(tempVal.getInt());
@@ -1106,6 +1105,11 @@ void IrVisitor::visit(AddExp *addExp) {
         auto left = tempVal;
         addExp->mulExp->accept(*this);
         auto right = tempVal;
+        if (left.isInt() && right.isInt()) {
+            if (left.getInt() == 1000000000) {
+                std::cout << "\n";
+            }
+        }
         //cal const
         if (!left.getVal() && !right.getVal()) {
             if (addExp->op == addop::OP_ADD) {

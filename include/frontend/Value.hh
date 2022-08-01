@@ -188,22 +188,59 @@ public:
         }else {
             res.setType(v2.getType());
         }
-        switch (op) {
-            case '+':
-                res.setConst(v1.getConst() + v2.getConst());
-                break;
-            case '-':
-                res.setConst(v1.getConst() - v2.getConst());
-                break;
-            case '*':
-                res.setConst(v1.getConst() * v2.getConst());
-                break;
-            case '/':
-                res.setConst(v1.getConst() / v2.getConst());
-                break;
-            case '%':
-                res.setConst((int)v1.getConst() % (int)v2.getConst());
-                break;
+        static int xi;
+        static int yi;
+        static float xf;
+        static float yf;
+        if (res.isInt()) {
+            xi = v1.getInt();
+            yi = v2.getInt();
+        }
+        if (res.isFloat()) {
+            if (v1.isInt()) {
+                xf = v1.getInt();
+            } else {
+                xf = v1.getFloat();
+            }
+            if (v2.isInt()) {
+                xf = v2.getInt();
+            } else {
+                xf = v2.getFloat();
+            }
+        }
+        if (res.isInt()) {
+            switch (op) {
+                case '+':
+                    res.setInt(xi + yi);
+                    break;
+                case '-':
+                    res.setInt(xi - yi);
+                    break;
+                case '*':
+                    res.setInt(xi * yi);
+                    break;
+                case '/':
+                    res.setInt(xi / yi);
+                    break;
+                case '%':
+                    res.setInt(xi % yi);
+                    break;
+            }
+        } else {
+            switch (op) {
+                case '+':
+                    res.setFloat(xf + yf);
+                    break;
+                case '-':
+                    res.setFloat(xf - yf);
+                    break;
+                case '*':
+                    res.setFloat(xf * yf);
+                    break;
+                case '/':
+                    res.setFloat(xf / yf);
+                    break;
+            }
         }
         return res;
     }
