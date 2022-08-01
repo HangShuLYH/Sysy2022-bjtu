@@ -31,6 +31,7 @@ private:
     void comment(std::string s);
     std::string getFloatAddr(float x);
     void generateFloatConst();
+    void generateMemset();
 public:
     Codegen(IrVisitor &irVisitor, std::ostream& out) : irVisitor(irVisitor),out(out) {}
     void generateProgramCode();

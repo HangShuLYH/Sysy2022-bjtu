@@ -82,6 +82,24 @@ void Codegen::generateFloatConst() {
         out << "\t.4byte " << floatToInt(pair.first) << "\n";
     }
 }
+void Codegen::generateMemset() {
+    out << ".memset:\n";
+    out << "\tpush {r5}\n";
+    out << "\tmov r4,#0\n";
+    out << "\tmov r5,#0\n";
+    out << ".memset8:\n";
+    out << "\tsub r1,r1,#8\n";
+    out << "\tcmp r1,#0\n";
+    out << "\tblt .memset4\n";
+    out << "\tstrd r4,r5,[r0],r3\n";
+    out << "\tbne .memset8\n";;
+    out << "\tb .memset_end\n";
+    out << ".memset4:\n";
+    out << "\tstr r4,[r0],#4\n";
+    out << ".memset_end:\n";
+    out << "\tpop {r5}\n";
+    out << "\tbx lr\n";
+}
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
@@ -90,6 +108,7 @@ void Codegen::generateProgramCode() {
     out << ".global main\n";
     generateGlobalCode();
     out << ".section .text\n";
+    generateMemset();
     int removeCnt = 0;
     Function *entry_func = new Function(".init", new Type(TypeID::VOID));
     entry_func->pushBB(irVisitor.entry);
@@ -473,18 +492,36 @@ int Codegen::translateFunction(Function *function) {
     }
     for (BasicBlock *bb: function->basicBlocks) {
         for (Instruction *ir: bb->ir) {
-            if (!dynamic_cast<AllocIR *>(ir)) {
                 std::vector<Instr *> vec = translateInstr(ir);
                 for (int i = 0; i < vec.size(); ++i) {
                     bb->pushInstr(vec[i]);
                 }
-            }
         }
     }
     return stackSize;
 }
 
 std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
+    if (typeid(*ir) == typeid(AllocIIR)) {
+        AllocIIR* allocIir = dynamic_cast<AllocIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (allocIir->isArray) {
+            if (is_legal_immediate(stackMapping[allocIir->v] * 4) && is_legal_load_store_offset(stackMapping[allocIir->v] * 4)) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v] * 4));
+            } else {
+                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]*4);
+                for (Instr* instr: v) {
+                    vec.push_back(instr);
+                }
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(0), GR(13), GR(12)));
+            }
+            for (Instr* instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
+                vec.push_back(instr);
+            }
+            vec.push_back(new Bl(".memset"));
+        }
+        return vec;
+    }
     if (typeid(*ir) == typeid(GEPIR)) {
         GEPIR *gepIr = dynamic_cast<GEPIR *>(ir);
         std::vector<Instr *> vec;
