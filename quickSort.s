@@ -61,8 +61,8 @@ main:
 	vldr.32 s0,[r12,#0]
 	bl float_eq
 	bl assert_not
-	movw r12,#:lower16:EVAL1
-	movt r12,#:upper16:EVAL1
+	movw r12,#:lower16:EVAL2
+	movt r12,#:upper16:EVAL2
 	vldr.32 s1,[r12,#0]
 	movw r12,#:lower16:EVAL2
 	movt r12,#:upper16:EVAL2
@@ -295,7 +295,7 @@ float_eq:
 	bne .L26
 	beq .L27
 .L26:
-	mov r0,#17
+	mov r0,#1
 	add sp,sp, #8
 	vpop {s1}
 	pop {pc}
@@ -395,14 +395,14 @@ RADIUS:
 .f0:
 	.4byte 1092616192
 .align
+EVAL2:
+	.4byte 1107966695
+.align
 EVAL1:
 	.4byte 1119752446
 .align
 CONV1:
 	.4byte 1130954752
-.align
-EVAL2:
-	.4byte 1133856541
 .align
 CONV2:
 	.4byte 1166012416

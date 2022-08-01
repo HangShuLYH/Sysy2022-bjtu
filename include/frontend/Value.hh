@@ -198,12 +198,12 @@ public:
         }
         if (res.isFloat()) {
             if (v1.isInt()) {
-                xi = v1.getInt();
+                xf = v1.getInt();
             } else {
                 xf = v1.getFloat();
             }
             if (v2.isInt()) {
-                yi = v2.getInt();
+                yf = v2.getInt();
             } else {
                 yf = v2.getFloat();
             }
