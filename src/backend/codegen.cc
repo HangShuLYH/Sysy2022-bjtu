@@ -84,21 +84,19 @@ void Codegen::generateFloatConst() {
 }
 void Codegen::generateMemset() {
     out << ".memset:\n";
-    out << "\tpush {r5}\n";
-    out << "\tmov r4,#0\n";
-    out << "\tmov r5,#0\n";
-    out << "\tmov r3,#8\n";
+    out << "\tmov r2,#0\n";
+    out << "\tmov r3,#0\n";
+    out << "\tmov r4,#8\n";
     out << ".memset8:\n";
     out << "\tsub r1,r1,#8\n";
     out << "\tcmp r1,#0\n";
     out << "\tblt .memset4\n";
-    out << "\tstrd r4,r5,[r0],r3\n";
+    out << "\tstrd r2,r3,[r0],r4\n";
     out << "\tbne .memset8\n";;
     out << "\tb .memset_end\n";
     out << ".memset4:\n";
-    out << "\tstr r4,[r0],#4\n";
+    out << "\tstr r2,[r0],#4\n";
     out << ".memset_end:\n";
-    out << "\tpop {r5}\n";
     out << "\tbx lr\n";
 }
 void Codegen::generateProgramCode() {
@@ -507,10 +505,30 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         AllocIIR* allocIir = dynamic_cast<AllocIIR*>(ir);
         std::vector<Instr*> vec;
         if (allocIir->isArray) {
-            if (is_legal_immediate(stackMapping[allocIir->v] * 4) && is_legal_load_store_offset(stackMapping[allocIir->v] * 4)) {
-                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v] * 4));
+            if (is_legal_immediate(stackMapping[allocIir->v]) && is_legal_load_store_offset(stackMapping[allocIir->v])) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v]));
             } else {
-                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]*4);
+                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]);
+                for (Instr* instr: v) {
+                    vec.push_back(instr);
+                }
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(0), GR(13), GR(12)));
+            }
+            for (Instr* instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
+                vec.push_back(instr);
+            }
+            vec.push_back(new Bl(".memset"));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(AllocFIR)) {
+        AllocFIR* allocIir = dynamic_cast<AllocFIR*>(ir);
+        std::vector<Instr*> vec;
+        if (allocIir->isArray) {
+            if (is_legal_immediate(stackMapping[allocIir->v]) && is_legal_load_store_offset(stackMapping[allocIir->v])) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v]));
+            } else {
+                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]);
                 for (Instr* instr: v) {
                     vec.push_back(instr);
                 }

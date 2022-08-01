@@ -5,21 +5,19 @@
 .global main
 .section .text
 .memset:
-	push {r5}
-	mov r4,#0
-	mov r5,#0
-	mov r3,#8
+	mov r2,#0
+	mov r3,#0
+	mov r4,#8
 .memset8:
 	sub r1,r1,#8
 	cmp r1,#0
 	blt .memset4
-	strd r4,r5,[r0],r3
+	strd r2,r3,[r0],r4
 	bne .memset8
 	b .memset_end
 .memset4:
-	str r4,[r0],#4
+	str r2,[r0],#4
 .memset_end:
-	pop {r5}
 	bx lr
 .init:
 .L0:
@@ -34,7 +32,7 @@ main:
 	add r0,sp, #0
 	mov r1,#32
 	bl .memset
-	add r0,sp, #128
+	add r0,sp, #32
 	mov r1,#32
 	bl .memset
 	mov r0,#1
@@ -53,7 +51,7 @@ main:
 	str r0,[sp,#56]
 	mov r0,#8
 	str r0,[sp,#60]
-	add r0,sp, #256
+	add r0,sp, #64
 	mov r1,#32
 	bl .memset
 	mov r0,#1
@@ -72,7 +70,7 @@ main:
 	str r0,[sp,#88]
 	mov r0,#8
 	str r0,[sp,#92]
-	add r0,sp, #384
+	add r0,sp, #96
 	mov r1,#32
 	bl .memset
 	mov r0,#1
@@ -87,7 +85,7 @@ main:
 	str r0,[sp,#120]
 	mov r0,#8
 	str r0,[sp,#124]
-	add r0,sp, #512
+	add r0,sp, #128
 	mov r1,#32
 	bl .memset
 	ldr r0,[sp,#116]
