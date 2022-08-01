@@ -29,7 +29,8 @@ public:
 class LoadIRManager {
 public:
     static Instruction *getIR(Value *v, Value *t) {
-        if (v->getType()->isInt() || v->getType()->isIntPointer()) {
+        if (v->getType()->isInt() || v->getType()->isIntPointer() ||
+        v->getType()->isPointer()) {
             return new LoadIIR(v, t);
         } else {
             return new LoadFIR(v, t);
@@ -52,7 +53,8 @@ public:
         t.setVal(src);
         t.setType(src->getType());
         if (dst->getType()->isIntPointer() ||
-        dst->getType()->getContained()->isIntPointer()) {
+        dst->getType()->getContained()->isIntPointer() ||
+        src->getType()->isPointer()) {
             return new StoreIIR(dst, t);
         } else {
             return new StoreFIR(dst, t);
