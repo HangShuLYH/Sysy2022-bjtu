@@ -97,6 +97,7 @@ void Codegen::generateProgramCode() {
     std::map<Function *, std::set<GR>> usedGRMapping;
     std::map<Function *, std::set<FR>> usedFRMapping;
     std::map<Function *, int> spillCountMapping;
+    std::map<Function*, int> surplyFor8AlignMapping;
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
@@ -151,7 +152,10 @@ void Codegen::generateProgramCode() {
         usedFRMapping[function] = allUsedRegsFR;
         //make sp%8 == 0
         if ((function->stackSize + spill_size + allUsedRegsGR.size() * 4 + allUsedRegsFR.size() * 4) % 8 != 0) {
+            surplyFor8AlignMapping[function] = 4;
             function->stackSize += 4;
+        } else {
+            surplyFor8AlignMapping[function] = 0;
         }
     }
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
@@ -208,7 +212,7 @@ void Codegen::generateProgramCode() {
                     Load *load = dynamic_cast<Load *>(instr);
                     if (load->offset < 0) {
                         load->offset = -load->offset + usedGRMapping[function].size() * 4 +
-                                       usedFRMapping[function].size() * 4 + spillCountMapping[function];
+                                       usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(load->offset) || !is_legal_load_store_offset(load->offset)) {
                         block->getInstrs().erase(it);
@@ -225,7 +229,7 @@ void Codegen::generateProgramCode() {
                     Store *store = dynamic_cast<Store *>(instr);
                     if (store->offset < 0) {
                         store->offset = -store->offset + usedGRMapping[function].size() * 4 +
-                                        usedFRMapping[function].size() * 4 + spillCountMapping[function];
+                                        usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(store->offset) || !is_legal_load_store_offset(store->offset)) {
                         block->getInstrs().erase(it);
@@ -242,7 +246,7 @@ void Codegen::generateProgramCode() {
                     VLoad *vload = dynamic_cast<VLoad *>(instr);
                     if (vload->offset < 0) {
                         vload->offset = -vload->offset + usedGRMapping[function].size() * 4 +
-                                        usedFRMapping[function].size() * 4 + spillCountMapping[function];
+                                        usedFRMapping[function].size() * 4 + spillCountMapping[function]+ surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vload->offset) || !is_legal_load_store_offset(vload->offset)) {
                         block->getInstrs().erase(it);
@@ -259,7 +263,7 @@ void Codegen::generateProgramCode() {
                     VStore *vstore = dynamic_cast<VStore *>(instr);
                     if (vstore->offset < 0) {
                         vstore->offset = -vstore->offset + usedGRMapping[function].size() * 4 +
-                                         usedFRMapping[function].size() * 4 + spillCountMapping[function];
+                                         usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vstore->offset) || !is_legal_load_store_offset(vstore->offset)) {
                         block->getInstrs().erase(it);

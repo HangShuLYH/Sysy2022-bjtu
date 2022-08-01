@@ -3,17 +3,19 @@ int L;
 int N;
 
 
-int add(float a0[],float a1[], float a2[],float b0[],float b1[],float b2[],float c0[],float c1[],float c2[])
+int mul(float a0[],float a1[], float a2[],float b0[],float b1[],float b2[],float c0[],float c1[],float c2[])
 {
     int i;
     i=0;
-    while(i<M)
-    {
-        c0[i]=a0[i]+b0[i];
-        c1[i]=a1[i]+b1[i];
-        c2[i]=a2[i]+b2[i];
-        i=i+1;
-    }
+    c0[0]=a0[0]*b0[0]+a0[1]*b1[0]+a0[2]*b2[0];
+    c0[1]=a0[0]*b0[1]+a0[1]*b1[1]+a0[2]*b2[1];
+    c0[2]=a0[0]*b0[2]+a0[1]*b1[2]+a0[2]*b2[2];
+    c1[0]=a1[0]*b0[0]+a1[1]*b1[0]+a1[2]*b2[0];
+    c1[1]=a1[0]*b0[1]+a1[1]*b1[1]+a1[2]*b2[1];
+    c1[2]=a1[0]*b0[2]+a1[1]*b1[2]+a1[2]*b2[2];
+    c2[0]=a2[0]*b0[0]+a2[1]*b1[0]+a2[2]*b2[0];
+    c2[1]=a2[0]*b0[1]+a2[1]*b1[1]+a2[2]*b2[1];
+    c2[2]=a2[0]*b0[2]+a2[1]*b1[2]+a2[2]*b2[2];
 
     return 0;
 
@@ -37,7 +39,7 @@ int main()
         b2[i]=i;
         i=i+1;
     }
-    i=add( a0, a1,  a2, b0, b1, b2, c0, c1, c2);
+    i=mul( a0, a1,  a2, b0, b1, b2, c0, c1, c2);
     int x;
     while(i<N)
     {
@@ -46,21 +48,23 @@ int main()
         i=i+1;
     }
     x = 10;
-    putch(x);
     i=0;
+    putch(x);
     while(i<N)
     {
         x = c1[i];
         putint(x);
+
         i=i+1;
     }
     x = 10;
-    putch(x);
     i=0;
+    putch(x);
     while(i<N)
     {
         x = c2[i];
         putint(x);
+
         i=i+1;
     }
     x = 10;

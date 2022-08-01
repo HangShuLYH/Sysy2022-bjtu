@@ -142,7 +142,7 @@ main:
 	add r2,sp, #44
 	add r1,sp, #32
 	add r0,sp, #20
-	bl add
+	bl mul
 	str r0,[sp,#140]
 .L5:
 	ldr r1,[sp,#140]
@@ -178,10 +178,10 @@ main:
 .L7:
 	mov r0,#10
 	str r0,[sp,#144]
-	ldr r0,[sp,#144]
-	bl putch
 	mov r0,#0
 	str r0,[sp,#140]
+	ldr r0,[sp,#144]
+	bl putch
 .L8:
 	ldr r1,[sp,#140]
 	movw r0,#:lower16:N
@@ -216,10 +216,10 @@ main:
 .L10:
 	mov r0,#10
 	str r0,[sp,#144]
-	ldr r0,[sp,#144]
-	bl putch
 	mov r0,#0
 	str r0,[sp,#140]
+	ldr r0,[sp,#144]
+	bl putch
 .L11:
 	ldr r1,[sp,#140]
 	movw r0,#:lower16:N
@@ -260,11 +260,11 @@ main:
 	add sp,sp, #148
 	pop {pc}
 @ spilled Size: 0
-@ stack Size: 40
-add:
+@ stack Size: 44
+mul:
 	push {lr}
-	vpush {s1}
-	sub sp,sp, #40
+	vpush {s1,s2}
+	sub sp,sp, #44
 .L14:
 	str r0,[sp,#0]
 	str r1,[sp,#4]
@@ -272,109 +272,220 @@ add:
 	str r3,[sp,#12]
 	mov r0,#0
 	str r0,[sp,#36]
-.L15:
-	ldr r1,[sp,#36]
-	movw r0,#:lower16:M
-	movt r0,#:upper16:M
-	ldr r0,[r0,#0]
-	cmp r1,r0
-	mov r0,#0
-	movlt r0,#1
-	cmp r0,#0
-	bne .L16
-	beq .L17
-.L16:
-	ldr r2,[sp,#56]
-	ldr r1,[sp,#36]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r3,[sp,#0]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	ldr r0,[sp,#64]
+	ldr r1,[sp,#0]
 	vldr.32 s1,[r1,#0]
-	ldr r3,[sp,#12]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	ldr r1,[sp,#12]
 	vldr.32 s0,[r1,#0]
-	vadd.f32 s0,s1,s0
-	vstr.32 s0,[r0,#0]
-	ldr r2,[sp,#60]
-	ldr r1,[sp,#36]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r3,[sp,#4]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #4
 	vldr.32 s1,[r1,#0]
-	ldr r3,[sp,#48]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	ldr r1,[sp,#56]
 	vldr.32 s0,[r1,#0]
-	vadd.f32 s0,s1,s0
-	vstr.32 s0,[r0,#0]
-	ldr r2,[sp,#64]
-	ldr r1,[sp,#36]
-	mov r0,#1
-	mul r1,r1,r0
-	mov r0,#0
-	add r1,r1,r0
-	mov r0,#4
-	mla r0,r0,r1,r2
-	ldr r3,[sp,#8]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #8
 	vldr.32 s1,[r1,#0]
-	ldr r3,[sp,#52]
-	ldr r2,[sp,#36]
-	mov r1,#1
-	mul r2,r2,r1
-	mov r1,#0
-	add r2,r2,r1
-	mov r1,#4
-	mla r1,r1,r2,r3
+	ldr r1,[sp,#60]
 	vldr.32 s0,[r1,#0]
-	vadd.f32 s0,s1,s0
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
 	vstr.32 s0,[r0,#0]
-	ldr r1,[sp,#36]
-	mov r0,#1
-	add r0,r1,r0
-	str r0,[sp,#36]
-	b .L15
-.L17:
+	ldr r0,[sp,#64]
+	add r0,r0, #4
+	ldr r1,[sp,#0]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#64]
+	add r0,r0, #8
+	ldr r1,[sp,#0]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#0]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#68]
+	ldr r1,[sp,#4]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#68]
+	add r0,r0, #4
+	ldr r1,[sp,#4]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#68]
+	add r0,r0, #8
+	ldr r1,[sp,#4]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#4]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#72]
+	ldr r1,[sp,#8]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#72]
+	add r0,r0, #4
+	ldr r1,[sp,#8]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #4
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
+	ldr r0,[sp,#72]
+	add r0,r0, #8
+	ldr r1,[sp,#8]
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#12]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s2,s1,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #4
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#56]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s2,s2,s0
+	ldr r1,[sp,#8]
+	add r1,r1, #8
+	vldr.32 s1,[r1,#0]
+	ldr r1,[sp,#60]
+	add r1,r1, #8
+	vldr.32 s0,[r1,#0]
+	vmul.f32 s0,s1,s0
+	vadd.f32 s0,s2,s0
+	vstr.32 s0,[r0,#0]
 	mov r0,#0
-	add sp,sp, #40
-	vpop {s1}
+	add sp,sp, #44
+	vpop {s1,s2}
 	pop {pc}
