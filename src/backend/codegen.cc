@@ -84,6 +84,7 @@ void Codegen::generateFloatConst() {
 }
 void Codegen::generateMemset() {
     out << ".memset:\n";
+    out << "\tpush {r4}\n";
     out << "\tmov r2,#0\n";
     out << "\tmov r3,#0\n";
     out << "\tmov r4,#8\n";
@@ -97,6 +98,7 @@ void Codegen::generateMemset() {
     out << ".memset4:\n";
     out << "\tstr r2,[r0],#4\n";
     out << ".memset_end:\n";
+    out << "\tpop {r4}\n";
     out << "\tbx lr\n";
 }
 void Codegen::generateProgramCode() {
