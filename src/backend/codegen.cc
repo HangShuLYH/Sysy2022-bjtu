@@ -87,6 +87,7 @@ void Codegen::generateMemset() {
     out << "\tpush {r5}\n";
     out << "\tmov r4,#0\n";
     out << "\tmov r5,#0\n";
+    out << "\tmov r3,#8\n";
     out << ".memset8:\n";
     out << "\tsub r1,r1,#8\n";
     out << "\tcmp r1,#0\n";
