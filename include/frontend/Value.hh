@@ -198,14 +198,14 @@ public:
         }
         if (res.isFloat()) {
             if (v1.isInt()) {
-                xf = v1.getInt();
+                xi = v1.getInt();
             } else {
                 xf = v1.getFloat();
             }
             if (v2.isInt()) {
-                xf = v2.getInt();
+                yi = v2.getInt();
             } else {
-                xf = v2.getFloat();
+                yf = v2.getFloat();
             }
         }
         if (res.isInt()) {
