@@ -2,7 +2,7 @@
 #include "driver.hh"
 #include "syntax_tree.hh"
 #include "IrVisitor.hh"
-#include "errors/errors.hh"
+#include "errors.hh"
 #include "MIRBuilder.hh"
 #include "codegen.hh"
 
