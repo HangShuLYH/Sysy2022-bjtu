@@ -235,12 +235,12 @@ void Codegen::generateProgramCode() {
                                        usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(load->offset) || !is_legal_load_store_offset(load->offset)) {
-                        block->getInstrs().erase(it);
-                        block->getInstrs().insert(it, new Load(load->dst, GR(12), 0));
-                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), load->base));
+                        it = block->getInstrs().erase(it);
+                        it = block->getInstrs().insert(it, new Load(load->dst, GR(12), 0));
+                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), load->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), load->offset);
-                        for (auto item = vv.rbegin(); item != vv.rend(); it++) {
-                            block->getInstrs().insert(it, *item);
+                        for (auto item = vv.rbegin(); item != vv.rend(); item++) {
+                            it = block->getInstrs().insert(it, *item);
                         }
                         it = it + 1 + vv.size();
                     }
@@ -252,12 +252,12 @@ void Codegen::generateProgramCode() {
                                         usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(store->offset) || !is_legal_load_store_offset(store->offset)) {
-                        block->getInstrs().erase(it);
-                        block->getInstrs().insert(it, new Store(store->src, GR(12), 0));
-                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), store->base));
+                        it = block->getInstrs().erase(it);
+                        it = block->getInstrs().insert(it, new Store(store->src, GR(12), 0));
+                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), store->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), store->offset);
-                        for (auto item = vv.rbegin(); item != vv.rend(); it++) {
-                            block->getInstrs().insert(it, *item);
+                        for (auto item = vv.rbegin(); item != vv.rend(); item++) {
+                            it = block->getInstrs().insert(it, *item);
                         }
                         it = it + 1 + vv.size();
                     }
@@ -269,12 +269,12 @@ void Codegen::generateProgramCode() {
                                         usedFRMapping[function].size() * 4 + spillCountMapping[function]+ surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vload->offset) || !is_legal_load_store_offset(vload->offset)) {
-                        block->getInstrs().erase(it);
-                        block->getInstrs().insert(it, new VLoad(vload->dst, GR(12), 0));
-                        block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), vload->base));
+                        it = block->getInstrs().erase(it);
+                        it = block->getInstrs().insert(it, new VLoad(vload->dst, GR(12), 0));
+                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), vload->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), vload->offset);
-                        for (auto item = vv.rbegin(); item != vv.rend(); it++) {
-                            block->getInstrs().insert(it, *item);
+                        for (auto item = vv.rbegin(); item != vv.rend(); item++) {
+                            it = block->getInstrs().insert(it, *item);
                         }
                         it = it + 1 + vv.size();
                     }
@@ -286,13 +286,13 @@ void Codegen::generateProgramCode() {
                                          usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vstore->offset) || !is_legal_load_store_offset(vstore->offset)) {
-                        block->getInstrs().erase(it);
-                        block->getInstrs().insert(it, new VStore(vstore->src, GR(12), 0));
-                        block->getInstrs().insert(it,
+                        it = block->getInstrs().erase(it);
+                        it = block->getInstrs().insert(it, new VStore(vstore->src, GR(12), 0));
+                        it = block->getInstrs().insert(it,
                                                   new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), vstore->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), vstore->offset);
-                        for (auto item = vv.rbegin(); item != vv.rend(); it++) {
-                            block->getInstrs().insert(it, *item);
+                        for (auto item = vv.rbegin(); item != vv.rend(); item++) {
+                            it = block->getInstrs().insert(it, *item);
                         }
                         it = it + 1 + vv.size();
                     }
