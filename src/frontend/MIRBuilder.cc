@@ -309,6 +309,12 @@ void MIRBuilder::removeDuplicate(){
                     preNB->setSucc(nowNB->getSucc());
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
+                    for (auto succNB:nowNB->getSucc()) {
+                        std::set<BasicBlock*> preBBs(succNB->getPre());
+                        preBBs.erase(preBBs.find(nowNB));
+                        preBBs.insert(preNB);
+                        succNB->setPre(preBBs);
+                    }
                     bbs[j] = preNB;
                     bbs.erase(bbs.begin()+j);
                 }

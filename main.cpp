@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
     std::string outputFileName = "a.s";
     bool printAST = false;
     bool printIR = false;
-    bool optimize_O1 = false;
+    bool optimize_O2 = false;
     for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "-o") {
             outputFileName = argv[i + 1];
@@ -39,8 +39,8 @@ int main(int argc, char *argv[]) {
             printIR = true;
         } else if (std::string(argv[i]) == "-tree") {
             printAST = true;
-        } else if (std::string(argv[i]) == "-O1") {
-            optimize_O1 = true;
+        } else if (std::string(argv[i]) == "-O2") {
+            optimize_O2 = true;
         } else {
             inputFileName = argv[i];
         }

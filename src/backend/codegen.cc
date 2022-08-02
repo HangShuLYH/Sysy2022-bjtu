@@ -1067,7 +1067,15 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                     if (!v.getVal()) {
                         v.setVal(new VarValue());
                         gRegMapping[v.getVal()] = gr_cnt;
-                        tempVec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                        if (is_legal_load_store_offset(v.getInt()) && is_legal_immediate(v.getInt())) {
+                            tempVec.push_back(new MovImm(getGR(v.getVal()), v.getInt()));
+                        } else {
+                            std::vector<Instr *> vv = setIntValue(GR(12), v.getInt());
+                            for (Instr *instr: vv) {
+                                tempVec.push_back(instr);
+                            }
+                            tempVec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(v.getVal()), GR(13), GR(12)));
+                        }
                     } else {
                         if (gRegMapping.count(v.getVal()) != 0) {
                             tempVec.push_back(new MoveReg(GR(gr_cnt), getGR(v.getVal())));
