@@ -718,67 +718,44 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
     if (typeid(*ir) == typeid(StoreFIR)) {
         StoreFIR *storeIr = dynamic_cast<StoreFIR *>(ir);
         std::vector<Instr *> vec;
+        FR src;
         if (!storeIr->src.getVal()) {
-            GR src;
-            Value *val = new VarValue();
+            Value* val = new VarValue();
             storeIr->src.setVal(val);
-            src = getGR(val);
-            if (storeIr->src.isInt()) {
-                storeIr->src.setFloat(storeIr->src.getInt());
-            }
-            std::vector<Instr *> vv = setFloatValue(src, storeIr->src.getFloat());
-            for (Instr *instr: vv) {
-                vec.push_back(instr);
-            }
-            if (storeIr->dst->is_Global()) {
-                Value *v = new VarValue();
-                GR base = getGR(v);
-                vec.push_back(new MoveWFromSymbol(base, storeIr->dst->getName()));
-                vec.push_back(new MoveTFromSymbol(base, storeIr->dst->getName()));
-                vec.push_back(new Store(src, base, 0));
-            } else {
-                if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst]) &&
-                        is_legal_immediate(stackMapping[storeIr->dst])
-                        || stackMapping[storeIr->dst] < 0) {
-                        vec.push_back(new Store(src, GR(13), stackMapping[storeIr->dst]));
-                    } else {
-                        std::vector<Instr *> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
-                        for (Instr *instr: v) {
-                            vec.push_back(instr);
-                        }
-                        vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), GR(13)));
-                        vec.push_back(new Store(src, GR(12), 0));
-                    }
-                } else {
-                    vec.push_back(new Store(src, getGR(storeIr->dst), 0));
-                }
-            }
+            src = getFR(val);
+            vec.push_back(new MoveWFromSymbol(GR(12),getFloatAddr(storeIr->src.getFloat())));
+            vec.push_back(new MoveTFromSymbol(GR(12),getFloatAddr(storeIr->src.getFloat())));
+            vec.push_back(new VLoad(src,GR(12),0));
         } else {
-            FR src = getFR(storeIr->src.getVal());
-            if (storeIr->dst->is_Global()) {
-                Value *v = new VarValue();
-                GR base = getGR(v);
-                vec.push_back(new MoveWFromSymbol(base, storeIr->dst->getName()));
-                vec.push_back(new MoveTFromSymbol(base, storeIr->dst->getName()));
-                vec.push_back(new VStore(src, base, 0));
+            if (fRegMapping.count(storeIr->src.getVal()) != 0){
+                src = getFR(storeIr->src.getVal());
             } else {
-                if (stackMapping.count(storeIr->dst) != 0) {
-                    if (is_legal_load_store_offset(stackMapping[storeIr->dst])
-                        && is_legal_immediate(stackMapping[storeIr->dst])
-                        || stackMapping[storeIr->dst] < 0) {
-                        vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
-                    } else {
-                        std::vector<Instr *> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
-                        for (Instr *instr: v) {
-                            vec.push_back(instr);
-                        }
-                        vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), GR(13)));
-                        vec.push_back(new VStore(src, GR(12), 0));
-                    }
+                stackMapping[storeIr->dst] = stackMapping[storeIr->src.getVal()];
+                return vec;
+            }
+        }
+        if (storeIr->dst->is_Global()) {
+            Value *v = new VarValue();
+            GR base = getGR(v);
+            vec.push_back(new MoveWFromSymbol(base, storeIr->dst->getName()));
+            vec.push_back(new MoveTFromSymbol(base, storeIr->dst->getName()));
+            vec.push_back(new VStore(src, base, 0));
+        } else {
+            if (stackMapping.count(storeIr->dst) != 0) {
+                if (is_legal_load_store_offset(stackMapping[storeIr->dst]) &&
+                    is_legal_immediate(stackMapping[storeIr->dst])
+                    || stackMapping[storeIr->dst] < 0) {
+                    vec.push_back(new VStore(src, GR(13), stackMapping[storeIr->dst]));
                 } else {
-                    vec.push_back(new VStore(src, getGR(storeIr->dst), 0));
+                    std::vector<Instr *> v = setIntValue(GR(12), stackMapping[storeIr->dst]);
+                    for (Instr *instr: v) {
+                        vec.push_back(instr);
+                    }
+                    vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), GR(13)));
+                    vec.push_back(new VStore(src, GR(12), 0));
                 }
+            } else {
+                vec.push_back(new VStore(src, getGR(storeIr->dst), 0));
             }
         }
         return vec;
