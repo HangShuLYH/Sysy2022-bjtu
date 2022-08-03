@@ -6,26 +6,38 @@
 #define SYSY2022_BJTU_INSTRUCTION_HH
 #include <string>
 #include <iostream>
+#include <map>
 #include "Value.hh"
 
 enum class OP{
     NEG,
     NOT,
 };
-class Instruction{
+class Instruction : public User {
 public:
+    bool deleted = false;
     Instruction() {}
     virtual void print(std::ostream& out) = 0;
     virtual ~Instruction(){}
+    void deleteIR() { deleted = true; }
+    bool isDeleted() { return deleted; }
 };
 class AllocIR: public Instruction {
 public:
     bool isArray = false;
     int arrayLen = 1;
     Value* v;
-    AllocIR(Value* v):v(v){}
+    AllocIR(Value* v):v(v){
+        Use* use = new Use(v, this, 0);
+        // v->addUse(use);
+        this->Operands.push_back(use);
+    }
     AllocIR(Value* v, int arrayLen):v(v),arrayLen(arrayLen) {
         this->isArray = true;
+
+        Use* use = new Use(v, this, 0);
+        // v->addUse(use);
+        this->Operands.push_back(use);
     }
     virtual void print(std::ostream& out) = 0;
 };
@@ -57,7 +69,14 @@ class LoadIR:public Instruction{
 public:
     Value* v1;
     Value* v2;
-    LoadIR(Value* v1,Value* v2):v1(v1),v2(v2){}
+    LoadIR(Value* v1,Value* v2):v1(v1),v2(v2){
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+    }
     virtual void print(std::ostream& out) = 0;
 };
 class LoadIIR:public LoadIR{
@@ -84,7 +103,15 @@ class StoreIR:public Instruction{
 public:
     Value* dst;
     TempVal src;
-    StoreIR(Value* dst,TempVal src):dst(dst),src(src){}
+    StoreIR(Value* dst,TempVal src):dst(dst),src(src){
+        Use* use2 = new Use(dst, this, 0);
+        Use* use3 = new Use(&this->src, this, 1);
+        // dst->addUse(use2);
+        // this->src.addUse(use3);
+        // this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
+    }
     virtual void print(std::ostream& out) = 0;
 };
 class StoreIIR:public StoreIR{
@@ -126,6 +153,13 @@ public:
     CastInt2FloatIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -141,6 +175,13 @@ public:
     CastFloat2IntIR(Value* v1,Value* v2){
         this->v1 = v1;
         this->v2 = v2;
+
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -154,13 +195,24 @@ public:
     TempVal res;
     TempVal left;
     TempVal right;
+    std::string op;
     virtual ~ArithmeticIR(){}
     virtual void print(std::ostream& out) = 0;
-    ArithmeticIR(TempVal res,TempVal left,TempVal right): res(res),left(left),right(right) {}
+    ArithmeticIR(TempVal res,TempVal left,TempVal right): res(res),left(left),right(right) {
+        Use* use1 = new Use(&this->res, this, 0);
+        Use* use2 = new Use(&this->left, this, 1);
+        Use* use3 = new Use(&this->right, this, 2);
+        // this->res.addUse(use1);
+        // this->left.addUse(use2);
+        // this->right.addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
+    }
 };
 class AddIIR:public ArithmeticIR{
 public:
-    AddIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    AddIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "+"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = AddI ";
@@ -181,6 +233,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "+";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -194,7 +248,7 @@ public:
 
 class SubIIR:public ArithmeticIR{
 public:
-    SubIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    SubIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "-"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = SubI ";
@@ -215,6 +269,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "-";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -227,7 +283,7 @@ public:
 };
 class MulIIR:public ArithmeticIR{
 public:
-    MulIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    MulIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "*"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = MulI ";
@@ -248,6 +304,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "*";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -260,7 +318,7 @@ public:
 };
 class DivIIR:public ArithmeticIR{
 public:
-    DivIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    DivIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "/"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = DivI ";
@@ -281,6 +339,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "/";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -293,7 +353,7 @@ public:
 };
 class ModIR:public ArithmeticIR{
 public:
-    ModIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    ModIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "%"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = Mod ";
@@ -308,7 +368,14 @@ public:
     TempVal res;
     TempVal v;
     OP op;
-    UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){}
+    UnaryIR(TempVal res,TempVal v,OP op): res(res), v(v), op(op){
+        Use* use1 = new Use(&this->res, this, 0);
+        Use* use2 = new Use(&this->v, this, 1);
+        // this->res.addUse(use1);
+        // this->v.addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+    }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = ";
@@ -337,7 +404,7 @@ public:
 };
 class LTIIR:public ArithmeticIR{
 public:
-    LTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    LTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){this->op = "<";}
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = LTI ";
@@ -358,6 +425,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "<";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -370,7 +439,7 @@ public:
 };
 class LEIIR:public ArithmeticIR{
 public:
-    LEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    LEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "<="; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = LEI ";
@@ -391,6 +460,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "<=";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -403,7 +474,7 @@ public:
 };
 class GTIIR:public ArithmeticIR{
 public:
-    GTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    GTIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = ">"; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = GTI ";
@@ -424,6 +495,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = ">";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -436,7 +509,7 @@ public:
 };
 class GEIIR:public ArithmeticIR{
 public:
-    GEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    GEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = ">="; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = GEI ";
@@ -457,6 +530,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = ">=";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -469,7 +544,7 @@ public:
 };
 class EQUIIR:public ArithmeticIR{
 public:
-    EQUIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    EQUIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "=="; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = EQUI ";
@@ -490,6 +565,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "==";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -502,7 +579,7 @@ public:
 };
 class NEIIR:public ArithmeticIR{
 public:
-    NEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){}
+    NEIIR(TempVal res,TempVal left,TempVal right) : ArithmeticIR(res,left,right){ this->op = "!="; }
     void print(std::ostream& out) override final{
         res.print(out);
         out << " = NEI ";
@@ -523,6 +600,8 @@ public:
             this->right.setType(new Type(TypeID::FLOAT));
             this->right.setFloat(right.getInt());
         }
+
+        this->op = "!=";
     }
     void print(std::ostream& out) override final{
         res.print(out);
@@ -556,14 +635,30 @@ public:
     bool useFloat = false;
     ReturnIR(Value* v){
         this->v = v;
+
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        // v->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     ReturnIR(int val) {
         retInt = val;
         useInt = true;
+
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     ReturnIR(float val){
         retFloat = val;
         useFloat = true;
+
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(v, this, 0);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
     }
     void print(std::ostream& out) override final{
         out << "ret ";
@@ -594,7 +689,13 @@ public:
     BasicBlock* falseTarget;
     Value* cond;
     BranchIR(BasicBlock* trueTarget,BasicBlock* falseTarget,Value* cond) :
-    trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {}
+            trueTarget(trueTarget),falseTarget(falseTarget),cond(cond) {
+        Use* use1 = new Use(nullptr, this, 0);
+        Use* use2 = new Use(cond, this, 0);
+        // cond->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+    }
     void print(std::ostream& out) override final{
         out << "goto ";
         cond->print(out);
@@ -619,11 +720,32 @@ public:
         this->v1 = v1;
         this->v2 = v2;
         this->v3 = v3;
+
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        Use* use3 = new Use(v3, this, 2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        // v3->addUse(use3);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
     }
     GEPIR(Value* v1,Value* v2,int arrayLen){
         this->v1 = v1;
         this->v2 = v2;
         this->arrayLen = arrayLen;
+
+        Use* use1 = new Use(v1, this, 0);
+        Use* use2 = new Use(v2, this, 1);
+        Use* use3 = new Use(v3, this, 2);
+        // v1->addUse(use1);
+        // v2->addUse(use2);
+        this->Operands.push_back(use1);
+        this->Operands.push_back(use2);
+        this->Operands.push_back(use3);
+
+        v1->setArray(true);
     }
     void print(std::ostream& out) override final{
         v1->print(out);
@@ -647,11 +769,30 @@ public:
     CallIR(Function* func,std::vector<TempVal> args) {
         this->func = func;
         this->args = args;
+
+        Use* use = new Use(returnVal, this, 0);
+        this->Operands.push_back(use);
+
+        for(int i(0); i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i + 1);
+            // this->args[i].addUse(use);
+            this->Operands.push_back(use);
+        }
     }
     CallIR(Function* func,std::vector<TempVal> args, Value* v){
         this->func = func;
         this->args = args;
         this->returnVal = v;
+
+        Use* use = new Use(returnVal, this, 0);
+        // returnVal->addUse(use);
+        this->Operands.push_back(use);
+
+        for(int i(0); i < args.size(); i++) {
+            Use* use = new Use(&this->args[i], this, i + 1);
+            // this->args[i].addUse(use);
+            this->Operands.push_back(use);
+        }
     }
     void print(std::ostream& out) override final{
         if (returnVal) {
@@ -679,4 +820,34 @@ public:
     }
 };
 
+class PhiIR : public Instruction {
+public:
+    Value* dst;
+    std::map<BasicBlock*, Value*> params;
+    PhiIR(std::vector<BasicBlock*> bbs, Value* var) {
+        for(auto& bb : bbs) {
+            params[bb] = var;
+        }
+        dst = var;
+
+        Use* use = new Use(dst, this, 0);
+        // dst->addUse(use);
+        this->Operands.push_back(use);
+    }
+    void print(std::ostream& out) override final{
+        Operands[0]->getVal()->print(out);
+        out << " = Phi(";
+        for(auto iter(params.begin()); iter != params.end(); iter++) {
+            // out << iter->first->name << " ";
+            if(!iter->second) {
+                out << "nullptr";
+            }
+            else iter->second->print(out);
+            out << ", ";
+        }
+        out << "\b\b)" << std::endl;
+    }
+};
+
 #endif //SYSY2022_BJTU_INSTRUCTION_HH
+

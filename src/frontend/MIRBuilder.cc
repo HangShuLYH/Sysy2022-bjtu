@@ -4,6 +4,7 @@
 //Created by lin 5.22
 #include "MIRBuilder.hh"
 #include "Function.hh"
+#include <algorithm>
 
 std::vector<BasicBlock*> MIRBuilder::relatedCond(std::vector<BasicBlock*> bbs, BasicBlock* firstBB, BasicBlock* nextAB){
     BasicBlock* lastOrBB = nextAB;
@@ -310,9 +311,9 @@ void MIRBuilder::removeDuplicate(){
                     preNB->ir.pop_back();
                     preNB->ir.insert(preNB->ir.end(), nowNB->ir.begin(), nowNB->ir.end());
                     for (auto succNB:nowNB->getSucc()) {
-                        std::set<BasicBlock*> preBBs(succNB->getPre());
-                        preBBs.erase(preBBs.find(nowNB));
-                        preBBs.insert(preNB);
+                        std::vector<BasicBlock*> preBBs(succNB->getPre());
+                        preBBs.erase(find(preBBs.begin(), preBBs.end(), nowNB));
+                        preBBs.push_back(preNB);
                         succNB->setPre(preBBs);
                     }
                     bbs[j] = preNB;

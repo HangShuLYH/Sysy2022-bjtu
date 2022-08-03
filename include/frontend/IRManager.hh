@@ -30,7 +30,7 @@ class LoadIRManager {
 public:
     static Instruction *getIR(Value *v, Value *t) {
         if (v->getType()->isInt() || v->getType()->isIntPointer() ||
-        v->getType()->isPointer()) {
+            v->getType()->isPointer()) {
             return new LoadIIR(v, t);
         } else {
             return new LoadFIR(v, t);
@@ -42,7 +42,7 @@ class StoreIRManager {
 public:
     static Instruction *getIR(Value *dst, TempVal src) {
         if (dst->getType()->isIntPointer() ||
-        dst->getType()->getContained()->isIntPointer()) {
+            dst->getType()->getContained()->isIntPointer()) {
             return new StoreIIR(dst, src);
         } else {
             return new StoreFIR(dst, src);
@@ -53,8 +53,8 @@ public:
         t.setVal(src);
         t.setType(src->getType());
         if (dst->getType()->isIntPointer() ||
-        dst->getType()->getContained()->isIntPointer() ||
-        src->getType()->isPointer()) {
+            dst->getType()->getContained()->isIntPointer() ||
+            src->getType()->isPointer()) {
             return new StoreIIR(dst, t);
         } else {
             return new StoreFIR(dst, t);

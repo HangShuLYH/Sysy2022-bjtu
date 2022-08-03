@@ -1022,7 +1022,7 @@ void IrVisitor::visit(FuncRParams *funcRParams) {
         funcRParams->expList[i]->accept(*this);
         Function* f = call_func_stack.top();
         if (f->params[i]->getType()->isInt() && tempVal.getType()->isFloat() ||
-        f->params[i]->getType()->isFloat() && tempVal.getType()->isInt()) {
+            f->params[i]->getType()->isFloat() && tempVal.getType()->isInt()) {
             if (tempVal.getVal()) {
                 Value *v = new VarValue("", f->params[i]->getType(), isGlobal(),
                                         isGlobal() ? cnt++ : cur_func->varCnt++, true);

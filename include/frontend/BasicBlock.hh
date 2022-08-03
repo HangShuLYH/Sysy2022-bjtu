@@ -15,6 +15,8 @@ public:
     BasicBlock* parent;
     std::vector<Value*> vars;
     std::string name;
+    std::set<Value*> originVals;
+
     BasicBlock(std::string name):name(name){}
     BasicBlock(BasicBlock* parent,std::string func_name,int cnt) {
         this->parent = parent;
@@ -23,26 +25,43 @@ public:
     void pushIr(Instruction* instruction) {
         ir.push_back(instruction);
     }
+    std::vector<Instruction*>& getIr() {
+        return ir;
+    }
     void pushVar(Value *v) {
         vars.push_back(v);
     }
+    void insertDomFrontier(BasicBlock* bb) {
+        domFrontier.insert(bb);
+    }
+    std::set<BasicBlock*> getDomFrontier() {
+        return domFrontier;
+    }
+
     virtual void print(std::ostream& out) = 0;
     virtual void clear() = 0;
     virtual ~BasicBlock(){}
-    void pushPre(BasicBlock* nb){preBBs.insert(nb);}
-    void pushSucc(BasicBlock* nb){succBBs.insert(nb);}
-    void setPre(std::set<BasicBlock*> pre){preBBs = pre;}
-    void setSucc(std::set<BasicBlock*> succ){succBBs = succ;}
-    std::set<BasicBlock*> getPre(){return preBBs;}
-    std::set<BasicBlock*> getSucc(){return succBBs;}
+    void pushPre(BasicBlock* nb){preBBs.push_back(nb);}
+    void pushSucc(BasicBlock* nb){succBBs.push_back(nb);}
+    void setPre(std::vector<BasicBlock*> pre){preBBs = pre;}
+    void setSucc(std::vector<BasicBlock*> succ){succBBs = succ;}
+    std::vector<BasicBlock*> getPre(){return preBBs;}
+    std::vector<BasicBlock*> getSucc(){return succBBs;}
+    void setIdom(BasicBlock* idom) { this->idom = idom; }
+    BasicBlock* getIdom() { return idom; }
+    void pushDomTreeSuccNode(BasicBlock* bb) { this->domTreeSuccNode.push_back(bb); }
+    std::vector<BasicBlock*> getDomTreeSuccNode() { return domTreeSuccNode; }
 
     //add for codegen
     void pushInstr(Instr* instr) {instrs.push_back(instr);}
     std::vector<Instr*>& getInstrs() {return instrs;}
 private:
-    std::set<BasicBlock*> preBBs;
-    std::set<BasicBlock*> succBBs;
+    std::vector<BasicBlock*> preBBs;
+    std::vector<BasicBlock*> succBBs;
     std::vector<Instr*> instrs;
+    std::set<BasicBlock*> domFrontier;
+    BasicBlock* idom = nullptr;
+    std::vector<BasicBlock*> domTreeSuccNode;
 };
 class NormalBlock:public BasicBlock{
 public:

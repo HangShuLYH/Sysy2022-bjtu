@@ -2,7 +2,7 @@
 add_library(
         driver
         driver.cc
-        IrVisitor.cc)
+        IrVisitor.cc Value.cc)
 
 add_library(
         lexer STATIC

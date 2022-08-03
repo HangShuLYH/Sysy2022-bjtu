@@ -7,7 +7,14 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <set>
 #include "syntax_tree.hh"
+
+class Value;
+class Use;
+class User;
+
 enum TypeID {
     INT,
     FLOAT,
@@ -67,6 +74,24 @@ private:
     Type* contained;
 };
 
+class BasicBlock;
+class Use {
+private:
+    Value* Val;
+    User *U;
+    int arg;
+    BasicBlock* bb;
+public:
+    Value* getVal() { return Val; }
+    User* getUser() { return U; }
+    int getArg() { return arg; }
+    BasicBlock* getBB() { return bb; }
+    void setVal(Value* Val) { this->Val = Val; }
+    Use(Value* Val, User* U, int arg);
+    Use(Value* Val, User* U, BasicBlock* bb);
+    Use();
+};
+
 class Value{
 public:
     Value(){}
@@ -92,6 +117,13 @@ public:
     int getNum() {return num;}
     std::vector<int> getArrayDims() {return arrayDims;}
     Type* getType() {return type;}
+    void addUse(Use* U) {
+        this->Uses.insert(U);
+    }
+    void killUse(Use* U) { this->Uses.erase(U); }
+    void clearUses() { this->Uses.clear(); }
+    std::set<Use*> getUses() { return Uses; }
+    void setNum(int num) { this->num = num; }
 protected:
     int num;
     std::string name;
@@ -100,7 +132,7 @@ protected:
     bool isArray = false;
     std::vector<int> arrayDims;
     int arrayLen = 0;
-
+    std::set<Use*> Uses;
 };
 class VarValue: public Value{
 public:
@@ -131,7 +163,7 @@ public:
         if(isArray) this->arrayLen++;
     }
 };
-struct TempVal {
+struct TempVal : public Value{
 private:
     int valInt;
     float valFloat;
@@ -348,6 +380,15 @@ private:
     std::vector<int> intValList;
     std::vector<float> floatValList;
 
+};
+
+class User : public Value {
+protected:
+    std::vector<Use*> Operands;
+public:
+    User() {;}
+    void addOperand(Use* Operand) { Operands.push_back(Operand); }
+    std::vector<Use*>& getOperands() { return this->Operands; }
 };
 
 #endif

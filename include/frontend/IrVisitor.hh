@@ -50,7 +50,7 @@ public:
         functions.push_back(new Function("getfarray",typeInt,
                                          {new VarValue("",new Type(TypeID::POINTER,typeFloat), false,0)}));
         functions.push_back(new Function("putint",typeVoid,{
-            new VarValue("",typeInt,false,0)
+                new VarValue("",typeInt,false,0)
         }));
         functions.push_back(new Function("putch",typeVoid,{
                 new VarValue("",typeInt,false,0)
@@ -59,8 +59,8 @@ public:
                 new VarValue("",typeFloat,false,0)
         }));
         functions.push_back(new Function("putarray",typeVoid,{
-            new VarValue("",typeInt, false,0),
-            new VarValue("",new Type(TypeID::POINTER,typeInt), false,1)
+                new VarValue("",typeInt, false,0),
+                new VarValue("",new Type(TypeID::POINTER,typeInt), false,1)
         }));
         functions.push_back(new Function("putfarray",typeVoid,{
                 new VarValue("",typeInt, false,0),
@@ -88,6 +88,9 @@ public:
     }
     void pushFunctions(Function* func){
         functions.push_back(func);
+    }
+    std::vector<Function*> getFunctions() {
+        return functions;
     }
     void pushGlobalVars(Value *var) {
         var->setGlobal(true);

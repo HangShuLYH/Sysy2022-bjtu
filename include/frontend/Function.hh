@@ -19,6 +19,7 @@ public:
     Type* return_type;
     std::vector<BasicBlock*> basicBlocks;
     std::vector<Value*> params;
+    std::set<Value*> allocaVars;
     bool variant_params = false;
     Function(std::string name,Type* type){
         this->name = name;
@@ -31,6 +32,9 @@ public:
     }
     void pushBB(BasicBlock* basicBlock) {
         basicBlocks.push_back(basicBlock);
+    }
+    std::vector<BasicBlock*> getBB() {
+        return basicBlocks;
     }
     bool isArgs(std::string name) {
         for (size_t i = 0; i < params.size(); ++i) {

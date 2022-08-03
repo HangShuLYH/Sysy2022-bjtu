@@ -5,7 +5,9 @@
 #include "errors.hh"
 #include "MIRBuilder.hh"
 #include "codegen.hh"
-
+#include "DominateTree.hh"
+#include "Mem2reg.hh"
+#include "OptimizeAdaptor.hh"
 driver ddriver;
 CompUnit *root;
 int main(int argc, char *argv[]) {
@@ -61,6 +63,17 @@ int main(int argc, char *argv[]) {
     }
     MIRBuilder mirBuilder(irVisitor);
     mirBuilder.getPreAndSucc();
+    if (optimize_O2) {
+        DominateTree dominateTree(&irVisitor);
+        dominateTree.execute();
+
+        Mem2reg mem2reg(&irVisitor);
+        mem2reg.execute();
+
+        optimizeAdaptor(&irVisitor);
+        moveBackOperand(&irVisitor);
+    }
+
     if (printIR) {
         irVisitor.print(std::cout);
     }
