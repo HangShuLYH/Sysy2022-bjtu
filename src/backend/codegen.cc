@@ -217,8 +217,25 @@ void Codegen::generateProgramCode() {
                 }
                 usedGRMapping[function].insert(GR(12));
             }
-            function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
-                                                         new Vpush(usedFRMapping[function]));
+            if (usedFRMapping[function].size() <= 16) {
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new Vpush(usedFRMapping[function]));
+            } else {
+                std::set<FR> first,second;
+                int cnt = 0;
+                for (auto item:usedFRMapping[function]) {
+                    if (cnt < 16) {
+                        first.insert(item);
+                    } else {
+                        second.insert(item);
+                    }
+                    cnt++;
+                }
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new Vpush(first));
+                function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
+                                                             new Vpush(second));
+            }
             function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
                                                          new Push(usedGRMapping[function]));
             //simple way
@@ -355,7 +372,26 @@ void Codegen::generateProgramCode() {
                     setGR.erase(GR(14));
                     setGR.insert(GR(15));
                     if (!usedFRMapping[function].empty()) {
-                        block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
+                        if (usedFRMapping[function].size() < 16) {
+                            block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
+                        } else {
+                            std::set<FR> first,second;
+                            int cnt = 0;
+                            for (auto item:usedFRMapping[function]) {
+                                if (cnt < 16) {
+                                    first.insert(item);
+                                } else {
+                                    second.insert(item);
+                                }
+                                cnt++;
+                            }
+                            if (!first.empty()) {
+                                block->getInstrs().push_back(new Vpop(first));
+                            }
+                            if (!second.empty()) {
+                                block->getInstrs().push_back(new Vpop(second));
+                            }
+                        }
                     }
                     if (!setGR.empty()) {
                         block->getInstrs().push_back(new Pop(setGR));

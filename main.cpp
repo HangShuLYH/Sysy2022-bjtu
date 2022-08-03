@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     }
     MIRBuilder mirBuilder(irVisitor);
     mirBuilder.getPreAndSucc();
-    if (optimize_O2) {
+    if (false) {
         DominateTree dominateTree(&irVisitor);
         dominateTree.execute();
 
