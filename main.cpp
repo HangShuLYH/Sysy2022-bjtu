@@ -8,10 +8,24 @@
 #include "DominateTree.hh"
 #include "Mem2reg.hh"
 #include "OptimizeAdaptor.hh"
+#include <sys/resource.h>
 driver ddriver;
 CompUnit *root;
 int main(int argc, char *argv[]) {
-
+    // increase stack size
+    const rlim_t kStackSize = 64L * 1024L * 1024L;
+    struct rlimit rl;
+    int result;
+    result = getrlimit(RLIMIT_STACK, &rl);
+    if (result == 0) {
+        if (rl.rlim_cur < kStackSize) {
+            rl.rlim_cur = kStackSize;
+            result = setrlimit(RLIMIT_STACK, &rl);
+            if (result != 0)
+                std::cerr << "setrlimit failed, use ulimit -s unlimited instead."
+                          << std::endl;
+        }
+    }
 //    std::vector<int> v{1,2,5,6,7};
 //    for (auto it = v.begin();it != v.end();it++) {
 //        int x = *it;
