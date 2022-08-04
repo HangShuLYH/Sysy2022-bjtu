@@ -372,7 +372,7 @@ void Codegen::generateProgramCode() {
                     setGR.erase(GR(14));
                     setGR.insert(GR(15));
                     if (!usedFRMapping[function].empty()) {
-                        if (usedFRMapping[function].size() < 16) {
+                        if (usedFRMapping[function].size() <= 16) {
                             block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
                         } else {
                             std::set<FR> first,second;
