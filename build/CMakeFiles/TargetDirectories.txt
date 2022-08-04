@@ -1,0 +1,9 @@
+/mnt/e/编译器/Sysy2022-bjtu/build/CMakeFiles/rebuild_cache.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/CMakeFiles/edit_cache.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/CMakeFiles/compiler.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/syntax_tree.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/rebuild_cache.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/parser.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/edit_cache.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/lexer.dir
+/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend/CMakeFiles/driver.dir

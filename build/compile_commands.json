@@ -1,0 +1,52 @@
+[
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/compiler.dir/main.cpp.o -c /mnt/e/编译器/Sysy2022-bjtu/main.cpp",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/main.cpp"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/MIRBuilder.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/MIRBuilder.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/compiler.dir/src/backend/codegen.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/backend/codegen.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/backend/codegen.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/compiler.dir/src/backend/allocRegs.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/backend/allocRegs.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/backend/allocRegs.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/syntax_tree.dir/syntax_tree.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/syntax_tree.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/syntax_tree.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/parser.dir/parser.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/parser.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/parser.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/lexer.dir/lexer.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/lexer.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/lexer.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/driver.dir/driver.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/driver.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/driver.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/driver.dir/IrVisitor.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/IrVisitor.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/IrVisitor.cc"
+},
+{
+  "directory": "/mnt/e/编译器/Sysy2022-bjtu/build/src/frontend",
+  "command": "/usr/bin/g++   -I/mnt/e/编译器/Sysy2022-bjtu/include -I/mnt/e/编译器/Sysy2022-bjtu/include/frontend -I/mnt/e/编译器/Sysy2022-bjtu/include/backend -I/mnt/e/编译器/Sysy2022-bjtu/include/errors -I/mnt/e/编译器/Sysy2022-bjtu/include/optimize  -g   -o CMakeFiles/driver.dir/Value.cc.o -c /mnt/e/编译器/Sysy2022-bjtu/src/frontend/Value.cc",
+  "file": "/mnt/e/编译器/Sysy2022-bjtu/src/frontend/Value.cc"
+}
+]

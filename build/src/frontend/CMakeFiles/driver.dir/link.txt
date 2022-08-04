@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdriver.a  CMakeFiles/driver.dir/driver.cc.o CMakeFiles/driver.dir/IrVisitor.cc.o CMakeFiles/driver.dir/Value.cc.o
+/usr/bin/ranlib libdriver.a

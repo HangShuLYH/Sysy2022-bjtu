@@ -27,25 +27,25 @@ int main(int argc, char *argv[]) {
                           << std::endl;
         }
     }
-    std::string inputFileName;
+    std::string inputFileName = "/mnt/e/编译器/Sysy2022-bjtu/test/quickSort.sy";
     std::string outputFileName = "a.s";
     bool printAST = false;
-    bool printIR = false;
+    bool printIR = true;
     bool optimize_O2 = false;
-    for (int i = 1; i < argc; i++) {
-        if (std::string(argv[i]) == "-o") {
-            outputFileName = argv[i + 1];
-            i++;
-        } else if (std::string(argv[i]) == "-g") {
-            printIR = true;
-        } else if (std::string(argv[i]) == "-tree") {
-            printAST = true;
-        } else if (std::string(argv[i]) == "-O2") {
-            optimize_O2 = true;
-        } else {
-            inputFileName = argv[i];
-        }
-    }
+    // for (int i = 1; i < argc; i++) {
+    //     if (std::string(argv[i]) == "-o") {
+    //         outputFileName = argv[i + 1];
+    //         i++;
+    //     } else if (std::string(argv[i]) == "-g") {
+    //         printIR = true;
+    //     } else if (std::string(argv[i]) == "-tree") {
+    //         printAST = true;
+    //     } else if (std::string(argv[i]) == "-O2") {
+    //         optimize_O2 = true;
+    //     } else {
+    //         inputFileName = argv[i];
+    //     }
+    // }
 
     root = ddriver.parse(inputFileName);
     if (printAST) {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     }
     MIRBuilder mirBuilder(irVisitor);
     mirBuilder.getPreAndSucc();
-    if (false) {
+    if (true) {
         DominateTree dominateTree(&irVisitor);
         dominateTree.execute();
 

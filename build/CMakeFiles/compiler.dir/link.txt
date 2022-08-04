@@ -1,0 +1,1 @@
+/usr/bin/g++  -g   CMakeFiles/compiler.dir/main.cpp.o CMakeFiles/compiler.dir/src/frontend/MIRBuilder.cc.o CMakeFiles/compiler.dir/src/backend/codegen.cc.o CMakeFiles/compiler.dir/src/backend/allocRegs.cc.o  -o compiler  src/frontend/libdriver.a src/frontend/libparser.a src/frontend/liblexer.a src/frontend/libsyntax_tree.a 

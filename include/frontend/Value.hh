@@ -124,6 +124,7 @@ public:
     void clearUses() { this->Uses.clear(); }
     std::set<Use*> getUses() { return Uses; }
     void setNum(int num) { this->num = num; }
+    void setType(Type* type) { this->type = type; }
 protected:
     int num;
     std::string name;

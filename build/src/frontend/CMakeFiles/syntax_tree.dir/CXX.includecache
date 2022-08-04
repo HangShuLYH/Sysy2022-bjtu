@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/frontend/syntax_tree.hh
+vector
+-
+memory
+-
+iostream
+-
+
+/mnt/e/编译器/Sysy2022-bjtu/src/frontend/syntax_tree.cc
+syntax_tree.hh
+/mnt/e/编译器/Sysy2022-bjtu/src/frontend/syntax_tree.hh
+

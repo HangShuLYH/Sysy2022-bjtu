@@ -30,6 +30,8 @@ public:
     void constValBroadcast();
     void removeDeadcode();
     void publicExp();
+    void copyBroadcast();
+    std::vector<std::vector<Instruction*>::iterator>* findPublicExp(std::vector<Instruction*>::iterator iter, std::vector<Instruction*>::iterator end);
 };
 
 void Mem2reg::execute()
@@ -50,6 +52,16 @@ void Mem2reg::execute()
         constValBroadcast();
     }
     removeDeadcode();
+
+    allVars.clear();
+    for(Function* func : functions) {
+        if(func->getBB().size() == 0) continue;
+        this->function = func;
+
+        copyBroadcast();
+        // publicExp();
+    }
+    // removeDeadcode();
 }
 
 void Mem2reg::getOriginVals() {
@@ -140,7 +152,7 @@ void Mem2reg::rename(BasicBlock* bb) {
                                 Value* newVal = stk[temp->getVal()].top();
                                 if(typeid(*newVal) == typeid(TempVal)) {
                                     // operands[i]->setVal(newVal);
-
+                                    
                                     Use* use = new Use(newVal, ir, i);
                                     operands[i] = use;
                                     dynamic_cast<TempVal*>(newVal)->getVal()->addUse(use);
@@ -155,7 +167,7 @@ void Mem2reg::rename(BasicBlock* bb) {
                                 }
                             } else {
                                 stk[temp->getVal()].push(temp);
-
+                                
                                 Use* use = new Use(temp, ir, i);
                                 operands[i] = use;
                                 temp->getVal()->addUse(use);
@@ -165,7 +177,7 @@ void Mem2reg::rename(BasicBlock* bb) {
                 }
             }
         }
-
+        
         if(operands.size() > 0 && operands[0]->getVal() && !operands[0]->getVal()->is_Array() && find(irVisitor->globalVars.begin(), irVisitor->globalVars.end(), operands[0]->getVal()) == end(irVisitor->globalVars)) {
             Value* val = operands[0]->getVal(), *newVal = nullptr;
             if(typeid(*(val)) == typeid(VarValue)) {
@@ -314,10 +326,56 @@ void Mem2reg::constValBroadcast() {
                             }
                         }
                     }
+
+                    
                 }
 
                 if(typeid(*inst) == typeid(StoreIIR) && !inst->getOperands()[0]->getVal()->is_Array()) {
                     StoreIIR* sir = dynamic_cast<StoreIIR*>(inst);
+                    TempVal* temp = dynamic_cast<TempVal*>(sir->getOperands()[1]->getVal());
+                    if(find(irVisitor->globalVars.begin(), irVisitor->globalVars.end(), sir->getOperands()[0]->getVal()) == end(irVisitor->globalVars)) {
+                        if(!temp->getVal()) {
+                            // if(temp->getType()->isInt()) {
+                            sir->deleteIR();
+
+                            Value* dst = sir->getOperands()[0]->getVal();
+                            for(auto use : dst->getUses()) {
+                                if(typeid(*(use->getVal())) != typeid(TempVal)) {
+                                    use->getVal()->killUse(use);
+                                }
+
+                                User* user = use->getUser();
+                                if(typeid(*user) == typeid(PhiIR)) {
+                                    dynamic_cast<PhiIR*>(user)->params[use->getBB()] = temp;
+                                } else {
+                                    std::vector<Use *> operands = user->getOperands();
+                                    operands[use->getArg()]->setVal(temp);
+                                }
+                                W.push_back(dynamic_cast<Instruction*>(user));
+                            }
+                            // }
+                        }
+                        
+                        // 此处混杂了拷贝传播
+                        else if(temp->getVal()) {
+                            // sir->deleteIR();
+
+                            Value* dst = sir->getOperands()[0]->getVal();
+                            for(auto use : dst->getUses()) {
+                                User* user = use->getUser();
+                                if(typeid(*user) == typeid(PhiIR)) {
+                                    if(typeid(*(use->getVal())) != typeid(TempVal)) {
+                                        use->getVal()->killUse(use);
+                                    }
+                                    Use* newUse = new Use(temp->getVal(), user, use->getBB());
+                                    temp->getVal()->addUse(newUse);
+                                    dynamic_cast<PhiIR*>(user)->params[use->getBB()] = temp;
+                                }
+                            }
+                        }
+                    }
+                } else if(typeid(*inst) == typeid(StoreFIR) && !inst->getOperands()[0]->getVal()->is_Array()) {
+                    StoreFIR* sir = dynamic_cast<StoreFIR*>(inst);
                     TempVal* temp = dynamic_cast<TempVal*>(sir->getOperands()[1]->getVal());
                     if(find(irVisitor->globalVars.begin(), irVisitor->globalVars.end(), sir->getOperands()[0]->getVal()) == end(irVisitor->globalVars)) {
                         if(!temp->getVal()) {
@@ -357,30 +415,6 @@ void Mem2reg::constValBroadcast() {
                                 }
                             }
                         }
-                    }
-                } else if(typeid(*inst) == typeid(StoreFIR) && !inst->getOperands()[0]->getVal()->is_Array()) {
-                    StoreFIR* sir = dynamic_cast<StoreFIR*>(inst);
-                    TempVal* temp = dynamic_cast<TempVal*>(sir->getOperands()[1]->getVal());
-                    if(!temp->getVal() && find(irVisitor->globalVars.begin(), irVisitor->globalVars.end(), temp->getVal()) == end(irVisitor->globalVars)) {
-                        // if(temp->getType()->isInt()) {
-                        sir->deleteIR();
-
-                        Value* dst = sir->getOperands()[0]->getVal();
-                        for(auto use : dst->getUses()) {
-                            if(typeid(*(use->getVal())) != typeid(TempVal)) {
-                                use->getVal()->killUse(use);
-                            }
-
-                            User* user = use->getUser();
-                            if(typeid(*user) == typeid(PhiIR)) {
-                                dynamic_cast<PhiIR*>(user)->params[use->getBB()] = temp;
-                            } else {
-                                std::vector<Use *> operands = user->getOperands();
-                                operands[use->getArg()]->setVal(temp);
-                            }
-                            W.push_back(dynamic_cast<Instruction*>(user));
-                        }
-                        // }
                     }
                 } else if(typeid(*inst) == typeid(LoadIIR)) {
                     LoadIIR* lir = dynamic_cast<LoadIIR*>(inst);
@@ -520,7 +554,7 @@ void Mem2reg::constValBroadcast() {
                         TempVal* newTemp = new TempVal();
                         newTemp->setInt(resultInt);
                         newTemp->setType(new Type(TypeID::INT));
-
+                        
                         Value* val = res->getVal();
                         for(auto use : val->getUses()) {
                             if(typeid(*(use->getVal())) != typeid(TempVal)) {
@@ -573,7 +607,7 @@ void Mem2reg::constValBroadcast() {
                         TempVal* newTemp = new TempVal();
                         newTemp->setFloat(resultFloat);
                         newTemp->setType(new Type(TypeID::FLOAT));
-
+                        
                         Value* val = res->getVal();
                         for(auto use : val->getUses()) {
                             if(typeid(*(use->getVal())) != typeid(TempVal)) {
@@ -658,31 +692,189 @@ void Mem2reg::removeDeadcode() {
     }
 }
 
-// void Mem2reg::findPublicExp(std::vector<Instruction*>::iterator iter, std::vector<Instruction*>::iterator end) {
-//     ArithmeticIR* inst = dynamic_cast<ArithmeticIR>(*(iter++));
-//     TempVal* left = dynamic_cast<TempVal*>(inst->getOperands()[1]->getVal()), right = dynamic_cast<TempVal*>(inst->getOperands()[2]->getVal());
+// 有问题
+std::vector<std::vector<Instruction*>::iterator>* Mem2reg::findPublicExp(std::vector<Instruction*>::iterator iter, std::vector<Instruction*>::iterator end) {
+    ArithmeticIR* inst = dynamic_cast<ArithmeticIR*>(*(iter++));
+    TempVal* left = dynamic_cast<TempVal*>(inst->getOperands()[1]->getVal()), *right = dynamic_cast<TempVal*>(inst->getOperands()[2]->getVal());
+    std::vector<std::vector<Instruction*>::iterator>* vec = new std::vector<std::vector<Instruction*>::iterator>();
 
-//     for(; iter != end; iter++) {
-//         if(dynamic_cast<ArithmeticIR*>(*iter)) {
-//             ArithmeticIR* iterInst = dynamic_cast<ArithmeticIR*>(*iter);
-//             TempVal* iterLeft = dynamic_cast<TempVal*>(iterInst->getOperands()[1]->getVal()), iterRight = dynamic_cast<TempVal*>(iterInst->getOperands()[2]->getVal());
+    for(; iter != end; iter++) {
+        if(dynamic_cast<ArithmeticIR*>(*iter)) {
+            ArithmeticIR* iterInst = dynamic_cast<ArithmeticIR*>(*iter);
+            TempVal* iterLeft = dynamic_cast<TempVal*>(iterInst->getOperands()[1]->getVal()), *iterRight = dynamic_cast<TempVal*>(iterInst->getOperands()[2]->getVal());
+            
+            if(!left->getVal() && !iterLeft->getVal() && left->getConst() == iterLeft->getConst() && !right->getVal() && !iterRight->getVal() && right->getConst() == iterRight->getConst()) {
+                vec->push_back(iter);
+            }
+            else if(left->getVal() && iterLeft->getVal() && left->getVal() == iterLeft->getVal() && right->getVal() && iterRight->getVal() && right->getVal() == iterRight->getVal()) {
+                vec->push_back(iter);
+            }
+            else if(!left->getVal() && !iterLeft->getVal() && left->getConst() == iterLeft->getConst() && right->getVal() && iterRight->getVal() && right->getVal() == iterRight->getVal()) {
+                vec->push_back(iter);
+            }
+            else if(left->getVal() && iterLeft->getVal() && left->getVal() == iterLeft->getVal() && !right->getVal() && !iterRight->getVal() && right->getConst() == iterRight->getConst()) {
+                vec->push_back(iter);
+            }
 
-//             if(left->getVal() && iterLeft->getVal() && left->getConst() == iterLeft->getConst() && right->getVal() && iterRight->getVal() && right->getConst() == iterRight->getConst()) {
+            if(typeid(*iter) == typeid(AddIIR) && typeid(*iter) == typeid(AddFIR) && typeid(*iter) == typeid(MulIIR) && typeid(*iter) == typeid(MulFIR)) {
+                if(!left->getVal() && !iterLeft->getVal() && !right->getVal() && !iterRight->getVal() && left->getConst() == iterRight->getConst() && right->getConst() == iterLeft->getConst()) {
+                    vec->push_back(iter);
+                }
+                else if(left->getVal() && iterLeft->getVal() && right->getVal() && iterRight->getVal() && left->getVal() == iterRight->getVal() && right->getVal() == iterLeft->getVal()) {
+                    vec->push_back(iter);
+                }
+            }
+        }
+    }
 
-//             }
-//         }
-//     }
-// }
+    return vec;
+}
 
-// void Mem2reg::publicExp() {
-//     for(auto bb : function->getBB()) {
-//         auto& irs = bb->getIr();
-//         for(auto iter(irs.begin()); iter != irs.end(); iter++) {
-//             if(dynamic_cast<ArithmeticIR>(*(*iter))) {
+void Mem2reg::publicExp() {
+    for(auto bb : function->getBB()) {
+        auto& irs = bb->getIr();
+        for(auto iter(irs.begin()); iter != irs.end(); iter++) {
+            if(dynamic_cast<ArithmeticIR*>(*iter)) {
+                auto vec = findPublicExp(iter, irs.end());
+                if(vec->empty()) continue;
 
-//             }
-//         }
-//     }
-// }
+                TempVal* dst = dynamic_cast<TempVal*>((*iter)->getOperands()[0]->getVal());
+                for(auto aimIter : *vec) {
+                    ArithmeticIR* inst = dynamic_cast<ArithmeticIR*>(*(aimIter));
+                    TempVal* aimDst = dynamic_cast<TempVal*>(inst->getOperands()[0]->getVal()), *left = dynamic_cast<TempVal*>(inst->getOperands()[1]->getVal()), *right = dynamic_cast<TempVal*>(inst->getOperands()[2]->getVal());
+                    if(left->getVal()) {
+                        left->getVal()->killUse((*aimIter)->getOperands()[1]);
+                    }
+                    if(right->getVal()) {
+                        right->getVal()->killUse((*aimIter)->getOperands()[2]);
+                    }
+
+                    for(auto use : aimDst->getVal()->getUses()) {
+                        User* user = use->getUser();
+                        std::vector<Use*> operands = user->getOperands();
+
+                        if(typeid(*(use->getVal())) != typeid(TempVal)) {
+                            use->getVal()->killUse(use);
+                        }
+                        else if(dynamic_cast<TempVal*>(use->getVal())->getVal()) {
+                            dynamic_cast<TempVal*>(use->getVal())->getVal()->killUse(use);
+                        }
+
+                        if(typeid(*user) == typeid(PhiIR)) {
+                            dynamic_cast<PhiIR*>(user)->params[use->getBB()] = dst;
+                        }
+                        else operands[use->getArg()]->setVal(dst);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Mem2reg::copyBroadcast() {
+    for(auto bb : function->getBB()) {
+        auto W = bb->getIr();
+        while(!W.empty()) {
+            auto inst = *W.rbegin();
+            W.pop_back();
+
+            if(inst->isDeleted()) continue;
+            if(typeid(*inst) == typeid(PhiIR)) {
+                PhiIR* phiIr = dynamic_cast<PhiIR*>(inst);
+                Value* dst = phiIr->getOperands()[0]->getVal();
+                Value* newDst = nullptr;
+                if(typeid(*(dst)) == typeid(VarValue)) {
+                    newDst = new VarValue(*dynamic_cast<VarValue*>(dst));
+                    if(typeid(*(phiIr->params.begin()->second)) == typeid(TempVal)) {
+                        if(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getVal()) {
+                            newDst->setType(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getVal()->getType());
+                        } else {
+                            newDst->setType(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getType());
+                        }
+                    }
+                    else newDst->setType(phiIr->params.begin()->second->getType());
+                    newDst->setNum(function->varCnt++);
+                }
+                else if(typeid(*dst) == typeid(ConstValue)) {
+                    newDst = new ConstValue(*dynamic_cast<ConstValue*>(dst));
+                    if(typeid(*(phiIr->params.begin()->second)) == typeid(TempVal)) {
+                        if(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getVal()) {
+                            newDst->setType(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getVal()->getType());
+                        } else {
+                            newDst->setType(dynamic_cast<TempVal*>(phiIr->params.begin()->second)->getType());
+                        }
+                    }
+                    else newDst->setType(phiIr->params.begin()->second->getType());
+                    newDst->setNum(function->varCnt++);
+                }
+
+                for(auto use : dst->getUses()) {
+                    if(typeid(*(use->getVal())) != typeid(TempVal)) {
+                        use->getVal()->killUse(use);
+                    }
+                    else if(dynamic_cast<TempVal*>(use->getVal())->getVal()) {
+                        dynamic_cast<TempVal*>(use->getVal())->getVal()->killUse(use);
+                    }
+
+                    User* user = use->getUser();
+                    dynamic_cast<Instruction*>(user)->deleteIR();
+                    auto operands = user->getOperands();
+                    if(operands[0]->getVal()) {
+                        for(auto nextUse : operands[0]->getVal()->getUses()) {
+                            if(typeid(*(nextUse->getVal())) != typeid(TempVal)) {
+                                nextUse->getVal()->killUse(nextUse);
+                            }
+
+                            auto val = nextUse->getVal();
+                            if(dynamic_cast<TempVal*>(val)) {
+                                for(auto nextNextUse : dynamic_cast<TempVal*>(val)->getVal()->getUses()) {
+                                    if(typeid(*(nextNextUse->getVal())) == typeid(TempVal)) {
+                                        dynamic_cast<TempVal*>(nextNextUse->getVal())->setVal(newDst);
+                                    }
+                                    else nextNextUse->setVal(newDst);
+                                    newDst->addUse(nextNextUse);
+                                }
+                                // newDst->Uses.insert(dynamic_cast<TempVal*>(val)->getVal()->getUses().begin(), dynamic_cast<TempVal*>(val)->getVal()->getUses().end())
+                            }
+                            else {
+                                for(auto nextNextUse : val->getUses()) {
+                                    if(typeid(*(nextNextUse->getVal())) == typeid(TempVal)) {
+                                        dynamic_cast<TempVal*>(nextNextUse->getVal())->setVal(newDst);
+                                    }
+                                    else nextNextUse->setVal(newDst);
+                                    newDst->addUse(nextNextUse);
+                                }
+                                // newDst->Uses.insert(val->getUses().begin(), val->getUses().end())
+                            }
+                        }
+                    }
+                }
+
+                auto& operands = phiIr->getOperands();
+                operands[0]->setVal(newDst);
+            }
+            // else if(dynamic_cast<StoreIR*>(inst) && !inst->getOperands()[0]->getVal()->is_Array()) {
+            //     StoreIR* sir = dynamic_cast<StoreIR*>(inst);
+            //     TempVal* temp = dynamic_cast<TempVal*>(sir->getOperands()[1]->getVal());
+                
+            //     if(temp->getVal() && find(irVisitor->globalVars.begin(), irVisitor->globalVars.end(), sir->getOperands()[0]->getVal()) == end(irVisitor->globalVars)) {
+            //     for(auto use : sir->getOperands()[0]->getVal()->getUses()) {
+            //         User* user = use->getUser();
+            //         if(dynamic_cast<LoadIR*>(user)) {
+            //             LoadIR* lir = dynamic_cast<LoadIR*>(user);
+            //             lir->deleteIR();
+                        
+            //             Value* v1 = lir->getOperands()[0]->getVal();
+            //             lir->getOperands()[1]->getVal()->killUse(lir->getOperands()[1]);
+            //             for(auto nextUse : v1->getUses()) {
+            //                 User* nextUser = nextUse->getUser();
+                            
+            //             }
+            //         }
+            //     }
+            // }
+        }
+    }
+}
 
 #endif
