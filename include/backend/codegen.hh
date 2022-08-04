@@ -21,17 +21,21 @@ private:
     std::map<Value *, FR> fRegMapping;
     std::map<Value*, int> stackMapping;
     std::map<Value*, int> globalMapping;
+    std::map<BasicBlock*, std::map<int, GR>> constantIntMapping;
+    std::map<BasicBlock*, std::map<float, FR>> constantFloatMapping;
+    std::map<BasicBlock*, std::map<std::string, GR>> symbolMapping;
     std::string asm_code;
     std::ostream& out;
     int translateFunction(Function* function);
     void generateGlobalCode();
-    std::vector<Instr*> translateInstr(Instruction* ir);
+    std::vector<Instr*> translateInstr(Instruction* ir, BasicBlock* block);
     GR getGR(Value* src);
     FR getFR(Value* src);
     void comment(std::string s);
     std::string getFloatAddr(float x);
     void generateFloatConst();
     void generateMemset();
+    GR getConstantGR(int x, BasicBlock* block, std::vector<Instr*>& vec);
 public:
     Codegen(IrVisitor &irVisitor, std::ostream& out) : irVisitor(irVisitor),out(out) {}
     void generateProgramCode();

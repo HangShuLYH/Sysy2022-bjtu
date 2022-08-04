@@ -29,9 +29,12 @@ public:
 };
 class GRegRegInstr: public Instr {
 public:
-    enum Type {Add,Sub,Mul,Div} op;
+    enum Type {Add,Sub,Mul,Div,RSUB} op;
+    enum Shift {Nothing,LSL,LSR} shift = Nothing;
+    int shiftNum;
     GR dst, src1, src2;
     GRegRegInstr(Type op,GR dst, GR src1,GR src2): dst(dst),src1(src1),src2(src2),op(op){}
+    GRegRegInstr(Type op,GR dst, GR src1,GR src2, Shift shift, int shiftNum): dst(dst),src1(src1),src2(src2),op(op),shift(shift),shiftNum(shiftNum){}
     void setNewGR(GR old_gr, GR new_gr, bool use) {
         if (use) {
             if (src1 == old_gr) src1 = new_gr;
@@ -59,14 +62,67 @@ public:
             case Div:
                 out << "sdiv ";
                 break;
+            case RSUB:
+                out << "rsb ";
+                break;
             default:
                 out << "wrongInstr ";
                 break;
         }
-        out << dst.getName() << "," << src1.getName() << "," << src2.getName() << "\n";
+        out << dst.getName() << "," << src1.getName() << "," << src2.getName();
+        if (shift == LSL) {
+            out << ",LSL #" << shiftNum;
+        } else if (shift == LSR){
+            out << ",LSR #" << shiftNum;
+        }
+        out << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {src1,src2};
+    }
+    std::vector<FR> getUseF() override final{
+        return {};
+    }
+    std::vector<GR> getDefG() override final{
+        return {dst};
+    }
+    std::vector<FR> getDefF() override final{
+        return {};
+    }
+};
+class LSImmInstr: public Instr {
+public:
+    enum Type {LSL,LSR} op;
+    int shiftNum;
+    GR dst, src;
+    LSImmInstr(Type op,GR dst, GR src,int shiftNum): dst(dst),src(src),op(op),shiftNum(shiftNum){}
+    void setNewGR(GR old_gr, GR new_gr, bool use) {
+        if (use) {
+            if (src == old_gr) src = new_gr;
+        } else {
+            if (dst == old_gr) dst = new_gr;
+        }
+    }
+    void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
+        dst = GR(grMapping[dst]);
+        src = GR(grMapping[src]);
+    }
+    void print(std::ostream& out) override final{
+        switch (op) {
+            case LSL:
+                out << "lsl ";
+                break;
+            case LSR:
+                out << "lsr ";
+                break;
+            default:
+                out << "wrongInstr ";
+                break;
+        }
+        out << dst.getName() << "," << src.getName() << ",#" << shiftNum << "\n";
+    }
+    std::vector<GR> getUseG() override final{
+        return {src};
     }
     std::vector<FR> getUseF() override final{
         return {};
@@ -128,10 +184,12 @@ public:
 };
 class GRegImmInstr: public Instr{
 public:
-    enum Type {Add,Sub} op;
+    enum Type {Add,Sub,RSUB} op;
     GR dst, src1;
     int src2;
+    COND cond = NOTHING;
     GRegImmInstr(Type op,GR dst,GR src1,int src2): dst(dst),src1(src1),src2(src2),op(op){}
+    GRegImmInstr(Type op,GR dst,GR src1,int src2,COND cond): dst(dst),src1(src1),src2(src2),op(op),cond(cond){}
     void replace(std::map<GR, int> grMapping, std::map<FR, int> frMapping) {
         dst = GR(grMapping[dst]);
         src1 = GR(grMapping[src1]);
@@ -146,11 +204,21 @@ public:
     void print(std::ostream& out) override final{
         switch (op) {
             case Add:
-                out << "add ";
+                out << "add";
                 break;
             case Sub:
-                out << "sub ";
+                out << "sub";
                 break;
+            case RSUB:
+                out << "rsb";
+                break;
+        }
+        switch (cond) {
+            case LT:
+                out << "lt ";
+                break;
+            default:
+                out << " ";
         }
         out << dst.getName() << "," << src1.getName() << ", #" << src2 << "\n";
     }
@@ -946,7 +1014,9 @@ class MoveReg: public Instr{
 public:
     GR dst;
     GR src;
+    int asr = -1;
     MoveReg(GR dst,GR src):dst(dst),src(src){}
+    MoveReg(GR dst,GR src,int asr):dst(dst),src(src),asr(asr){}
     void setNewGR(GR old_gr, GR new_gr, bool use) {
         if (use) {
             if (src == old_gr) src = new_gr;
@@ -959,7 +1029,11 @@ public:
         src = GR(grMapping[src]);
     }
     void print(std::ostream& out) override final{
-        out << "mov " << dst.getName() << "," << src.getName() << "\n";
+        out << "mov " << dst.getName() << "," << src.getName();
+        if (asr != -1) {
+            out << ",asr #" <<asr;
+        }
+        out << "\n";
     }
     std::vector<GR> getUseG() override final{
         return {src};

@@ -74,7 +74,16 @@ uint32_t floatToInt(float value) {
     data.floatVal = value;
     return data.intVal;
 }
-
+GR Codegen::getConstantGR(int x, BasicBlock* block, std::vector<Instr*>& vec) {
+    if (!constantIntMapping[block].count(x)) {
+        GR gr = GR::allocateReg();
+        for (Instr *instr: setIntValue(gr, x)) {
+            vec.push_back(instr);
+        }
+        constantIntMapping[block][x] = gr;
+    }
+    return constantIntMapping[block][x];
+}
 void Codegen::generateFloatConst() {
     for (std::pair<float, std::string> pair: floatConstMapping) {
         out << ".align\n";
@@ -82,6 +91,7 @@ void Codegen::generateFloatConst() {
         out << "\t.4byte " << floatToInt(pair.first) << "\n";
     }
 }
+
 void Codegen::generateMemset() {
     out << ".memset:\n";
     out << "\tpush {r4}\n";
@@ -101,6 +111,7 @@ void Codegen::generateMemset() {
     out << "\tpop {r4}\n";
     out << "\tbx lr\n";
 }
+
 void Codegen::generateProgramCode() {
     out << ".arch armv7ve\n";
     out << ".arm\n";
@@ -117,7 +128,7 @@ void Codegen::generateProgramCode() {
     std::map<Function *, std::set<GR>> usedGRMapping;
     std::map<Function *, std::set<FR>> usedFRMapping;
     std::map<Function *, int> spillCountMapping;
-    std::map<Function*, int> surplyFor8AlignMapping;
+    std::map<Function *, int> surplyFor8AlignMapping;
     for (auto itt = irVisitor.functions.rbegin(); itt != irVisitor.functions.rend(); itt++) {
         Function *function = *itt;
         if (function->basicBlocks.empty()) continue;
@@ -134,7 +145,7 @@ void Codegen::generateProgramCode() {
                 Instr *instr = *it;
                 instr->replace(coloringAlloc.getColorGR(), coloringAlloc.getColorFR());
                 instr->replaceBBName(bbNameMapping);
-                if (typeid(*instr) == typeid(MoveReg) && instr->getUseG()[0] == instr->getDefG()[0] ||
+                if (typeid(*instr) == typeid(MoveReg) && instr->getUseG()[0] == instr->getDefG()[0] && (dynamic_cast<MoveReg*>(instr)->asr == -1)||
                     typeid(*instr) == typeid(VMoveReg) && instr->getUseF()[0] == instr->getDefF()[0]) {
                     block->getInstrs().erase((++it).base());
                     removeCnt++;
@@ -221,9 +232,9 @@ void Codegen::generateProgramCode() {
                 function->basicBlocks[0]->getInstrs().insert(function->basicBlocks[0]->getInstrs().begin(),
                                                              new Vpush(usedFRMapping[function]));
             } else {
-                std::set<FR> first,second;
+                std::set<FR> first, second;
                 int cnt = 0;
-                for (auto item:usedFRMapping[function]) {
+                for (auto item: usedFRMapping[function]) {
                     if (cnt < 16) {
                         first.insert(item);
                     } else {
@@ -249,12 +260,14 @@ void Codegen::generateProgramCode() {
                     Load *load = dynamic_cast<Load *>(instr);
                     if (load->offset < 0) {
                         load->offset = -load->offset + usedGRMapping[function].size() * 4 +
-                                       usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
+                                       usedFRMapping[function].size() * 4 + spillCountMapping[function] +
+                                       surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(load->offset) || !is_legal_load_store_offset(load->offset)) {
                         it = block->getInstrs().erase(it);
                         it = block->getInstrs().insert(it, new Load(load->dst, GR(12), 0));
-                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), load->base));
+                        it = block->getInstrs().insert(it,
+                                                       new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), load->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), load->offset);
                         for (auto item = vv.rbegin(); item != vv.rend(); item++) {
                             it = block->getInstrs().insert(it, *item);
@@ -266,12 +279,14 @@ void Codegen::generateProgramCode() {
                     Store *store = dynamic_cast<Store *>(instr);
                     if (store->offset < 0) {
                         store->offset = -store->offset + usedGRMapping[function].size() * 4 +
-                                        usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
+                                        usedFRMapping[function].size() * 4 + spillCountMapping[function] +
+                                        surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(store->offset) || !is_legal_load_store_offset(store->offset)) {
                         it = block->getInstrs().erase(it);
                         it = block->getInstrs().insert(it, new Store(store->src, GR(12), 0));
-                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), store->base));
+                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12),
+                                                                            store->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), store->offset);
                         for (auto item = vv.rbegin(); item != vv.rend(); item++) {
                             it = block->getInstrs().insert(it, *item);
@@ -283,12 +298,14 @@ void Codegen::generateProgramCode() {
                     VLoad *vload = dynamic_cast<VLoad *>(instr);
                     if (vload->offset < 0) {
                         vload->offset = -vload->offset + usedGRMapping[function].size() * 4 +
-                                        usedFRMapping[function].size() * 4 + spillCountMapping[function]+ surplyFor8AlignMapping[function];
+                                        usedFRMapping[function].size() * 4 + spillCountMapping[function] +
+                                        surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vload->offset) || !is_legal_load_store_offset(vload->offset)) {
                         it = block->getInstrs().erase(it);
                         it = block->getInstrs().insert(it, new VLoad(vload->dst, GR(12), 0));
-                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), vload->base));
+                        it = block->getInstrs().insert(it, new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12),
+                                                                            vload->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), vload->offset);
                         for (auto item = vv.rbegin(); item != vv.rend(); item++) {
                             it = block->getInstrs().insert(it, *item);
@@ -300,13 +317,15 @@ void Codegen::generateProgramCode() {
                     VStore *vstore = dynamic_cast<VStore *>(instr);
                     if (vstore->offset < 0) {
                         vstore->offset = -vstore->offset + usedGRMapping[function].size() * 4 +
-                                         usedFRMapping[function].size() * 4 + spillCountMapping[function] + surplyFor8AlignMapping[function];
+                                         usedFRMapping[function].size() * 4 + spillCountMapping[function] +
+                                         surplyFor8AlignMapping[function];
                     }
                     if (!is_legal_immediate(vstore->offset) || !is_legal_load_store_offset(vstore->offset)) {
                         it = block->getInstrs().erase(it);
                         it = block->getInstrs().insert(it, new VStore(vstore->src, GR(12), 0));
                         it = block->getInstrs().insert(it,
-                                                  new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12), vstore->base));
+                                                       new GRegRegInstr(GRegRegInstr::Add, GR(12), GR(12),
+                                                                        vstore->base));
                         std::vector<Instr *> vv = setIntValue(GR(12), vstore->offset);
                         for (auto item = vv.rbegin(); item != vv.rend(); item++) {
                             it = block->getInstrs().insert(it, *item);
@@ -375,9 +394,9 @@ void Codegen::generateProgramCode() {
                         if (usedFRMapping[function].size() <= 16) {
                             block->getInstrs().push_back(new Vpop(usedFRMapping[function]));
                         } else {
-                            std::set<FR> first,second;
+                            std::set<FR> first, second;
                             int cnt = 0;
-                            for (auto item:usedFRMapping[function]) {
+                            for (auto item: usedFRMapping[function]) {
                                 if (cnt < 16) {
                                     first.insert(item);
                                 } else {
@@ -529,30 +548,31 @@ int Codegen::translateFunction(Function *function) {
     }
     for (BasicBlock *bb: function->basicBlocks) {
         for (Instruction *ir: bb->ir) {
-                std::vector<Instr *> vec = translateInstr(ir);
-                for (int i = 0; i < vec.size(); ++i) {
-                    bb->pushInstr(vec[i]);
-                }
+            std::vector<Instr *> vec = translateInstr(ir,bb);
+            for (int i = 0; i < vec.size(); ++i) {
+                bb->pushInstr(vec[i]);
+            }
         }
     }
     return stackSize;
 }
 
-std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
+std::vector<Instr *> Codegen::translateInstr(Instruction *ir, BasicBlock* block) {
     if (typeid(*ir) == typeid(AllocIIR)) {
-        AllocIIR* allocIir = dynamic_cast<AllocIIR*>(ir);
-        std::vector<Instr*> vec;
+        AllocIIR *allocIir = dynamic_cast<AllocIIR *>(ir);
+        std::vector<Instr *> vec;
         if (allocIir->isArray) {
-            if (is_legal_immediate(stackMapping[allocIir->v]) && is_legal_load_store_offset(stackMapping[allocIir->v])) {
-                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v]));
+            if (is_legal_immediate(stackMapping[allocIir->v]) &&
+                is_legal_load_store_offset(stackMapping[allocIir->v])) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(0), GR(13), stackMapping[allocIir->v]));
             } else {
-                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]);
-                for (Instr* instr: v) {
+                std::vector<Instr *> v = setIntValue(GR(12), stackMapping[allocIir->v]);
+                for (Instr *instr: v) {
                     vec.push_back(instr);
                 }
                 vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(0), GR(13), GR(12)));
             }
-            for (Instr* instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
+            for (Instr *instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
                 vec.push_back(instr);
             }
             vec.push_back(new Bl(".memset"));
@@ -560,19 +580,20 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         return vec;
     }
     if (typeid(*ir) == typeid(AllocFIR)) {
-        AllocFIR* allocIir = dynamic_cast<AllocFIR*>(ir);
-        std::vector<Instr*> vec;
+        AllocFIR *allocIir = dynamic_cast<AllocFIR *>(ir);
+        std::vector<Instr *> vec;
         if (allocIir->isArray) {
-            if (is_legal_immediate(stackMapping[allocIir->v]) && is_legal_load_store_offset(stackMapping[allocIir->v])) {
-                vec.push_back(new GRegImmInstr(GRegImmInstr::Add,GR(0),GR(13),stackMapping[allocIir->v]));
+            if (is_legal_immediate(stackMapping[allocIir->v]) &&
+                is_legal_load_store_offset(stackMapping[allocIir->v])) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, GR(0), GR(13), stackMapping[allocIir->v]));
             } else {
-                std::vector<Instr*> v = setIntValue(GR(12),stackMapping[allocIir->v]);
-                for (Instr* instr: v) {
+                std::vector<Instr *> v = setIntValue(GR(12), stackMapping[allocIir->v]);
+                for (Instr *instr: v) {
                     vec.push_back(instr);
                 }
                 vec.push_back(new GRegRegInstr(GRegRegInstr::Add, GR(0), GR(13), GR(12)));
             }
-            for (Instr* instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
+            for (Instr *instr: setIntValue(GR(1), allocIir->arrayLen * 4)) {
                 vec.push_back(instr);
             }
             vec.push_back(new Bl(".memset"));
@@ -756,14 +777,14 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         std::vector<Instr *> vec;
         FR src;
         if (!storeIr->src.getVal()) {
-            Value* val = new VarValue();
+            Value *val = new VarValue();
             storeIr->src.setVal(val);
             src = getFR(val);
-            vec.push_back(new MoveWFromSymbol(GR(12),getFloatAddr(storeIr->src.getFloat())));
-            vec.push_back(new MoveTFromSymbol(GR(12),getFloatAddr(storeIr->src.getFloat())));
-            vec.push_back(new VLoad(src,GR(12),0));
+            vec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(storeIr->src.getFloat())));
+            vec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(storeIr->src.getFloat())));
+            vec.push_back(new VLoad(src, GR(12), 0));
         } else {
-            if (fRegMapping.count(storeIr->src.getVal()) != 0){
+            if (fRegMapping.count(storeIr->src.getVal()) != 0) {
                 src = getFR(storeIr->src.getVal());
             } else {
                 stackMapping[storeIr->dst] = stackMapping[storeIr->src.getVal()];
@@ -836,28 +857,383 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         GR dst = getGR(ir2->v1);
         return {new VcvtSF(src, src), new VMovGF(dst, src)};
     }
-    if (typeid(*ir) == typeid(AddIIR) ||
-        typeid(*ir) == typeid(AddFIR) ||
-        typeid(*ir) == typeid(DivIIR) ||
-        typeid(*ir) == typeid(SubIIR) ||
-        typeid(*ir) == typeid(SubFIR) ||
-        typeid(*ir) == typeid(DivFIR) ||
-        typeid(*ir) == typeid(MulIIR) ||
-        typeid(*ir) == typeid(MulFIR) ||
-        typeid(*ir) == typeid(ModIR) ||
-        typeid(*ir) == typeid(LTIIR) ||
-        typeid(*ir) == typeid(LTFIR) ||
-        typeid(*ir) == typeid(GTIIR) ||
-        typeid(*ir) == typeid(GTFIR) ||
-        typeid(*ir) == typeid(LEIIR) ||
-        typeid(*ir) == typeid(LEFIR) ||
-        typeid(*ir) == typeid(GEIIR) ||
-        typeid(*ir) == typeid(GEFIR) ||
-        typeid(*ir) == typeid(EQUIIR) ||
-        typeid(*ir) == typeid(EQUFIR) ||
-        typeid(*ir) == typeid(NEIIR) ||
-        typeid(*ir) == typeid(NEFIR)) {
 
+    if (typeid(*ir) == typeid(AddIIR)) {
+        std::vector<Instr*> vec;
+        AddIIR *addIir = dynamic_cast<AddIIR*>(ir);
+        if (!addIir->left.getVal() && addIir->right.getVal()) {
+            TempVal temp = addIir->left;
+            addIir->left = addIir->right;
+            addIir->right = temp;
+        }
+        if (!addIir->right.getVal()) {
+            if (is_legal_immediate(addIir->right.getInt())) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(addIir->res.getVal()), getGR(addIir->left.getVal()), addIir->right.getInt()));
+            } else if (is_legal_immediate(-addIir->right.getInt())){
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Sub, getGR(addIir->res.getVal()), getGR(addIir->left.getVal()), -addIir->right.getInt()));
+            } else {
+                getConstantGR(addIir->right.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Add,
+                                               getGR(addIir->res.getVal()),
+                                               getGR(addIir->left.getVal()),
+                                               constantIntMapping[block][addIir->right.getInt()]));
+            }
+        } else {
+            vec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(addIir->res.getVal()), getGR(addIir->left.getVal()),
+                                           getGR(addIir->right.getVal())));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(SubIIR)) {
+        std::vector<Instr*> vec;
+        SubIIR *subIir = dynamic_cast<SubIIR*>(ir);
+        if (!subIir->right.getVal()) {
+            if (is_legal_immediate(subIir->right.getInt())) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Sub, getGR(subIir->res.getVal()), getGR(subIir->left.getVal()), subIir->right.getInt()));
+            } else if (is_legal_immediate(-subIir->right.getInt())){
+                vec.push_back(new GRegImmInstr(GRegImmInstr::Add, getGR(subIir->res.getVal()), getGR(subIir->left.getVal()), -subIir->right.getInt()));
+            } else {
+                getConstantGR(subIir->right.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
+                                               getGR(subIir->res.getVal()),
+                                               getGR(subIir->left.getVal()),
+                                               constantIntMapping[block][subIir->right.getInt()]));
+            }
+        } else if (!subIir->left.getVal()) {
+            if (is_legal_immediate(subIir->left.getInt())) {
+                vec.push_back(new GRegImmInstr(GRegImmInstr::RSUB, getGR(subIir->res.getVal()), getGR(subIir->right.getVal()), subIir->left.getInt()));
+            } else {
+                getConstantGR(subIir->left.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
+                                               getGR(subIir->res.getVal()),
+                                               constantIntMapping[block][subIir->left.getInt()],
+                                               getGR(subIir->right.getVal())));
+            }
+        } else {
+            vec.push_back(new GRegRegInstr(GRegRegInstr::Sub, getGR(subIir->res.getVal()), getGR(subIir->left.getVal()),
+                                           getGR(subIir->right.getVal())));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(MulIIR)) {
+        std::vector<Instr*> vec;
+        MulIIR* mulIir = dynamic_cast<MulIIR*>(ir);
+        if (!mulIir->left.getVal() && mulIir->right.getVal()) {
+            TempVal temp = mulIir->left;
+            mulIir->left = mulIir->right;
+            mulIir->right = temp;
+        }
+        if (!mulIir->right.getVal()) {
+            int v = mulIir->right.getInt();
+            bool flag = false;
+            //add inst * 1
+            {
+                for (int lsl_1 = 0;lsl_1 < 32;lsl_1++) {
+                    int x = 1;
+                    int y;
+                    y = (x + (x << lsl_1));
+                    if (y == v) {
+                        flag = true;
+                        vec.push_back(new GRegRegInstr(GRegRegInstr::Add, getGR(mulIir->res.getVal()),
+                                                       getGR(mulIir->left.getVal()),
+                                                       getGR(mulIir->left.getVal()), GRegRegInstr::LSL,lsl_1));
+                        break;
+                    }
+                }
+            }
+            //sub inst*1
+            {
+                for (int lsl_1 = 0;lsl_1 < 32;lsl_1++) {
+                    int x = 1;
+                    int y;
+                    y = (x - (x << lsl_1));
+                    if (y == v) {
+                        flag = true;
+                        vec.push_back(new GRegRegInstr(GRegRegInstr::Sub, getGR(mulIir->res.getVal()),
+                                                       getGR(mulIir->left.getVal()),
+                                                       getGR(mulIir->left.getVal()), GRegRegInstr::LSL,lsl_1));
+                        break;
+                    }
+                }
+            }
+            //rsb inst*1
+            {
+                for (int lsl_1 = 0;lsl_1 < 32;lsl_1++) {
+                    int x = 1;
+                    int y;
+                    y = ((x << lsl_1) - x);
+                    if (y == v) {
+                        flag = true;
+                        vec.push_back(new GRegRegInstr(GRegRegInstr::RSUB, getGR(mulIir->res.getVal()),
+                                                       getGR(mulIir->left.getVal()),
+                                                       getGR(mulIir->left.getVal()), GRegRegInstr::LSL,lsl_1));
+                        break;
+                    }
+                }
+            }
+            //lsl inst*1
+            {
+                for (int lsl_1 = 0;lsl_1 < 32;lsl_1++) {
+                    int x = 1;
+                    int y;
+                    y = (x << lsl_1);
+                    if (y == v) {
+                        flag = true;
+                        vec.push_back(new LSImmInstr(LSImmInstr::LSL, getGR(mulIir->res.getVal()),
+                                                     getGR(mulIir->left.getVal()),lsl_1));
+                        break;
+                    }
+                }
+            }
+            if (!flag) {
+                getConstantGR(mulIir->right.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,
+                                               getGR(mulIir->res.getVal()),
+                                               getGR(mulIir->left.getVal()),
+                                               constantIntMapping[block][mulIir->right.getInt()]));
+            }
+        } else {
+            vec.push_back(new GRegRegInstr(GRegRegInstr::Mul, getGR(mulIir->res.getVal()), getGR(mulIir->left.getVal()),
+                                           getGR(mulIir->right.getVal())));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(DivIIR)) {
+        std::vector<Instr*> vec;
+        DivIIR* divIir = dynamic_cast<DivIIR*>(ir);
+        if (!divIir->right.getVal()) {
+            int v = divIir->right.getInt();
+            int i = 0;
+            for (i = 0; i < 32; ++i) {
+                int x = 1;
+                int y = x << i;
+                if (y == v) {
+                    vec.push_back(new MoveReg(getGR(divIir->res.getVal()),
+                                              getGR(divIir->left.getVal())));
+                    vec.push_back(new CmpImm(getGR(divIir->res.getVal()),0));
+                    vec.push_back(new GRegImmInstr(GRegImmInstr::Add,
+                                                   getGR(divIir->res.getVal()),
+                                                   getGR(divIir->res.getVal()),
+                                                   1,COND::LT));
+                    vec.push_back(new MoveReg(getGR(divIir->res.getVal()), getGR(divIir->res.getVal()), i));
+                    break;
+                }
+            }
+            if (i == 32) {
+                getConstantGR(divIir->right.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
+                                               getGR(divIir->res.getVal()),
+                                               getGR(divIir->left.getVal()),
+                                               constantIntMapping[block][divIir->right.getInt()]));
+            }
+        } else if (!divIir->left.getVal()){
+            if (!divIir->left.getVal()) {
+                getConstantGR(divIir->left.getInt(),block,vec);
+                vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
+                                               getGR(divIir->res.getVal()),
+                                               constantIntMapping[block][divIir->left.getInt()],
+                                                getGR(divIir->right.getVal())));
+            }
+        } else {
+            vec.push_back(new GRegRegInstr(GRegRegInstr::Div, getGR(divIir->res.getVal()), getGR(divIir->left.getVal()),
+                                           getGR(divIir->right.getVal())));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(ModIR)) {
+        ModIR* modIr = dynamic_cast<ModIR*>(ir);
+        std::vector<Instr*> vec;
+        GR res_gr = getGR(modIr->res.getVal());
+        GR left_gr,right_gr;
+        if (modIr->left.getVal()) {
+            left_gr = getGR(modIr->left.getVal());
+        } else {
+            left_gr = getConstantGR(modIr->left.getInt(),block,vec);
+        }
+        if (modIr->right.getVal()) {
+            right_gr = getGR(modIr->right.getVal());
+        } else {
+            left_gr = getConstantGR(modIr->right.getInt(),block,vec);
+        }
+        vec.push_back(new GRegRegInstr(GRegRegInstr::Div,res_gr,left_gr,right_gr));
+        vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,res_gr,res_gr,right_gr));
+        vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,res_gr,left_gr,res_gr));
+        return vec;
+    }
+    if (typeid(*ir) == typeid(LTIIR)) {
+        LTIIR* ir2 = dynamic_cast<LTIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(LEIIR)) {
+        LEIIR* ir2 = dynamic_cast<LEIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(GTIIR)) {
+        GTIIR* ir2 = dynamic_cast<GTIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(GEIIR)) {
+        GEIIR* ir2 = dynamic_cast<GEIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(EQUIIR)) {
+        EQUIIR* ir2 = dynamic_cast<EQUIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
+        }
+        return vec;
+    }
+    if (typeid(*ir) == typeid(NEIIR)) {
+        NEIIR* ir2 = dynamic_cast<NEIIR*>(ir);
+        std::vector<Instr*> vec;
+        if (!ir2->right.getVal()) {
+            if (is_legal_immediate(ir2->right.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->left.getVal()), ir2->right.getInt()));
+            } else {
+                GR right_gr = getConstantGR(ir2->right.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->left.getVal()),right_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
+        } else if (!ir2->left.getVal()) {
+            if (is_legal_immediate(ir2->left.getInt())) {
+                vec.push_back(new CmpImm(getGR(ir2->right.getVal()), ir2->left.getInt()));
+            } else {
+                GR left_gr = getConstantGR(ir2->left.getInt(),block,vec);
+                vec.push_back(new Cmp(getGR(ir2->right.getVal()),left_gr));
+            }
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
+        } else {
+            vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
+        }
+        return vec;
+    }
+
+    if (typeid(*ir) == typeid(AddFIR) || typeid(*ir) == typeid(SubFIR) ||
+            typeid(*ir) == typeid(MulFIR) || typeid(*ir) == typeid(DivFIR) ||
+            typeid(*ir) == typeid(LTFIR) || typeid(*ir) == typeid(GTFIR) ||
+            typeid(*ir) == typeid(LEFIR) || typeid(*ir) == typeid(GEFIR) ||
+            typeid(*ir) == typeid(EQUFIR) || typeid(*ir) == typeid(NEFIR)) {
         ArithmeticIR *ir2 = dynamic_cast<ArithmeticIR *>(ir);
         std::vector<Instr *> vec;
         if (!ir2->left.getVal()) {
@@ -892,143 +1268,67 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                 vec.push_back(new VLoad(dst, GR(12),0));
             }
         }
-        if (ir2->left.getVal() || ir2->right.getVal()) {
-            if (ir2->left.isInt()) {
-                if (typeid(*ir) == typeid(AddIIR)) {
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Add,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(SubIIR)) {
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(MulIIR)) {
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(DivIIR)) {
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(ModIR)) {
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Div,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Mul,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->right.getVal())));
-                    vec.push_back(new GRegRegInstr(GRegRegInstr::Sub,
-                                                   getGR(ir2->res.getVal()),
-                                                   getGR(ir2->left.getVal()),
-                                                   getGR(ir2->res.getVal())));
-
-                }
-                if (typeid(*ir) == typeid(LTIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
-                }
-                if (typeid(*ir) == typeid(LEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
-                }
-                if (typeid(*ir) == typeid(GTIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
-                }
-                if (typeid(*ir) == typeid(GEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
-                }
-                if (typeid(*ir) == typeid(EQUIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
-                }
-                if (typeid(*ir) == typeid(NEIIR)) {
-                    vec.push_back(new Cmp(getGR(ir2->left.getVal()), getGR(ir2->right.getVal())));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
-                }
-            } else {
-                if (typeid(*ir) == typeid(AddFIR)) {
-                    vec.push_back(new VRegRegInstr(VRegRegInstr::VAdd,
-                                                   getFR(ir2->res.getVal()),
-                                                   getFR(ir2->left.getVal()),
-                                                   getFR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(SubFIR)) {
-                    vec.push_back(new VRegRegInstr(VRegRegInstr::VSub,
-                                                   getFR(ir2->res.getVal()),
-                                                   getFR(ir2->left.getVal()),
-                                                   getFR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(MulFIR)) {
-                    vec.push_back(new VRegRegInstr(VRegRegInstr::VMul,
-                                                   getFR(ir2->res.getVal()),
-                                                   getFR(ir2->left.getVal()),
-                                                   getFR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(DivFIR)) {
-                    vec.push_back(new VRegRegInstr(VRegRegInstr::VDiv,
-                                                   getFR(ir2->res.getVal()),
-                                                   getFR(ir2->left.getVal()),
-                                                   getFR(ir2->right.getVal())));
-                }
-                if (typeid(*ir) == typeid(LTFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
-                }
-                if (typeid(*ir) == typeid(GTFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
-                }
-                if (typeid(*ir) == typeid(LEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
-                }
-                if (typeid(*ir) == typeid(GEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
-                }
-                if (typeid(*ir) == typeid(EQUFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
-                }
-                if (typeid(*ir) == typeid(NEFIR)) {
-                    vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
-                    vec.push_back(new VMrs());
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
-                    vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
-                }
-            }
+        if (typeid(*ir) == typeid(AddFIR)) {
+            vec.push_back(new VRegRegInstr(VRegRegInstr::VAdd,
+                                           getFR(ir2->res.getVal()),
+                                           getFR(ir2->left.getVal()),
+                                           getFR(ir2->right.getVal())));
         }
-        return vec;
+        if (typeid(*ir) == typeid(SubFIR)) {
+            vec.push_back(new VRegRegInstr(VRegRegInstr::VSub,
+                                           getFR(ir2->res.getVal()),
+                                           getFR(ir2->left.getVal()),
+                                           getFR(ir2->right.getVal())));
+        }
+        if (typeid(*ir) == typeid(MulFIR)) {
+            vec.push_back(new VRegRegInstr(VRegRegInstr::VMul,
+                                           getFR(ir2->res.getVal()),
+                                           getFR(ir2->left.getVal()),
+                                           getFR(ir2->right.getVal())));
+        }
+        if (typeid(*ir) == typeid(DivFIR)) {
+            vec.push_back(new VRegRegInstr(VRegRegInstr::VDiv,
+                                           getFR(ir2->res.getVal()),
+                                           getFR(ir2->left.getVal()),
+                                           getFR(ir2->right.getVal())));
+        }
+        if (typeid(*ir) == typeid(LTFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LT));
+        }
+        if (typeid(*ir) == typeid(GTFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GT));
+        }
+        if (typeid(*ir) == typeid(LEFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, LE));
+        }
+        if (typeid(*ir) == typeid(GEFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, GE));
+        }
+        if (typeid(*ir) == typeid(EQUFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, EQU));
+        }
+        if (typeid(*ir) == typeid(NEFIR)) {
+            vec.push_back(new VCmpe(getFR(ir2->left.getVal()), getFR(ir2->right.getVal())));
+            vec.push_back(new VMrs());
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 0));
+            vec.push_back(new MovImm(getGR(ir2->res.getVal()), 1, NE));
+        }
     }
-
     if (typeid(*ir) == typeid(JumpIR)) {
         return {new B(dynamic_cast<JumpIR *>(ir)->target->name)};
     }
@@ -1114,7 +1414,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         v.setVal(new VarValue());
                         tempVec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(v.getFloat())));
                         tempVec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(v.getFloat())));
-                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12),0));
+                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12), 0));
                     }
                     stackMapping[v.getVal()] = cnt * 4;
                     cnt++;
@@ -1125,7 +1425,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
                         fRegMapping[v.getVal()] = fr_cnt;
                         tempVec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(v.getFloat())));
                         tempVec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(v.getFloat())));
-                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12),0));
+                        tempVec.push_back(new VLoad(getFR(v.getVal()), GR(12), 0));
                     } else {
                         tempVec.push_back(new VMoveReg(FR(fr_cnt), getFR(v.getVal())));
                         fRegMapping[v.getVal()] = fr_cnt;
@@ -1160,7 +1460,7 @@ std::vector<Instr *> Codegen::translateInstr(Instruction *ir) {
         } else if (returnIr->useFloat) {
             vec.push_back(new MoveWFromSymbol(GR(12), getFloatAddr(returnIr->retFloat)));
             vec.push_back(new MoveTFromSymbol(GR(12), getFloatAddr(returnIr->retFloat)));
-            vec.push_back(new VLoad(FR(0), GR(12),0));
+            vec.push_back(new VLoad(FR(0), GR(12), 0));
         } else if (returnIr->v) {
             if (returnIr->v->getType()->isInt()) {
                 vec.push_back(new MoveReg(GR(0), getGR(returnIr->v)));
